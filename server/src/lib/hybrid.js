@@ -1,32 +1,38 @@
 import { embedQuery } from './embed.js';
-import { denseSearch, bm25Search } from './retrievers.js';
+import { denseSearch, bm25Search, getKeywordIndex } from './retrievers.js';
 import { weightedRrf } from './fusion.js';
 import { rerank } from './rerank.js';
+import { routeQuery } from './route.js';
 import { ms, timed } from './timing.js';
 
 const rankList = (hits) => hits.map((h, i) => ({ id: h.id, rank: i + 1, score: h.score }));
 
 // BM25 + dense fused with weighted RRF (baseline 2), optionally followed by a Cohere
 // rerank of the top `candidates` fused hits. Returns the top k plus a trace of every stage.
+// weights: { keyword, dense } for static weights, or 'auto' to route per query.
 // rerankQuery lets a retry retrieve with a reformulated query but still be scored
 // against the user's original question.
 export async function hybridSearch(query, {
   k, docIds, candidates, weights, useRerank = false, rerankQuery = query,
 }) {
   const t0 = performance.now();
+  const routing = weights === 'auto' ? routeQuery(query, (await getKeywordIndex()).postings) : null;
+  const used = routing ? routing.weights : weights;
+
   const [dense, keyword] = await Promise.all([
     timed(async () => denseSearch(await embedQuery(query), { k: candidates, docIds })),
     timed(() => bm25Search(query, { k: candidates, docIds })),
   ]);
-  const fused = weightedRrf({ keyword: keyword.result, dense: dense.result }, weights);
+  const fused = weightedRrf({ keyword: keyword.result, dense: dense.result }, used);
 
   const timings = { denseMs: dense.ms, keywordMs: keyword.ms };
-  const trace = { keyword: rankList(keyword.result), dense: rankList(dense.result) };
+  const trace = { routing, keyword: rankList(keyword.result), dense: rankList(dense.result) };
 
   if (!useRerank) {
     const top = fused.slice(0, k);
     trace.fused = top.map((f) => ({ id: f.hit.id, score: f.score, ranks: f.ranks }));
-    return { latencyMs: ms(t0), timings, hits: top.map((f) => ({ ...f.hit, score: f.score })), trace };
+    const hits = top.map((f) => ({ ...f.hit, score: f.score }));
+    return { latencyMs: ms(t0), weights: used, timings, hits, trace };
   }
 
   const pool = fused.slice(0, candidates);
@@ -34,5 +40,5 @@ export async function hybridSearch(query, {
   timings.rerankMs = reranked.ms;
   trace.fused = pool.map((f) => ({ id: f.hit.id, score: f.score, ranks: f.ranks }));
   trace.rerank = reranked.result.map((h) => ({ id: h.id, score: h.score }));
-  return { latencyMs: ms(t0), timings, hits: reranked.result, trace };
+  return { latencyMs: ms(t0), weights: used, timings, hits: reranked.result, trace };
 }

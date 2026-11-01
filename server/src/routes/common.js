@@ -17,8 +17,13 @@ export function parseParams(body = {}) {
   return { query: query.trim(), k, docIds, candidates };
 }
 
-// Normalised to sum to 1 so fused scores are on the same scale whatever the weights
+// 'auto' = per-query routing (lib/route.js). Static weights are normalised to sum to 1
+// so fused scores are on the same scale whatever the weights.
 export function parseWeights(weights = DEFAULT_WEIGHTS) {
+  if (weights === 'auto') return 'auto';
+  if (typeof weights !== 'object' || weights === null) {
+    throw badRequest('weights must be "auto" or { keyword, dense }');
+  }
   const keyword = Number(weights.keyword ?? 0);
   const dense = Number(weights.dense ?? 0);
   if (!(keyword >= 0 && dense >= 0 && keyword + dense > 0)) {
@@ -27,6 +32,7 @@ export function parseWeights(weights = DEFAULT_WEIGHTS) {
   return { keyword: keyword / (keyword + dense), dense: dense / (keyword + dense) };
 }
 
+// Full Anchor routes per query by default; pass static weights to ablate routing.
 // threshold 0 never retries or abstains on retrieval grounds; maxRetries 0 disables retry
 export function parseAnchorOptions(body = {}) {
   const { threshold = DEFAULT_THRESHOLD, maxRetries = DEFAULT_MAX_RETRIES } = body;
@@ -36,7 +42,7 @@ export function parseAnchorOptions(body = {}) {
   if (!Number.isInteger(maxRetries) || maxRetries < 0 || maxRetries > 3) {
     throw badRequest('maxRetries must be an integer from 0 to 3');
   }
-  return { weights: parseWeights(body.weights), threshold, maxRetries };
+  return { weights: parseWeights(body.weights ?? 'auto'), threshold, maxRetries };
 }
 
 export const route = (handler) => async (req, res) => {

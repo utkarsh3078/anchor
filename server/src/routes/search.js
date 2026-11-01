@@ -34,17 +34,18 @@ router.post('/keyword', route(async ({ query, k, docIds }, body) => {
 }));
 
 // BASELINE 2: static-weight hybrid (BM25 + dense, weighted RRF).
-// rerank: true adds the Cohere rerank stage on top (mode 'hybrid+rerank').
+// rerank: true adds the Cohere rerank stage; weights: 'auto' adds query routing.
 router.post('/hybrid', route(async ({ query, k, docIds, candidates }, body) => {
   const weights = parseWeights(body.weights);
   const useRerank = body.rerank ?? false;
   if (typeof useRerank !== 'boolean') throw badRequest('rerank must be true or false');
 
   const result = await hybridSearch(query, { k, docIds, candidates, weights, useRerank });
-  return { mode: useRerank ? 'hybrid+rerank' : 'hybrid', weights, ...result };
+  return { mode: useRerank ? 'hybrid+rerank' : 'hybrid', ...result };
 }));
 
-// Hybrid + rerank + confidence check and retry, without generation (for retrieval metrics)
+// Full Anchor retrieval: routing + hybrid + rerank + confidence check and retry,
+// without generation (for retrieval metrics)
 router.post('/anchor', route(async ({ query, k, docIds, candidates }, body) => {
   const opts = parseAnchorOptions(body);
   const result = await anchorRetrieve(query, { k, docIds, candidates, ...opts });

@@ -53,10 +53,14 @@ export function invalidateKeywordIndex() {
   indexPromise = null;
 }
 
-export async function bm25Search(query, { k, docIds = [] }) {
+export function getKeywordIndex() {
   indexPromise ??= loadIndex().catch((e) => {
     indexPromise = null;
     throw e;
   });
-  return searchIndex(await indexPromise, query, { k, docIds });
+  return indexPromise;
+}
+
+export async function bm25Search(query, { k, docIds = [] }) {
+  return searchIndex(await getKeywordIndex(), query, { k, docIds });
 }

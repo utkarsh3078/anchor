@@ -2,8 +2,9 @@ import { hybridSearch } from './hybrid.js';
 import { reformulateQuery } from './reformulate.js';
 import { ms, timed } from './timing.js';
 
-// Self-correcting retrieval: hybrid + rerank, and if the top rerank score is below
-// `threshold`, reformulate the query and try again (up to maxRetries times).
+// Self-correcting retrieval: hybrid (routed per query when weights = 'auto') + rerank,
+// and if the top rerank score is below `threshold`, reformulate the query and try
+// again (up to maxRetries times). Each reformulated query is routed afresh.
 // Every attempt is reranked against the ORIGINAL question, so attempt scores are
 // comparable and a reformulation that drifts off-topic can't make itself look confident.
 // The best-scoring attempt wins, since a retry can also make things worse.
@@ -21,7 +22,10 @@ export async function anchorRetrieve(question, opts, deps = {}) {
       k, docIds, candidates, weights, useRerank: true, rerankQuery: question,
     });
     const topScore = result.hits[0]?.score ?? 0;
-    const attempt = { query, topScore, latencyMs: result.latencyMs, timings: result.timings, trace: result.trace };
+    const attempt = {
+      query, topScore, weights: result.weights, hits: result.hits,
+      latencyMs: result.latencyMs, timings: result.timings, trace: result.trace,
+    };
     attempts.push(attempt);
     if (!best || topScore > best.topScore) best = { index: i, topScore, hits: result.hits };
 

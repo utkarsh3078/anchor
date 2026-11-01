@@ -55,6 +55,25 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 });
 
+// List indexed documents: [{ docId, docName, pages, chunks }]
+router.get('/', async (_req, res) => {
+  try {
+    const jsonl = await ts.collections(COLLECTION).documents()
+      .export({ include_fields: 'docId,docName,page' });
+    const docs = new Map();
+    for (const line of jsonl.split('\n').filter(Boolean)) {
+      const { docId, docName, page } = JSON.parse(line);
+      const doc = docs.get(docId) ?? { docId, docName, pages: 0, chunks: 0 };
+      doc.chunks++;
+      doc.pages = Math.max(doc.pages, page);
+      docs.set(docId, doc);
+    }
+    res.json([...docs.values()]);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Remove a document and all its chunks
 router.delete('/:docId', async (req, res) => {
   try {

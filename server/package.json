@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test",
     "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "eval": "node eval/run.js"
   },
   "keywords": [],
   "type": "module",

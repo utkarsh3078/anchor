@@ -1,0 +1,59 @@
+{
+  "name": "smoke",
+  "description": "Harness check on one synthetic 3-page manual. Too small for paper results.",
+  "docs": [
+    { "name": "plant-manual.pdf", "file": "../docs/plant-manual.pdf" }
+  ],
+  "questions": [
+    {
+      "id": "s01", "category": "exact",
+      "question": "What is the asset code of the backup chlorinator?",
+      "answerable": true, "gold": [{ "doc": "plant-manual.pdf", "page": 2 }], "answer": "CL-7Q"
+    },
+    {
+      "id": "s02", "category": "paraphrase",
+      "question": "How often are the filters cleaned?",
+      "answerable": true, "gold": [{ "doc": "plant-manual.pdf", "page": 1 }], "answer": "Every 36 hours (backwash), or sooner if head loss exceeds 2.4 m"
+    },
+    {
+      "id": "s03", "category": "paraphrase",
+      "question": "Who should I call if the water gets cloudy?",
+      "answerable": true, "gold": [{ "doc": "plant-manual.pdf", "page": 3 }], "answer": "Water Quality Duty Officer Priya Raman, extension 4417"
+    },
+    {
+      "id": "s04", "category": "numeric",
+      "question": "What free chlorine residual should water leaving the clearwell have?",
+      "answerable": true, "gold": [{ "doc": "plant-manual.pdf", "page": 2 }], "answer": "1.2 mg/L"
+    },
+    {
+      "id": "s05", "category": "numeric",
+      "question": "How thick is the sand layer in each filter bed?",
+      "answerable": true, "gold": [{ "doc": "plant-manual.pdf", "page": 1 }], "answer": "600 mm"
+    },
+    {
+      "id": "s06", "category": "exact",
+      "question": "When must the CL-7Q changeover be tested?",
+      "answerable": true, "gold": [{ "doc": "plant-manual.pdf", "page": 2 }], "answer": "First Monday of every month"
+    },
+    {
+      "id": "s07", "category": "paraphrase",
+      "question": "What should the operator do if the pH goes out of range?",
+      "answerable": true, "gold": [{ "doc": "plant-manual.pdf", "page": 3 }], "answer": "Adjust the lime dosing pump and record the corrective action"
+    },
+    {
+      "id": "u01", "category": "unanswerable",
+      "question": "What is the annual budget of the plant?",
+      "answerable": false
+    },
+    {
+      "id": "u02", "category": "unanswerable",
+      "question": "How many fish live in the Lakeview reservoir?",
+      "answerable": false
+    },
+    {
+      "id": "u03", "category": "unanswerable",
+      "question": "Who designed the treatment plant?",
+      "answerable": false
+    }
+  ]
+}
