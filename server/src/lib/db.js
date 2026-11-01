@@ -5,20 +5,38 @@ import { config } from '../config.js';
 // chat history and eval-run logs, which are simply not stored.
 let clientPromise = null;
 
+// After a failed connection Mongo is treated as off for a minute, so an unreachable
+// Atlas costs one 5 s wait per minute instead of one per request
+const RETRY_AFTER_MS = 60_000;
+let downUntil = 0;
+
 export const mongoEnabled = () => Boolean(config.mongo.uri);
 
 function getClient() {
-  clientPromise ??= new MongoClient(config.mongo.uri).connect().catch((e) => {
+  // The driver's default 30 s server-selection wait would stall every upload and answer
+  // when Atlas is unreachable (e.g. this network's IP isn't allow-listed); fail fast instead
+  clientPromise ??= new MongoClient(config.mongo.uri, {
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 5000,
+  }).connect().catch((e) => {
     clientPromise = null;
+    downUntil = Date.now() + RETRY_AFTER_MS;
+    console.error(`MongoDB unreachable (${e.message.slice(0, 120)}). Retrying in ${RETRY_AFTER_MS / 1000} s.`
+      + ' On Atlas, check Network Access allows this IP.');
     throw e;
   });
   return clientPromise;
 }
 
-// Returns null when MongoDB isn't configured
+// Returns null when MongoDB isn't configured or is currently unreachable; callers then
+// skip storing (or fall back to local files)
 export async function getDatabase() {
-  if (!mongoEnabled()) return null;
-  return (await getClient()).db(config.mongo.dbName);
+  if (!mongoEnabled() || Date.now() < downUntil) return null;
+  try {
+    return (await getClient()).db(config.mongo.dbName);
+  } catch {
+    return null;
+  }
 }
 
 export async function collection(name) {

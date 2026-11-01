@@ -9,7 +9,7 @@ router.use(withGemini);
 
 async function messages(res) {
   const col = await collection('messages');
-  if (!col) res.status(503).json({ error: 'history_unavailable', message: 'Chat history needs MONGODB_URI' });
+  if (!col) res.status(503).json({ error: 'history_unavailable', message: 'Chat history is unavailable (MongoDB not configured or unreachable)' });
   return col;
 }
 
