@@ -33,7 +33,13 @@ app.use((err, _req, res, _next) => {
   sendError(res, err);
 });
 
-await ensureCollection();
+try {
+  await ensureCollection();
+} catch (e) {
+  const { host, port } = config.typesense;
+  console.error(`Cannot reach Typesense at ${host}:${port} (${e.code ?? e.message}). Is Docker running? Try: docker start typesense`);
+  process.exit(1);
+}
 if (mongoEnabled()) console.log('MongoDB:', await pingDb());
 if (!config.corsOrigins) console.warn('CORS_ORIGIN not set: allowing all origins (fine for local dev only)');
 if (!config.requireUserKey) console.warn('REQUIRE_USER_KEY is not true: requests without X-Gemini-Key use the server key');

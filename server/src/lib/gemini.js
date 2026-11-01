@@ -51,7 +51,8 @@ export function geminiContext(headers, {
 // Text models this key can use, for the model picker. This is a metadata call, not a
 // generation request. Cached per key for 10 minutes.
 const modelLists = new LruCache(200);
-const NON_TEXT = /embedding|tts|image|imagen|audio|live|veo|aqa/i;
+// Models that list generateContent but aren't for document Q&A (seen in a real model list)
+const NON_TEXT = /embedding|tts|image|imagen|audio|live|veo|aqa|banana|robotics|computer-use|transcribe|customtools/i;
 
 export async function listTextModels(gemini) {
   const hit = modelLists.get(gemini.keyHash);
