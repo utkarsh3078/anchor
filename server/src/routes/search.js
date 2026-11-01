@@ -1,19 +1,13 @@
 import { Router } from 'express';
 import { embedQuery } from '../lib/embed.js';
 import { denseSearch, bm25Search, typesenseKeywordSearch } from '../lib/retrievers.js';
-import { weightedRrf } from '../lib/fusion.js';
+import { hybridSearch } from '../lib/hybrid.js';
+import { ms, timed } from '../lib/timing.js';
 
 const router = Router();
 const DEFAULT_WEIGHTS = { keyword: 0.5, dense: 0.5 };
 
-const ms = (t0) => Math.round(performance.now() - t0);
 const badRequest = (message) => Object.assign(new Error(message), { status: 400 });
-
-async function timed(fn) {
-  const t0 = performance.now();
-  const result = await fn();
-  return { result, ms: ms(t0) };
-}
 
 function parseParams(body = {}) {
   const { query, k = 5, docIds = [], candidates = 50 } = body;
@@ -45,8 +39,6 @@ const route = (handler) => async (req, res) => {
   }
 };
 
-const rankList = (hits) => hits.map((h, i) => ({ id: h.id, rank: i + 1, score: h.score }));
-
 // latencyMs is end-to-end (including the query embedding) so all modes are comparable
 
 // BASELINE 1: dense-only retrieval
@@ -72,30 +64,16 @@ router.post('/keyword', route(async ({ query, k, docIds }, body) => {
   return { mode: 'keyword', engine, latencyMs: ms(t0), hits };
 }));
 
-// BASELINE 2: static-weight hybrid (BM25 + dense, weighted RRF)
+// BASELINE 2: static-weight hybrid (BM25 + dense, weighted RRF).
+// rerank: true adds the Cohere rerank stage on top (mode 'hybrid+rerank').
 router.post('/hybrid', route(async ({ query, k, docIds, candidates }, body) => {
   const weights = parseWeights(body.weights);
   if (!weights) throw badRequest('weights must be non-negative and not both zero');
+  const useRerank = body.rerank ?? false;
+  if (typeof useRerank !== 'boolean') throw badRequest('rerank must be true or false');
 
-  const t0 = performance.now();
-  const [dense, keyword] = await Promise.all([
-    timed(async () => denseSearch(await embedQuery(query), { k: candidates, docIds })),
-    timed(() => bm25Search(query, { k: candidates, docIds })),
-  ]);
-  const fused = weightedRrf({ keyword: keyword.result, dense: dense.result }, weights).slice(0, k);
-
-  return {
-    mode: 'hybrid',
-    latencyMs: ms(t0),
-    timings: { denseMs: dense.ms, keywordMs: keyword.ms },
-    weights,
-    hits: fused.map((f) => ({ ...f.hit, score: f.score })),
-    trace: {
-      keyword: rankList(keyword.result),
-      dense: rankList(dense.result),
-      fused: fused.map((f) => ({ id: f.hit.id, score: f.score, ranks: f.ranks })),
-    },
-  };
+  const result = await hybridSearch(query, { k, docIds, candidates, weights, useRerank });
+  return { mode: useRerank ? 'hybrid+rerank' : 'hybrid', weights, ...result };
 }));
 
 export default router;

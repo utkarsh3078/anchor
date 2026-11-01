@@ -7,6 +7,10 @@ export const config = {
     embedModel: 'gemini-embedding-001',
     dim: 768, // must match num_dim in the Typesense schema
   },
+  cohere: {
+    apiKey: process.env.COHERE_API_KEY,
+    rerankModel: process.env.COHERE_RERANK_MODEL || 'rerank-v3.5',
+  },
   typesense: {
     host: process.env.TYPESENSE_HOST,
     port: Number(process.env.TYPESENSE_PORT),
