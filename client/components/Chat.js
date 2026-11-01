@@ -25,9 +25,22 @@ function AssistantMessage({ msg, active, onShowTrace, onOpenSource }) {
           {ABSTAIN_TEXT[data.abstainReason] ?? data.abstainReason}
         </p>
       ) : (
-        <div className="font-serif text-[17px] leading-relaxed">
-          <Markdown text={data.answer} onCite={open} />
-        </div>
+        <>
+          {data.lowConfidence && (
+            <p className="mb-2 rounded bg-amber-50 px-2 py-1 font-sans text-xs text-amber-800">
+              Low confidence: the best evidence scored {data.retrieval.confidence.topScore.toFixed(2)}, below the
+              threshold {data.retrieval.confidence.threshold}. Check the sources before relying on this.
+            </p>
+          )}
+          {data.overview && (
+            <p className="mb-2 rounded bg-blue-50 px-2 py-1 font-sans text-xs text-blue-800">
+              Whole-document question: answered from passages sampled across the selected documents.
+            </p>
+          )}
+          <div className="font-serif text-[17px] leading-relaxed">
+            <Markdown text={data.answer} onCite={open} />
+          </div>
+        </>
       )}
 
       {data.citations.length > 0 && (

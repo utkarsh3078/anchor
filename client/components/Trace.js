@@ -61,8 +61,14 @@ function WeightsBar({ weights }) {
   );
 }
 
-function Gauge({ score, threshold }) {
+function Gauge({ score, threshold, strict, abstained }) {
   const ok = score >= threshold;
+  let verdict = 'confident, so Gemini answered';
+  if (!ok) {
+    verdict = strict || abstained
+      ? 'too weak, so Anchor abstained (strict mode)'
+      : 'below threshold, so Anchor answered with a low-confidence warning (Gemini still checks the passages)';
+  }
   return (
     <div className="space-y-1 px-2">
       <div className="relative h-3 rounded bg-slate-200">
@@ -70,8 +76,7 @@ function Gauge({ score, threshold }) {
         <div className="absolute -top-1 h-5 w-0.5 bg-slate-900" style={{ left: pct(threshold) }} title={`threshold ${threshold}`} />
       </div>
       <p className="text-xs text-slate-600">
-        Best rerank score <b>{score.toFixed(3)}</b> vs threshold <b>{threshold}</b>:{' '}
-        {ok ? 'confident, so Gemini answered' : 'too weak, so Anchor abstained without calling Gemini'}
+        Best rerank score <b>{score.toFixed(3)}</b> vs threshold <b>{threshold}</b>: {verdict}
       </p>
     </div>
   );
@@ -195,7 +200,19 @@ export default function Trace({ message, onOpen }) {
 
       {r.confidence && (
         <Step n={++step} title="Confidence check">
-          <Gauge score={r.confidence.topScore} threshold={r.confidence.threshold} />
+          <Gauge
+            score={r.confidence.topScore} threshold={r.confidence.threshold}
+            strict={data.strict} abstained={data.abstainReason === 'low_retrieval_confidence'}
+          />
+        </Step>
+      )}
+
+      {r.overview && (
+        <Step n={++step} title="Whole-document question" note="search skipped">
+          <p className="px-2 text-xs text-slate-600">
+            Questions like “what is inside the pdf?” match no single passage, so instead of searching, Anchor
+            sampled passages evenly across the selected documents for Gemini to summarise.
+          </p>
         </Step>
       )}
 
@@ -207,7 +224,11 @@ export default function Trace({ message, onOpen }) {
               badges={p.neighbour && <span className="shrink-0 rounded bg-slate-200 px-1 text-[10px] text-slate-700">neighbour</span>}
             />
           ))}
-          <p className="px-2 text-[11px] text-slate-500">Top hits plus the chunks right before and after them, so lists and units arrive whole. Green rows are the ones the answer cites.</p>
+          <p className="px-2 text-[11px] text-slate-500">
+            {r.overview
+              ? 'Passages sampled across the documents. Green rows are the ones the answer cites.'
+              : 'Top hits plus the chunks right before and after them, so lists and units arrive whole. Green rows are the ones the answer cites.'}
+          </p>
         </Step>
       )}
     </div>

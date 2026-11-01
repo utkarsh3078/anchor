@@ -49,7 +49,15 @@ export default function SettingsPanel({ settings, setSettings, models }) {
                   type="range" min={0} max={0.6} step={0.05} value={settings.threshold}
                   onChange={(e) => set({ threshold: Number(e.target.value) })} className="w-full"
                 />
-                <span className="text-xs text-slate-500">Below this rerank score Anchor abstains instead of answering.</span>
+                <span className="text-xs text-slate-500">Below this rerank score Anchor retries, then answers with a low-confidence warning.</span>
+              </label>
+
+              <label className="flex items-start gap-2">
+                <input type="checkbox" checked={settings.strict} onChange={(e) => set({ strict: e.target.checked })} className="mt-1" />
+                <span>
+                  Strict: refuse below the threshold
+                  <span className="block text-xs text-slate-500">Abstains instead of answering when evidence is weak (how the paper evaluates Anchor).</span>
+                </span>
               </label>
 
               <label className="block">

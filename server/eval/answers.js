@@ -16,11 +16,14 @@ import {
   makeApi, geminiHeaders, loadDataset, resolveDocs, openCheckpoint, sleep, round, errorGuard,
 } from './common.js';
 
+// Anchor runs strict (hard confidence gate) so abstention is measured as designed;
+// anchor-soft is the UI default (answers below the threshold, flagged lowConfidence)
 const MODES = {
   dense: { mode: 'dense' },
   hybrid: { mode: 'hybrid' },
-  'anchor-noretry': { mode: 'anchor', maxRetries: 0 },
-  anchor: { mode: 'anchor' },
+  'anchor-noretry': { mode: 'anchor', maxRetries: 0, strict: true },
+  anchor: { mode: 'anchor', strict: true },
+  'anchor-soft': { mode: 'anchor' },
 };
 
 const { values: args, positionals } = parseArgs({
@@ -45,6 +48,7 @@ const judgeAnswer = args['no-judge'] ? null : makeJudge(args['judge-model']);
 function scoreRow(mode, q, res) {
   const row = {
     mode, id: q.id, category: q.category ?? null, answerable: q.answerable, model: res.model,
+    lowConfidence: res.lowConfidence ?? false, overview: res.overview ?? false,
     abstained: res.abstained, abstainReason: res.abstainReason ?? null,
     retries: res.retrieval.retries, latencyMs: res.latencyMs,
     answer: res.answer,

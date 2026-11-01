@@ -16,7 +16,7 @@ function pickDefaultModel({ models, defaultModel }) {
 // Three panels: documents + settings | chat | retrieval trace
 export default function Workspace({ session, onLogout }) {
   const [settings, setSettings] = useState({
-    mode: 'anchor', k: 10, threshold: 0.15, maxRetries: 1, model: pickDefaultModel(session), rewriteModel: '',
+    mode: 'anchor', k: 10, threshold: 0.15, maxRetries: 1, strict: false, model: pickDefaultModel(session), rewriteModel: '',
   });
   const [selectedIds, setSelectedIds] = useState([]);
   const [messages, setMessages] = useState([]); // { id, role: 'user' | 'assistant' | 'error', ... }
@@ -45,7 +45,9 @@ export default function Workspace({ session, onLogout }) {
     setAsking(true);
     try {
       const body = { query, k: settings.k, docIds: selectedIds, mode: settings.mode, chatId: chatId ?? undefined };
-      if (settings.mode === 'anchor') Object.assign(body, { threshold: settings.threshold, maxRetries: settings.maxRetries });
+      if (settings.mode === 'anchor') {
+        Object.assign(body, { threshold: settings.threshold, maxRetries: settings.maxRetries, strict: settings.strict });
+      }
       const data = await api('/api/ask', { method: 'POST', json: body, gemini });
       setChatId(data.chatId);
       setTraceId(add({ role: 'assistant', data, query }));

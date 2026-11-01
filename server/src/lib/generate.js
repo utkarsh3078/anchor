@@ -9,6 +9,8 @@ const SYSTEM = `Answer the question using ONLY the numbered passages. Rules:
 4. Be complete: if the question asks for a list, syllabus, steps or topics, include every relevant
    item found in the passages, grouped under short headings (e.g. "**Unit 1**") with "- " bullets.
 5. Be direct: start with the answer, no preamble or closing remarks. Short questions get short answers.
+   If asked what a document contains or for a summary, summarise the passages (they are spread
+   across the document) by topic.
 6. Use Markdown only for headings in bold, "- " bullets and **bold** terms.`;
 
 const SCHEMA = {
