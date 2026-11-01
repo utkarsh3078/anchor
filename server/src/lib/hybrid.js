@@ -7,6 +7,17 @@ import { ms, timed } from './timing.js';
 
 const rankList = (hits) => hits.map((h, i) => ({ id: h.id, rank: i + 1, score: h.score }));
 
+// Text and location of the passages the trace shows, so the client can display them and
+// open the source page (the ranked lists only carry ids). Top 10 per list keeps it small.
+const TRACE_TOP = 10;
+function tracePassages(...lists) {
+  const out = {};
+  for (const list of lists) {
+    for (const h of list.slice(0, TRACE_TOP)) out[h.id] ??= { docName: h.docName, page: h.page, text: h.text };
+  }
+  return out;
+}
+
 // BM25 + dense fused with weighted RRF (baseline 2), optionally followed by a Cohere
 // rerank of the top `candidates` fused hits. Returns the top k plus a trace of every stage.
 // weights: { keyword, dense } for static weights, or 'auto' to route per query.
@@ -32,6 +43,7 @@ export async function hybridSearch(query, {
     const top = fused.slice(0, k);
     trace.fused = top.map((f) => ({ id: f.hit.id, score: f.score, ranks: f.ranks }));
     const hits = top.map((f) => ({ ...f.hit, score: f.score }));
+    trace.passages = tracePassages(keyword.result, dense.result, hits);
     return { latencyMs: ms(t0), weights: used, timings, hits, trace };
   }
 
@@ -40,5 +52,6 @@ export async function hybridSearch(query, {
   timings.rerankMs = reranked.ms;
   trace.fused = pool.map((f) => ({ id: f.hit.id, score: f.score, ranks: f.ranks }));
   trace.rerank = reranked.result.map((h) => ({ id: h.id, score: h.score }));
+  trace.passages = tracePassages(keyword.result, dense.result, pool.map((f) => f.hit), reranked.result);
   return { latencyMs: ms(t0), weights: used, timings, hits: reranked.result, trace };
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Markdown from './Markdown';
 
 const ABSTAIN_TEXT = {
   low_retrieval_confidence: 'The retrieved evidence was too weak to answer reliably.',
@@ -8,23 +9,12 @@ const ABSTAIN_TEXT = {
   no_passages: 'Nothing relevant was found in the selected documents.',
 };
 
-// Turns "text [1] more [2, 3]" into text with clickable citation markers
-function AnswerText({ text, onCite }) {
-  const parts = text.split(/(\[\d+(?:\s*,\s*\d+)*\])/g);
-  return parts.map((part, i) => {
-    const m = part.match(/^\[(.+)\]$/);
-    if (!m) return <span key={i}>{part}</span>;
-    return m[1].split(',').map((n) => (
-      <button key={`${i}-${n}`} onClick={() => onCite(Number(n))} className="mx-0.5 rounded bg-blue-100 px-1 align-super font-sans text-[10px] text-blue-800">
-        {n.trim()}
-      </button>
-    ));
-  });
-}
-
-function AssistantMessage({ msg, active, onShowTrace }) {
-  const [open, setOpen] = useState(null);
+function AssistantMessage({ msg, active, onShowTrace, onOpenSource }) {
   const { data } = msg;
+  const open = (n) => {
+    const c = data.citations.find((x) => x.n === n);
+    if (c) onOpenSource(c);
+  };
 
   return (
     <div className={`rounded-lg border bg-white p-4 ${active ? 'border-blue-300' : 'border-slate-200'}`}>
@@ -34,29 +24,26 @@ function AssistantMessage({ msg, active, onShowTrace }) {
           {ABSTAIN_TEXT[data.abstainReason] ?? data.abstainReason}
         </p>
       ) : (
-        <p className="font-serif text-lg leading-relaxed">
-          <AnswerText text={data.answer} onCite={(n) => setOpen(open === n ? null : n)} />
-        </p>
+        <div className="font-serif text-[17px] leading-relaxed">
+          <Markdown text={data.answer} onCite={open} />
+        </div>
       )}
 
       {data.citations.length > 0 && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-4 border-t border-slate-100 pt-3">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Sources (click to open)</p>
           <div className="flex flex-wrap gap-2">
             {data.citations.map((c) => (
               <button
                 key={c.n}
-                onClick={() => setOpen(open === c.n ? null : c.n)}
-                className={`rounded border px-2 py-0.5 text-xs ${open === c.n ? 'border-blue-400 bg-blue-50' : 'border-slate-300'}`}
+                onClick={() => onOpenSource(c)}
+                title={c.text.slice(0, 200)}
+                className="rounded border border-slate-300 px-2 py-0.5 text-xs hover:border-blue-400 hover:bg-blue-50"
               >
-                [{c.n}] {c.docName} · p.{c.page}
+                <span className="font-semibold text-blue-800">[{c.n}]</span> {c.docName} · p.{c.page}
               </button>
             ))}
           </div>
-          {open != null && (
-            <blockquote className="whitespace-pre-wrap border-l-4 border-blue-200 bg-slate-50 p-3 text-sm text-slate-700">
-              {data.citations.find((c) => c.n === open)?.text ?? 'This number does not match a retrieved passage.'}
-            </blockquote>
-          )}
         </div>
       )}
 
@@ -101,7 +88,7 @@ function ErrorMessage({ msg, models, onSwitchModel, onRetry }) {
 }
 
 export default function Chat({
-  messages, asking, canAsk, onAsk, onNewChat, onShowTrace, traceId, models, onSwitchModel, onRetry,
+  messages, asking, canAsk, onAsk, onNewChat, onShowTrace, onOpenSource, traceId, models, onSwitchModel, onRetry,
 }) {
   const [query, setQuery] = useState('');
   const bottom = useRef(null);
@@ -138,7 +125,12 @@ export default function Chat({
           if (msg.role === 'error') {
             return <ErrorMessage key={msg.id} msg={msg} models={models} onSwitchModel={onSwitchModel} onRetry={onRetry} />;
           }
-          return <AssistantMessage key={msg.id} msg={msg} active={msg.id === traceId} onShowTrace={() => onShowTrace(msg.id)} />;
+          return (
+            <AssistantMessage
+              key={msg.id} msg={msg} active={msg.id === traceId}
+              onShowTrace={() => onShowTrace(msg.id)} onOpenSource={onOpenSource}
+            />
+          );
         })}
         {asking && <p className="text-sm text-slate-500">Searching and checking evidence…</p>}
         <div ref={bottom} />

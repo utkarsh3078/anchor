@@ -98,7 +98,11 @@ costs nothing. Quota errors (429) are not retried, since a retry would only burn
 | POST | `/api/documents` | multipart `file` (PDF, .txt, .md; max 25 MB) | `{ docId, docName, pages, chunks, failed }` |
 | POST | `/api/documents/text` | `{ name, text }` | same |
 | GET | `/api/documents` | | `[{ docId, docName, pages, chunks, source?, uploadedAt? }]` |
-| DELETE | `/api/documents/:docId` | | Typesense delete result |
+| GET | `/api/documents/:docId/file` | | the original upload (PDF or text), for the source viewer; 404 `not_found` if uploaded before originals were stored |
+| DELETE | `/api/documents/:docId` | | Typesense delete result (also deletes the stored original) |
+
+Uploads strip running PDF headers/footers before chunking, and keep the original file
+(MongoDB GridFS, or `server/uploads/` without MongoDB).
 
 ### Search (retrieval only)
 
@@ -107,7 +111,7 @@ costs nothing. Quota errors (429) are not retried, since a retry would only burn
 | `/api/search/dense` | | baseline 1 |
 | `/api/search/keyword` | `engine`: `bm25` (default) or `typesense` | |
 | `/api/search/hybrid` | `weights`: `{ keyword, dense }` (default 0.5/0.5) or `"auto"`; `rerank`: bool | baseline 2; `trace` has keyword/dense/fused/rerank lists and `routing` |
-| `/api/search/anchor` | `weights` (default `"auto"`), `threshold` (0-1, default 0.3), `maxRetries` (0-3, default 1) | adds `confidence`, `retries`, `bestAttempt`, `attempts[]` (each with query, weights, hits, trace) |
+| `/api/search/anchor` | `weights` (default `"auto"`), `threshold` (0-1, default 0.15), `maxRetries` (0-3, default 1) | adds `confidence`, `retries`, `bestAttempt`, `attempts[]` (each with query, weights, hits, trace) |
 
 ### Ask (retrieval + answer)
 
@@ -126,6 +130,12 @@ costs nothing. Quota errors (429) are not retried, since a retry would only burn
   "latencyMs": 2855, "timings": { "retrievalMs": 891, "generateMs": 1963 }
 }
 ```
+
+`context` lists every passage Gemini read (`{ id, docName, page, text, neighbour }`): the
+retrieved hits plus, for the top 4, the chunk before and after (`neighbours: false` turns
+that off). Answers are Markdown (bold headings, `- ` bullets) with `[n]` citations into
+`context`. The search `trace` includes `passages` (id → docName, page, text) for the top 10
+of each stage.
 
 When abstaining: `abstained: true`, `answer: null`, `citations: []`, and `abstainReason` is
 `low_retrieval_confidence` (anchor only; Gemini is not called), `not_in_passages`, or

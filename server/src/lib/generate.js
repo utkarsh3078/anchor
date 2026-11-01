@@ -1,10 +1,15 @@
 import { LruCache, cached } from './cache.js';
 
+// Complete but grounded: list-style questions (syllabus, steps, topics) get every item the
+// passages contain, formatted as Markdown; every line carries its citation.
 const SYSTEM = `Answer the question using ONLY the numbered passages. Rules:
-1. Every sentence must end with the number(s) of the passage(s) supporting it, e.g. [2] or [1, 3].
+1. Cite every sentence and every bullet with the passage number(s) it comes from, e.g. [2] or [1, 3].
 2. If the passages do not state the answer, return answerable=false and answer="". Do not guess.
 3. Never use outside knowledge, even if you know the answer.
-4. Be brief: answer the question directly in at most 3 sentences, no preamble.`;
+4. Be complete: if the question asks for a list, syllabus, steps or topics, include every relevant
+   item found in the passages, grouped under short headings (e.g. "**Unit 1**") with "- " bullets.
+5. Be direct: start with the answer, no preamble or closing remarks. Short questions get short answers.
+6. Use Markdown only for headings in bold, "- " bullets and **bold** terms.`;
 
 const SCHEMA = {
   type: 'object',

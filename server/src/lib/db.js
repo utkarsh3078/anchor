@@ -16,9 +16,13 @@ function getClient() {
 }
 
 // Returns null when MongoDB isn't configured
-export async function collection(name) {
+export async function getDatabase() {
   if (!mongoEnabled()) return null;
-  return (await getClient()).db(config.mongo.dbName).collection(name);
+  return (await getClient()).db(config.mongo.dbName);
+}
+
+export async function collection(name) {
+  return (await getDatabase())?.collection(name) ?? null;
 }
 
 // Logging must never fail the user's request, so errors are reported and swallowed

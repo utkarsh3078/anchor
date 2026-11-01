@@ -5,6 +5,7 @@ import { indexDocument } from '../lib/ingest.js';
 import { ts, COLLECTION } from '../lib/typesense.js';
 import { invalidateKeywordIndex } from '../lib/retrievers.js';
 import { collection, safeWrite } from '../lib/db.js';
+import { deleteFile, loadFile } from '../lib/files.js';
 import { badRequest, sendError, withGemini } from './common.js';
 
 const upload = multer({
@@ -24,7 +25,10 @@ router.post('/', withGemini, upload.single('file'), async (req, res) => {
     const isPdf = mimetype === 'application/pdf' || /\.pdf$/i.test(originalname);
     const pages = isPdf ? await extractPages(buffer) : [{ page: 1, text: buffer.toString('utf8') }];
     res.json(await indexDocument(originalname, pages, {
-      source: isPdf ? 'pdf' : 'text-file', sizeBytes: size, gemini: req.gemini,
+      source: isPdf ? 'pdf' : 'text-file',
+      sizeBytes: size,
+      gemini: req.gemini,
+      file: { buffer, contentType: isPdf ? 'application/pdf' : 'text/plain; charset=utf-8' },
     }));
   } catch (e) {
     sendError(res, e);
@@ -39,7 +43,10 @@ router.post('/text', withGemini, async (req, res) => {
     if (typeof text !== 'string' || !text.trim()) throw badRequest('text is required');
     const pages = [{ page: 1, text: text.trim() }];
     res.json(await indexDocument(name.trim(), pages, {
-      source: 'paste', sizeBytes: Buffer.byteLength(text), gemini: req.gemini,
+      source: 'paste',
+      sizeBytes: Buffer.byteLength(text),
+      gemini: req.gemini,
+      file: { buffer: Buffer.from(text.trim()), contentType: 'text/plain; charset=utf-8' },
     }));
   } catch (e) {
     sendError(res, e);
@@ -72,6 +79,20 @@ router.get('/', async (_req, res) => {
   }
 });
 
+// The original upload, for the source viewer (404 for documents indexed before files were kept)
+router.get('/:docId/file', async (req, res) => {
+  try {
+    const file = await loadFile(req.params.docId);
+    if (!file) return res.status(404).json({ error: 'not_found', message: 'Original file not stored. Re-upload the document to view it.' });
+    res.set('Content-Type', file.contentType || 'application/octet-stream');
+    res.set('Content-Disposition', `inline; filename="${encodeURIComponent(file.filename)}"`);
+    res.set('Cache-Control', 'private, max-age=3600');
+    res.send(file.buffer);
+  } catch (e) {
+    sendError(res, e);
+  }
+});
+
 // Remove a document and all its chunks
 router.delete('/:docId', async (req, res) => {
   try {
@@ -79,6 +100,7 @@ router.delete('/:docId', async (req, res) => {
       .delete({ filter_by: `docId:=\`${req.params.docId}\`` });
     invalidateKeywordIndex();
     await safeWrite('documents', (col) => col.deleteOne({ _id: req.params.docId }));
+    await deleteFile(req.params.docId).catch((e) => console.error('Deleting stored file failed:', e.message));
     res.json(out);
   } catch (e) {
     sendError(res, e);

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import { retrieve, MODES } from '../lib/retrieve.js';
 import { generateAnswer } from '../lib/generate.js';
+import { withNeighbours } from '../lib/context.js';
 import { ms, timed } from '../lib/timing.js';
 import { safeWrite } from '../lib/db.js';
 import { badRequest, parseAnchorOptions, parseWeights, route, withGemini } from './common.js';
@@ -16,6 +17,8 @@ const router = Router();
 //   no_passages:              nothing retrieved (e.g. no documents selected; Gemini not called)
 // Each exchange is saved under chatId (generated if absent) when MongoDB is configured.
 // Gemini calls use the caller's key and model (headers, see lib/gemini.js).
+// The answer sees the retrieved hits plus their neighbouring chunks (neighbours: false to
+// turn that off); `context` in the response lists exactly what Gemini was given.
 router.post('/', withGemini, route(async ({ query, k, docIds, candidates }, body, req) => {
   const mode = body.mode ?? 'anchor';
   if (!MODES.includes(mode)) throw badRequest(`mode must be one of ${MODES.join(', ')}`);
@@ -23,6 +26,8 @@ router.post('/', withGemini, route(async ({ query, k, docIds, candidates }, body
   if (typeof chatId !== 'string') throw badRequest('chatId must be a string');
 
   const opts = parseAnchorOptions(body);
+  const useNeighbours = body.neighbours ?? true;
+  if (typeof useNeighbours !== 'boolean') throw badRequest('neighbours must be true or false');
   // Baseline hybrid uses static weights unless told otherwise; anchor routes by default
   const weights = mode === 'hybrid' ? parseWeights(body.weights) : opts.weights;
 
@@ -31,12 +36,15 @@ router.post('/', withGemini, route(async ({ query, k, docIds, candidates }, body
   const retrieval = await retrieve(mode, query, { k, docIds, candidates, ...opts, weights, gemini });
 
   let result;
+  let context = [];
   if (!retrieval.hits.length) {
     result = abstention('no_passages');
   } else if (retrieval.confidence && !retrieval.confidence.confident) {
     result = abstention('low_retrieval_confidence');
   } else {
-    const gen = await timed(() => generateAnswer(query, retrieval.hits, gemini));
+    const passages = useNeighbours ? await withNeighbours(retrieval.hits) : retrieval.hits;
+    context = passages.map(({ id, docName, page, text, neighbour }) => ({ id, docName, page, text, neighbour: Boolean(neighbour) }));
+    const gen = await timed(() => generateAnswer(query, passages, gemini));
     const timings = { retrievalMs: retrieval.latencyMs, generateMs: gen.ms };
     const meta = { model: gen.result.model, cached: gen.result.cached, timings };
     result = gen.result.answerable
@@ -49,7 +57,7 @@ router.post('/', withGemini, route(async ({ query, k, docIds, candidates }, body
       }
       : abstention('not_in_passages', meta);
   }
-  const response = { chatId, mode, model: gemini.model, ...result, retrieval, latencyMs: ms(t0) };
+  const response = { chatId, mode, model: gemini.model, ...result, context, retrieval, latencyMs: ms(t0) };
 
   await safeWrite('messages', (col) => col.insertOne({ owner: gemini.keyHash, ...toMessage(query, response) }));
   return response;

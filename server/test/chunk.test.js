@@ -26,3 +26,26 @@ test('cuts at sentence ends when one is available', () => {
 test('skips empty pages and tiny fragments', () => {
   assert.deepEqual(chunkPages([{ page: 1, text: '' }, { page: 2, text: 'too short' }]), []);
 });
+
+test('running headers are stripped, repeated short content lines are kept', async () => {
+  const { stripRepeatedLines } = await import('../src/lib/pdf.js');
+  const header = (n) => `Handbook of B.Tech. offered by USICT\nApplicable from Session 2024-25 Page ${n} of 113`;
+  const subjects = ['Theory of Computation', 'Artificial Intelligence', 'Operating Systems', 'Computer Networks'];
+  const pages = subjects.map((s, i) => ({
+    page: i + 1,
+    text: `${header(49 + i)}\nPaper Code: PC-20${i} Paper: ${s}\nUnit-1\n1.\nTopics of ${s.toLowerCase()} in detail.`,
+  }));
+  const out = stripRepeatedLines(pages);
+  for (const p of out) {
+    assert.ok(!p.text.includes('Handbook'));
+    assert.ok(!p.text.includes('Page 4'));
+    assert.ok(p.text.startsWith('Paper Code'));
+    assert.ok(p.text.includes('Unit-1') && p.text.includes('\n1.\n'));
+  }
+});
+
+test('short documents are left alone', async () => {
+  const { stripRepeatedLines } = await import('../src/lib/pdf.js');
+  const pages = [{ page: 1, text: 'Same header line here\nA' }, { page: 2, text: 'Same header line here\nB' }];
+  assert.deepEqual(stripRepeatedLines(pages), pages);
+});

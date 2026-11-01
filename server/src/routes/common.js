@@ -1,9 +1,11 @@
 import { geminiContext, geminiHttpError } from '../lib/gemini.js';
 
 const DEFAULT_WEIGHTS = { keyword: 0.5, dense: 0.5 };
-// Provisional, from a 5-question smoke test (answerable questions scored 0.18-0.92,
-// unanswerable 0.03-0.25). Must be tuned on the evaluation set.
-export const DEFAULT_THRESHOLD = 0.3;
+// Provisional. Smoke test (prose manual): answerable 0.18-0.92, unanswerable 0.03-0.25.
+// A list-style syllabus PDF: correct chunks scored only 0.15-0.24, so 0.3 abstained on
+// everything. 0.15 keeps those; Gemini's not_in_passages check remains as a second gate.
+// Must be tuned on the evaluation set.
+export const DEFAULT_THRESHOLD = 0.15;
 // One retry costs one Gemini request; on the smoke test retries never changed the
 // result, so the free-tier-friendly default is 1 (the API allows up to 3)
 const DEFAULT_MAX_RETRIES = 1;

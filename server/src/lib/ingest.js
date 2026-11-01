@@ -4,10 +4,12 @@ import { embedDocuments } from './embed.js';
 import { ts, COLLECTION } from './typesense.js';
 import { invalidateKeywordIndex } from './retrievers.js';
 import { safeWrite } from './db.js';
+import { saveFile } from './files.js';
 
 // pages: [{ page, text }]. Chunks, embeds and indexes one document; records its
-// metadata in MongoDB when configured.
-export async function indexDocument(docName, pages, { source, sizeBytes, gemini }) {
+// metadata in MongoDB when configured. file = { buffer, contentType } of the original,
+// stored so the client can open the cited page.
+export async function indexDocument(docName, pages, { source, sizeBytes, gemini, file }) {
   const chunks = chunkPages(pages);
   if (!chunks.length) {
     throw Object.assign(new Error('No extractable text (scanned PDF?)'), { status: 422, code: 'no_text' });
@@ -31,6 +33,12 @@ export async function indexDocument(docName, pages, { source, sizeBytes, gemini 
   invalidateKeywordIndex();
   const failed = results.filter((r) => !r.success);
   if (failed.length) console.error('Import failures:', failed.slice(0, 3));
+
+  // The document is searchable even if storing the original fails; only the viewer is affected
+  if (file) {
+    await saveFile(docId, file.buffer, { filename: docName, contentType: file.contentType })
+      .catch((e) => console.error(`Storing original of ${docName} failed:`, e.message));
+  }
 
   const meta = { docId, docName, pages: pages.length, chunks: chunks.length, failed: failed.length };
   await safeWrite('documents', (col) => col.insertOne({

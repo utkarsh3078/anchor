@@ -5,3 +5,4 @@ ts-data/
 dist/
 .DS_Store
 claude.md
+server/uploads/
