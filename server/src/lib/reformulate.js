@@ -1,26 +1,29 @@
-import { ai } from './gemini.js';
-import { config } from '../config.js';
+import { LruCache, cached } from './cache.js';
 
-const SYSTEM = `You rewrite search queries for a document search engine.
-The user's question did not retrieve strong evidence. Write ONE new search query that is
-more likely to match the wording of the source documents: use synonyms, likely technical
-terms, or expand abbreviations. Do not answer the question. Reply with the query only.`;
+const SYSTEM = `Rewrite a search query for a document search engine.
+Output exactly one query: at most 12 words, no quotes, no explanation, no answer.
+Use different words from the queries already tried: synonyms, technical terms, expanded abbreviations.`;
+
+const rewrites = new LruCache(500);
 
 // weakHits are the best (but low-confidence) passages so far: they hint at the
-// vocabulary the documents actually use.
-export async function reformulateQuery(question, triedQueries, weakHits) {
-  const snippets = weakHits.slice(0, 3).map((h) => `- ${h.text.slice(0, 300)}`).join('\n');
+// vocabulary the documents actually use. Kept short to keep the request small.
+export async function reformulateQuery(question, triedQueries, weakHits, gemini) {
+  const snippets = weakHits.slice(0, 2).map((h) => `- ${h.text.slice(0, 200)}`).join('\n');
   const prompt = [
     `Question: ${question}`,
-    `Queries already tried:\n${triedQueries.map((q) => `- ${q}`).join('\n')}`,
-    `Closest passages found so far (may be off-topic):\n${snippets || '(none)'}`,
-  ].join('\n\n');
+    `Tried:\n${triedQueries.map((q) => `- ${q}`).join('\n')}`,
+    `Nearest passages (may be off-topic):\n${snippets || '(none)'}`,
+  ].join('\n');
 
-  const res = await ai.models.generateContent({
-    model: config.gemini.genModel,
-    contents: prompt,
-    config: { systemInstruction: SYSTEM, temperature: 0 },
+  const key = JSON.stringify([gemini.rewriteModel, question, triedQueries, weakHits.slice(0, 2).map((h) => h.id)]);
+  const { value } = await cached(rewrites, key, gemini.useCache, async () => {
+    const res = await gemini.ai.models.generateContent({
+      model: gemini.rewriteModel,
+      contents: prompt,
+      config: { systemInstruction: SYSTEM, temperature: 0 },
+    });
+    return (res.text ?? '').trim().split('\n')[0].replace(/^["']|["']$/g, '').trim();
   });
-  const query = (res.text ?? '').trim().split('\n')[0].replace(/^["']|["']$/g, '').trim();
-  return query || question;
+  return value || question;
 }

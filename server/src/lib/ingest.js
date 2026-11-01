@@ -7,14 +7,14 @@ import { safeWrite } from './db.js';
 
 // pages: [{ page, text }]. Chunks, embeds and indexes one document; records its
 // metadata in MongoDB when configured.
-export async function indexDocument(docName, pages, { source, sizeBytes }) {
+export async function indexDocument(docName, pages, { source, sizeBytes, gemini }) {
   const chunks = chunkPages(pages);
   if (!chunks.length) {
-    throw Object.assign(new Error('No extractable text (scanned PDF?)'), { status: 422 });
+    throw Object.assign(new Error('No extractable text (scanned PDF?)'), { status: 422, code: 'no_text' });
   }
 
   const docId = randomUUID();
-  const vectors = await embedDocuments(chunks.map((c) => c.text));
+  const vectors = await embedDocuments(gemini, chunks.map((c) => c.text));
   const docs = chunks.map((c, i) => ({
     id: `${docId}_${c.chunkIndex}`,
     docId,

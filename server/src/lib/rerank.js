@@ -9,7 +9,9 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // Trial keys allow 10 calls/minute, so a 429 waits and retries instead of failing.
 export async function rerank(query, hits, { topN = hits.length, maxRetries = 3, baseDelayMs = 3000 } = {}) {
   if (!hits.length) return [];
-  if (!config.cohere.apiKey) throw new Error('COHERE_API_KEY is not set');
+  if (!config.cohere.apiKey) {
+    throw Object.assign(new Error('COHERE_API_KEY is not set on the server'), { status: 503, code: 'rerank_unavailable' });
+  }
 
   const body = JSON.stringify({
     model: config.cohere.rerankModel,
@@ -33,7 +35,11 @@ export async function rerank(query, hits, { topN = hits.length, maxRetries = 3, 
     const retryAfter = Number(res.headers.get('retry-after'));
     await sleep(retryAfter > 0 ? retryAfter * 1000 : baseDelayMs * 2 ** attempt);
   }
-  if (!res.ok) throw new Error(`Cohere rerank failed (${res.status}): ${await res.text()}`);
+  if (!res.ok) {
+    throw Object.assign(new Error(`Cohere rerank failed (${res.status}): ${await res.text()}`), res.status === 429
+      ? { status: 429, code: 'cohere_quota' }
+      : { status: 502, code: 'cohere_error' });
+  }
 
   const { results } = await res.json();
   return results.map((r) => ({ ...hits[r.index], score: r.relevance_score }));

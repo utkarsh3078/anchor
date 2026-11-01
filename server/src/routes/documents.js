@@ -5,6 +5,7 @@ import { indexDocument } from '../lib/ingest.js';
 import { ts, COLLECTION } from '../lib/typesense.js';
 import { invalidateKeywordIndex } from '../lib/retrievers.js';
 import { collection, safeWrite } from '../lib/db.js';
+import { badRequest, sendError, withGemini } from './common.js';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -12,35 +13,36 @@ const upload = multer({
 });
 const router = Router();
 
-const fail = (res, e) => {
-  if (!e.status) console.error(e);
-  res.status(e.status || 500).json({ error: e.message });
-};
+// Uploads embed every chunk, so they need the caller's Gemini key (X-Gemini-Key)
 
 // Upload + index a PDF or .txt/.md file
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', withGemini, upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.file) throw badRequest('No file uploaded (multipart field "file")');
     const { originalname, mimetype, buffer, size } = req.file;
     // Browsers sometimes send PDFs as application/octet-stream, so check the extension too
     const isPdf = mimetype === 'application/pdf' || /\.pdf$/i.test(originalname);
     const pages = isPdf ? await extractPages(buffer) : [{ page: 1, text: buffer.toString('utf8') }];
-    res.json(await indexDocument(originalname, pages, { source: isPdf ? 'pdf' : 'text-file', sizeBytes: size }));
+    res.json(await indexDocument(originalname, pages, {
+      source: isPdf ? 'pdf' : 'text-file', sizeBytes: size, gemini: req.gemini,
+    }));
   } catch (e) {
-    fail(res, e);
+    sendError(res, e);
   }
 });
 
 // Index pasted text: { name, text }
-router.post('/text', async (req, res) => {
+router.post('/text', withGemini, async (req, res) => {
   try {
     const { name, text } = req.body ?? {};
-    if (typeof name !== 'string' || !name.trim()) return res.status(400).json({ error: 'name is required' });
-    if (typeof text !== 'string' || !text.trim()) return res.status(400).json({ error: 'text is required' });
+    if (typeof name !== 'string' || !name.trim()) throw badRequest('name is required');
+    if (typeof text !== 'string' || !text.trim()) throw badRequest('text is required');
     const pages = [{ page: 1, text: text.trim() }];
-    res.json(await indexDocument(name.trim(), pages, { source: 'paste', sizeBytes: Buffer.byteLength(text) }));
+    res.json(await indexDocument(name.trim(), pages, {
+      source: 'paste', sizeBytes: Buffer.byteLength(text), gemini: req.gemini,
+    }));
   } catch (e) {
-    fail(res, e);
+    sendError(res, e);
   }
 });
 
@@ -66,7 +68,7 @@ router.get('/', async (_req, res) => {
     }
     res.json([...docs.values()]);
   } catch (e) {
-    fail(res, e);
+    sendError(res, e);
   }
 });
 
@@ -79,7 +81,7 @@ router.delete('/:docId', async (req, res) => {
     await safeWrite('documents', (col) => col.deleteOne({ _id: req.params.docId }));
     res.json(out);
   } catch (e) {
-    fail(res, e);
+    sendError(res, e);
   }
 });
 

@@ -11,16 +11,16 @@ const rankList = (hits) => hits.map((h, i) => ({ id: h.id, rank: i + 1, score: h
 // rerank of the top `candidates` fused hits. Returns the top k plus a trace of every stage.
 // weights: { keyword, dense } for static weights, or 'auto' to route per query.
 // rerankQuery lets a retry retrieve with a reformulated query but still be scored
-// against the user's original question.
+// against the user's original question. gemini = the request's Gemini context (key, models).
 export async function hybridSearch(query, {
-  k, docIds, candidates, weights, useRerank = false, rerankQuery = query,
+  k, docIds, candidates, weights, useRerank = false, rerankQuery = query, gemini,
 }) {
   const t0 = performance.now();
   const routing = weights === 'auto' ? routeQuery(query, (await getKeywordIndex()).postings) : null;
   const used = routing ? routing.weights : weights;
 
   const [dense, keyword] = await Promise.all([
-    timed(async () => denseSearch(await embedQuery(query), { k: candidates, docIds })),
+    timed(async () => denseSearch(await embedQuery(gemini, query), { k: candidates, docIds })),
     timed(() => bm25Search(query, { k: candidates, docIds })),
   ]);
   const fused = weightedRrf({ keyword: keyword.result, dense: dense.result }, used);

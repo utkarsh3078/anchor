@@ -1,19 +1,42 @@
+import { geminiContext, geminiHttpError } from '../lib/gemini.js';
+
 const DEFAULT_WEIGHTS = { keyword: 0.5, dense: 0.5 };
 // Provisional, from a 5-question smoke test (answerable questions scored 0.18-0.92,
 // unanswerable 0.03-0.25). Must be tuned on the evaluation set.
 export const DEFAULT_THRESHOLD = 0.3;
-const DEFAULT_MAX_RETRIES = 2;
+// One retry costs one Gemini request; on the smoke test retries never changed the
+// result, so the free-tier-friendly default is 1 (the API allows up to 3)
+const DEFAULT_MAX_RETRIES = 1;
 
-export const badRequest = (message) => Object.assign(new Error(message), { status: 400 });
+export const badRequest = (message) => Object.assign(new Error(message), { status: 400, code: 'bad_request' });
+
+// Every error response is { error: <code>, message } so the client can branch on the code
+// (e.g. gemini_quota -> offer a model switch, gemini_key_invalid -> ask for the key again)
+export function sendError(res, e) {
+  const gemini = geminiHttpError(e);
+  if (gemini) return res.status(gemini.status).json(gemini.body);
+  if (!e.status) console.error(e);
+  res.status(e.status || 500).json({ error: e.code || (e.status ? 'error' : 'server_error'), message: e.message });
+}
+
+// Attaches req.gemini (the caller's key and chosen models) for routes that call Gemini
+export function withGemini(req, res, next) {
+  try {
+    req.gemini = geminiContext(req.headers);
+    next();
+  } catch (e) {
+    sendError(res, e);
+  }
+}
 
 export function parseParams(body = {}) {
   const { query, k = 5, docIds = [], candidates = 50 } = body;
-  if (typeof query !== 'string' || !query.trim()) return { error: 'query is required' };
-  if (!Number.isInteger(k) || k < 1 || k > 50) return { error: 'k must be an integer from 1 to 50' };
+  if (typeof query !== 'string' || !query.trim()) throw badRequest('query is required');
+  if (!Number.isInteger(k) || k < 1 || k > 50) throw badRequest('k must be an integer from 1 to 50');
   if (!Number.isInteger(candidates) || candidates < k || candidates > 250) {
-    return { error: 'candidates must be an integer from k to 250' };
+    throw badRequest('candidates must be an integer from k to 250');
   }
-  if (!Array.isArray(docIds)) return { error: 'docIds must be an array' };
+  if (!Array.isArray(docIds)) throw badRequest('docIds must be an array');
   return { query: query.trim(), k, docIds, candidates };
 }
 
@@ -45,13 +68,11 @@ export function parseAnchorOptions(body = {}) {
   return { weights: parseWeights(body.weights ?? 'auto'), threshold, maxRetries };
 }
 
+// handler(params, body, req) -> JSON response
 export const route = (handler) => async (req, res) => {
-  const params = parseParams(req.body);
-  if (params.error) return res.status(400).json(params);
   try {
-    res.json(await handler(params, req.body));
+    res.json(await handler(parseParams(req.body), req.body, req));
   } catch (e) {
-    if (!e.status) console.error(e);
-    res.status(e.status || 500).json({ error: e.message });
+    sendError(res, e);
   }
 };

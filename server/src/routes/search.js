@@ -4,18 +4,19 @@ import { hybridSearch } from '../lib/hybrid.js';
 import { anchorRetrieve } from '../lib/anchor.js';
 import { denseRetrieve } from '../lib/retrieve.js';
 import { ms } from '../lib/timing.js';
-import { badRequest, parseWeights, parseAnchorOptions, route } from './common.js';
+import { badRequest, parseWeights, parseAnchorOptions, route, withGemini } from './common.js';
 
 const router = Router();
 
-// latencyMs is end-to-end (including the query embedding) so all modes are comparable
+// latencyMs is end-to-end (including the query embedding) so all modes are comparable.
+// Every mode except keyword embeds the query, so it needs the caller's Gemini key.
 
 // BASELINE 1: dense-only retrieval
-router.post('/dense', route(async ({ query, k, docIds }) => (
-  { mode: 'dense', ...(await denseRetrieve(query, { k, docIds })) }
+router.post('/dense', withGemini, route(async ({ query, k, docIds }, _body, req) => (
+  { mode: 'dense', ...(await denseRetrieve(query, { k, docIds, gemini: req.gemini })) }
 )));
 
-// Keyword-only retrieval. engine: 'bm25' (default) or 'typesense'
+// Keyword-only retrieval (no Gemini call). engine: 'bm25' (default) or 'typesense'
 router.post('/keyword', route(async ({ query, k, docIds }, body) => {
   const engine = body.engine ?? 'bm25';
   if (!['bm25', 'typesense'].includes(engine)) throw badRequest(`unknown engine: ${engine}`);
@@ -27,20 +28,20 @@ router.post('/keyword', route(async ({ query, k, docIds }, body) => {
 
 // BASELINE 2: static-weight hybrid (BM25 + dense, weighted RRF).
 // rerank: true adds the Cohere rerank stage; weights: 'auto' adds query routing.
-router.post('/hybrid', route(async ({ query, k, docIds, candidates }, body) => {
+router.post('/hybrid', withGemini, route(async ({ query, k, docIds, candidates }, body, req) => {
   const weights = parseWeights(body.weights);
   const useRerank = body.rerank ?? false;
   if (typeof useRerank !== 'boolean') throw badRequest('rerank must be true or false');
 
-  const result = await hybridSearch(query, { k, docIds, candidates, weights, useRerank });
+  const result = await hybridSearch(query, { k, docIds, candidates, weights, useRerank, gemini: req.gemini });
   return { mode: useRerank ? 'hybrid+rerank' : 'hybrid', ...result };
 }));
 
 // Full Anchor retrieval: routing + hybrid + rerank + confidence check and retry,
 // without generation (for retrieval metrics)
-router.post('/anchor', route(async ({ query, k, docIds, candidates }, body) => {
+router.post('/anchor', withGemini, route(async ({ query, k, docIds, candidates }, body, req) => {
   const opts = parseAnchorOptions(body);
-  const result = await anchorRetrieve(query, { k, docIds, candidates, ...opts });
+  const result = await anchorRetrieve(query, { k, docIds, candidates, ...opts, gemini: req.gemini });
   return { mode: 'anchor', weights: opts.weights, ...result };
 }));
 

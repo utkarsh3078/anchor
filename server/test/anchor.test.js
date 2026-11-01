@@ -59,3 +59,20 @@ test('maxRetries 0 disables retry', async () => {
   await anchorRetrieve('q', { ...opts, maxRetries: 0 }, { search, reformulate: async () => 'x' });
   assert.equal(calls.length, 1);
 });
+
+test('no hits at all: no rewrite request is spent', async () => {
+  const calls = [];
+  const search = async (query) => { calls.push(query); return { hits: [], latencyMs: 1, timings: {}, trace: {} }; };
+  const r = await anchorRetrieve('q', opts, { search, reformulate: async () => assert.fail('should not reformulate') });
+  assert.equal(calls.length, 1);
+  assert.equal(r.confidence.confident, false);
+});
+
+test('passes the Gemini context to search and rewrite', async () => {
+  const gemini = { model: 'm' };
+  const seen = [];
+  const search = async (query, o) => { seen.push(o.gemini); return { hits: [{ id: query, score: 0.1 }], latencyMs: 1, timings: {}, trace: {} }; };
+  const reformulate = async (_q, _tried, _hits, g) => { seen.push(g); return 'q2'; };
+  await anchorRetrieve('q', { ...opts, maxRetries: 1, gemini }, { search, reformulate });
+  assert.ok(seen.length === 3 && seen.every((g) => g === gemini));
+});

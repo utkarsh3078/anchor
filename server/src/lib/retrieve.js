@@ -6,9 +6,9 @@ import { ms, timed } from './timing.js';
 
 export const MODES = ['dense', 'hybrid', 'anchor'];
 
-export async function denseRetrieve(query, { k, docIds }) {
+export async function denseRetrieve(query, { k, docIds, gemini }) {
   const t0 = performance.now();
-  const embed = await timed(() => embedQuery(query));
+  const embed = await timed(() => embedQuery(gemini, query));
   const search = await timed(() => denseSearch(embed.result, { k, docIds }));
   return { latencyMs: ms(t0), timings: { embedMs: embed.ms, searchMs: search.ms }, hits: search.result };
 }

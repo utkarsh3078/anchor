@@ -17,6 +17,24 @@ npm run eval:answers -- eval/datasets/smoke.json --modes dense,hybrid,anchor
 npm run eval:report -- --dataset smoke --out ../report-smoke.md
 ```
 
+### Free tiers
+
+The runners send `GEMINI_API_KEY` from `.env` as `X-Gemini-Key` and bypass the server
+caches, so latencies are real calls. Progress is saved after every question; when a quota
+runs out the run stops (at once for a daily quota) and prints a `--resume` command:
+
+```bash
+npm run eval:answers -- eval/datasets/real.json --model gemini-2.5-flash --judge-model gemini-2.5-flash-lite
+# ...stopped by a daily quota. Next day, or with another model:
+npm run eval:answers -- eval/datasets/real.json --resume eval/results/real-answers-<ts>.partial.json --model <other>
+```
+
+Answer rows record their model, and the report lists the models used per mode. A run that
+mixes models should be reported as such, or rerun. If only the judge failed, `--resume`
+re-grades the saved answer without asking again. Retrieval runs need Gemini text requests
+only for anchor configs that retry (`anchor`, `anchor-static`); `--rewrite-model` points
+those at another model's quota. Model names are the ids from `GET /api/gemini/models`.
+
 `--upload` indexes any dataset document that isn't indexed yet. Each document must be
 indexed exactly once (the runner refuses duplicates). `--rerank-delay` (default 6500 ms per
 Cohere call) keeps a trial key under its 10 calls/min limit; use `--rerank-delay 0` with a

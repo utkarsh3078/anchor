@@ -82,8 +82,11 @@ function answersSection(run) {
     run.summary.map((s) => [s.mode, pct(s.accuracy), pct(s.answeredRate), pct(s.abstainRate), pct(s.citationPrecision),
       pct(s.citedGoldRate), pct(s.faithfulness?.supported), msf(s.latencyP50), msf(s.latencyP95), s.errors]),
   ));
+  const models = run.summary.map((s) => `${s.mode}: ${(s.models ?? []).join(', ') || 'n/a'}`).join('; ');
+  const unjudged = run.summary.reduce((n, s) => n + (s.unjudged ?? 0), 0);
   out.push('', 'Accuracy counts abstentions on answerable questions as wrong. Judge: '
-    + `${run.rows.find((r) => r.judgeModel)?.judgeModel ?? 'n/a'} (an LLM grading its own family; verify a sample by hand).`);
+    + `${run.rows.find((r) => r.judgeModel)?.judgeModel ?? 'n/a'} (an LLM grading its own family; verify a sample by hand).`,
+  `Answer models: ${models}.${unjudged ? ` ${unjudged} answered rows were not judged.` : ''}`);
   return out.join('\n');
 }
 

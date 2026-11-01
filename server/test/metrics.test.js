@@ -53,3 +53,13 @@ test('gate curve: answerable kept at score >= t, unanswerable caught below t', (
     { threshold: 0.3, answeredRate: 0.5, abstainRate: 1 },
   ]);
 });
+
+test('error guard stops at once on a daily quota, else after 3 in a row', async () => {
+  const { errorGuard } = await import('../eval/common.js');
+  const daily = Object.assign(new Error('quota'), { code: 'gemini_quota', scope: 'day' });
+  assert.throws(() => errorGuard().fail(daily), /cannot continue/);
+  const g = errorGuard();
+  const minute = Object.assign(new Error('busy'), { code: 'gemini_quota', scope: 'minute' });
+  g.fail(minute); g.ok(); g.fail(minute); g.fail(minute);
+  assert.throws(() => g.fail(minute), /3 consecutive/);
+});

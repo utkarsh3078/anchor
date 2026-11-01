@@ -1,12 +1,17 @@
 // Retrieval evaluation runner. The server must be running.
 //   node eval/run.js eval/datasets/smoke.json [--configs dense,hybrid,anchor] [--k 5]
 //     [--threshold 0.3 | --threshold 0.1,0.2,0.3] [--rerank-delay 6500] [--upload]
+//     [--model M] [--rewrite-model M] [--resume eval/results/<run>.partial.json]
 //     [--base http://localhost:4000]
 // Several thresholds run each anchor config once per threshold (labelled anchor@0.2 etc).
+// Only anchor configs with retries call Gemini for text (query rewrites); the rest only
+// embed the query. A run stopped by a quota continues with --resume, e.g. on another model.
 import { parseArgs } from 'util';
 import { CONFIGS, DEFAULT_CONFIGS } from './configs.js';
 import { anyRelevant, recallAtK, reciprocalRank, mean, percentile } from './metrics.js';
-import { makeApi, loadDataset, resolveDocs, saveRun, sleep, round, errorGuard } from './common.js';
+import {
+  makeApi, geminiHeaders, loadDataset, resolveDocs, openCheckpoint, sleep, round, errorGuard,
+} from './common.js';
 
 const { values: args, positionals } = parseArgs({
   allowPositionals: true,
@@ -17,6 +22,9 @@ const { values: args, positionals } = parseArgs({
     // Cohere trial keys allow 10 calls/min; set 0 with a production key
     'rerank-delay': { type: 'string', default: '6500' },
     upload: { type: 'boolean', default: false },
+    model: { type: 'string' },
+    'rewrite-model': { type: 'string' },
+    resume: { type: 'string' },
     base: { type: 'string', default: process.env.ANCHOR_URL || 'http://localhost:4000' },
   },
 });
@@ -84,49 +92,51 @@ function planRuns(configs, thresholds) {
 async function main() {
   if (!positionals[0]) throw new Error('usage: node eval/run.js <dataset.json> [options]');
   const { dataset, datasetDir } = await loadDataset(positionals[0]);
-  const api = makeApi(args.base);
-  const k = Number(args.k);
+  const api = makeApi(args.base, geminiHeaders({ model: args.model, rewriteModel: args['rewrite-model'] }));
   const configs = args.configs.split(',').map((c) => c.trim());
   const unknown = configs.filter((c) => !CONFIGS[c]);
   if (unknown.length) throw new Error(`unknown configs: ${unknown.join(', ')} (known: ${Object.keys(CONFIGS).join(', ')})`);
   const thresholds = args.threshold ? args.threshold.split(',').map(Number) : [];
-  const rerankDelay = Number(args['rerank-delay']);
 
-  const docIds = await resolveDocs(api, dataset, datasetDir, { upload: args.upload });
-  const runs = planRuns(configs, thresholds);
-  const startedAt = new Date().toISOString();
-  console.log(`${dataset.name}: ${dataset.questions.length} questions x ${runs.length} runs, k=${k}`);
-
-  const rows = [];
-  const guard = errorGuard();
-  for (const run of runs) {
-    const { path: route, body, rerankCalls } = CONFIGS[run.config];
-    for (const q of dataset.questions) {
-      try {
-        const res = await api('POST', route, { query: q.question, k, docIds, ...body, ...run.extra });
-        rows.push(scoreRow(run, q, res, k));
-        guard.ok();
-        if (rerankDelay) await sleep(rerankDelay * rerankCalls(res));
-      } catch (e) {
-        rows.push({ config: run.label, base: run.config, id: q.id, answerable: q.answerable, error: e.message });
-        console.error(`  ${run.label} ${q.id}: ${e.message}`);
-        guard.fail(e);
-      }
-      process.stdout.write('.');
-    }
-    process.stdout.write(` ${run.label} done\n`);
-  }
-
-  const summary = runs.map((run) => summarise(run, rows.filter((r) => r.config === run.label)));
-  console.table(summary);
-  await saveRun({
+  const checkpoint = await openCheckpoint({
     kind: 'retrieval',
     dataset: dataset.name,
-    startedAt,
-    settings: { k, configs, thresholds: thresholds.length ? thresholds : 'server default', rerankDelay },
-    summary,
-    rows,
+    settings: { k: Number(args.k), configs, thresholds, rerankDelay: Number(args['rerank-delay']) },
+    resume: args.resume,
   });
+  const { k, rerankDelay } = checkpoint.settings;
+  const runs = planRuns(checkpoint.settings.configs, checkpoint.settings.thresholds);
+
+  const docIds = await resolveDocs(api, dataset, datasetDir, { upload: args.upload });
+  console.log(`${dataset.name}: ${dataset.questions.length} questions x ${runs.length} runs, k=${k}`);
+
+  const guard = errorGuard();
+  try {
+    for (const run of runs) {
+      const { path: route, body, rerankCalls } = CONFIGS[run.config];
+      for (const q of dataset.questions) {
+        if (checkpoint.isDone(run.label, q.id)) continue;
+        try {
+          const res = await api('POST', route, { query: q.question, k, docIds, ...body, ...run.extra });
+          await checkpoint.add(scoreRow(run, q, res, k));
+          guard.ok();
+          if (rerankDelay) await sleep(rerankDelay * rerankCalls(res));
+        } catch (e) {
+          await checkpoint.add({ config: run.label, base: run.config, id: q.id, answerable: q.answerable, error: e.message });
+          console.error(`  ${run.label} ${q.id}: ${e.message}`);
+          guard.fail(e);
+        }
+        process.stdout.write('.');
+      }
+      process.stdout.write(` ${run.label} done\n`);
+    }
+  } catch (e) {
+    throw new Error(`${e.message}\nProgress saved. Continue with: --resume ${checkpoint.file}`);
+  }
+
+  const summary = runs.map((run) => summarise(run, checkpoint.rows.filter((r) => r.config === run.label)));
+  console.table(summary);
+  await checkpoint.finish(summary);
 }
 
 main().catch((e) => {

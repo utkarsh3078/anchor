@@ -9,7 +9,7 @@ import { ms, timed } from './timing.js';
 // comparable and a reformulation that drifts off-topic can't make itself look confident.
 // The best-scoring attempt wins, since a retry can also make things worse.
 export async function anchorRetrieve(question, opts, deps = {}) {
-  const { k, docIds, candidates, weights, threshold, maxRetries } = opts;
+  const { k, docIds, candidates, weights, threshold, maxRetries, gemini } = opts;
   const { search = hybridSearch, reformulate = reformulateQuery } = deps;
 
   const t0 = performance.now();
@@ -19,7 +19,7 @@ export async function anchorRetrieve(question, opts, deps = {}) {
 
   for (let i = 0; i <= maxRetries; i++) {
     const result = await search(query, {
-      k, docIds, candidates, weights, useRerank: true, rerankQuery: question,
+      k, docIds, candidates, weights, useRerank: true, rerankQuery: question, gemini,
     });
     const topScore = result.hits[0]?.score ?? 0;
     const attempt = {
@@ -29,9 +29,11 @@ export async function anchorRetrieve(question, opts, deps = {}) {
     attempts.push(attempt);
     if (!best || topScore > best.topScore) best = { index: i, topScore, hits: result.hits };
 
-    if (topScore >= threshold || i === maxRetries) break;
+    // No hits means nothing is indexed for these docIds: a rewrite can't help, so don't
+    // spend a Gemini request on it
+    if (topScore >= threshold || i === maxRetries || !result.hits.length) break;
 
-    const next = await timed(() => reformulate(question, attempts.map((a) => a.query), result.hits));
+    const next = await timed(() => reformulate(question, attempts.map((a) => a.query), result.hits, gemini));
     attempt.reformulateMs = next.ms;
     const seen = attempts.some((a) => a.query.toLowerCase() === next.result.toLowerCase());
     if (seen) break; // nothing new to try
