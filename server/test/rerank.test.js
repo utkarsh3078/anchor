@@ -31,6 +31,23 @@ test('surfaces API errors with the status code', async () => {
   await assert.rejects(rerank('q', hits), /Cohere rerank failed \(401\)/);
 });
 
+test('waits and retries on 429 rate limits', async () => {
+  let calls = 0;
+  globalThis.fetch = async () => (++calls < 3
+    ? new Response('rate limited', { status: 429 })
+    : new Response(JSON.stringify({ results: [{ index: 1, relevance_score: 0.8 }] })));
+  const out = await rerank('q', hits, { baseDelayMs: 1 });
+  assert.equal(calls, 3);
+  assert.equal(out[0].id, 'b');
+});
+
+test('gives up after maxRetries rate limits', async () => {
+  let calls = 0;
+  globalThis.fetch = async () => { calls++; return new Response('rate limited', { status: 429 }); };
+  await assert.rejects(rerank('q', hits, { maxRetries: 2, baseDelayMs: 1 }), /\(429\)/);
+  assert.equal(calls, 3);
+});
+
 test('empty input makes no API call', async () => {
   globalThis.fetch = async () => { throw new Error('should not be called'); };
   assert.deepEqual(await rerank('q', []), []);

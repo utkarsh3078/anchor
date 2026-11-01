@@ -1,7 +1,5 @@
-import { GoogleGenAI } from '@google/genai';
+import { ai } from './gemini.js';
 import { config } from '../config.js';
-
-const ai = new GoogleGenAI({ apiKey: config.gemini.apiKey });
 
 async function embed(texts, taskType) {
   const out = [];

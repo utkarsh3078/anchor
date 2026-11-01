@@ -8,7 +8,11 @@ const rankList = (hits) => hits.map((h, i) => ({ id: h.id, rank: i + 1, score: h
 
 // BM25 + dense fused with weighted RRF (baseline 2), optionally followed by a Cohere
 // rerank of the top `candidates` fused hits. Returns the top k plus a trace of every stage.
-export async function hybridSearch(query, { k, docIds, candidates, weights, useRerank = false }) {
+// rerankQuery lets a retry retrieve with a reformulated query but still be scored
+// against the user's original question.
+export async function hybridSearch(query, {
+  k, docIds, candidates, weights, useRerank = false, rerankQuery = query,
+}) {
   const t0 = performance.now();
   const [dense, keyword] = await Promise.all([
     timed(async () => denseSearch(await embedQuery(query), { k: candidates, docIds })),
@@ -26,7 +30,7 @@ export async function hybridSearch(query, { k, docIds, candidates, weights, useR
   }
 
   const pool = fused.slice(0, candidates);
-  const reranked = await timed(() => rerank(query, pool.map((f) => f.hit), { topN: k }));
+  const reranked = await timed(() => rerank(rerankQuery, pool.map((f) => f.hit), { topN: k }));
   timings.rerankMs = reranked.ms;
   trace.fused = pool.map((f) => ({ id: f.hit.id, score: f.score, ranks: f.ranks }));
   trace.rerank = reranked.result.map((h) => ({ id: h.id, score: h.score }));

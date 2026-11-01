@@ -5,6 +5,7 @@ export const config = {
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
     embedModel: 'gemini-embedding-001',
+    genModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     dim: 768, // must match num_dim in the Typesense schema
   },
   cohere: {
