@@ -2,6 +2,8 @@ import 'dotenv/config';
 
 export const config = {
   port: process.env.PORT || 4000,
+  // Comma-separated allowed origins, e.g. the Vercel domain. Unset = allow all (dev only).
+  corsOrigins: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim()) : null,
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
     embedModel: 'gemini-embedding-001',
@@ -17,5 +19,9 @@ export const config = {
     port: Number(process.env.TYPESENSE_PORT),
     protocol: process.env.TYPESENSE_PROTOCOL,
     apiKey: process.env.TYPESENSE_API_KEY,
+  },
+  mongo: {
+    uri: process.env.MONGODB_URI,
+    dbName: process.env.MONGODB_DB || 'anchor',
   },
 };

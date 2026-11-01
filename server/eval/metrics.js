@@ -25,3 +25,27 @@ export function percentile(xs, p) {
   const sorted = [...xs].sort((a, b) => a - b);
   return sorted[Math.max(0, Math.ceil((p / 100) * sorted.length) - 1)];
 }
+
+// Answer level. citations: [{ docName, page }]
+// Share of an answer's citations that point at a gold page (null if nothing cited)
+export function citationPrecision(citations, gold) {
+  if (!citations.length) return null;
+  return citations.filter((c) => isRelevant(c, gold)).length / citations.length;
+}
+
+// Shares of rows whose `field` equals each of `values`, e.g. { correct: 0.6, partial: 0.2 }
+export function shares(rows, field, values) {
+  return Object.fromEntries(values.map((v) => [v, rows.length ? rows.filter((r) => r[field] === v).length / rows.length : null]));
+}
+
+// Confidence-gate curve from recorded scores, no re-running needed. rows: [{ answerable, score }]
+// At each threshold: share of answerable questions kept, share of unanswerable caught.
+export function gateCurve(rows, thresholds) {
+  const ans = rows.filter((r) => r.answerable);
+  const unans = rows.filter((r) => !r.answerable);
+  return thresholds.map((t) => ({
+    threshold: t,
+    answeredRate: mean(ans.map((r) => (r.score >= t ? 1 : 0))),
+    abstainRate: mean(unans.map((r) => (r.score < t ? 1 : 0))),
+  }));
+}

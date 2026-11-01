@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { embedQuery } from '../lib/embed.js';
-import { denseSearch, bm25Search, typesenseKeywordSearch } from '../lib/retrievers.js';
+import { bm25Search, typesenseKeywordSearch } from '../lib/retrievers.js';
 import { hybridSearch } from '../lib/hybrid.js';
 import { anchorRetrieve } from '../lib/anchor.js';
-import { ms, timed } from '../lib/timing.js';
+import { denseRetrieve } from '../lib/retrieve.js';
+import { ms } from '../lib/timing.js';
 import { badRequest, parseWeights, parseAnchorOptions, route } from './common.js';
 
 const router = Router();
@@ -11,17 +11,9 @@ const router = Router();
 // latencyMs is end-to-end (including the query embedding) so all modes are comparable
 
 // BASELINE 1: dense-only retrieval
-router.post('/dense', route(async ({ query, k, docIds }) => {
-  const t0 = performance.now();
-  const embed = await timed(() => embedQuery(query));
-  const search = await timed(() => denseSearch(embed.result, { k, docIds }));
-  return {
-    mode: 'dense',
-    latencyMs: ms(t0),
-    timings: { embedMs: embed.ms, searchMs: search.ms },
-    hits: search.result,
-  };
-}));
+router.post('/dense', route(async ({ query, k, docIds }) => (
+  { mode: 'dense', ...(await denseRetrieve(query, { k, docIds })) }
+)));
 
 // Keyword-only retrieval. engine: 'bm25' (default) or 'typesense'
 router.post('/keyword', route(async ({ query, k, docIds }, body) => {

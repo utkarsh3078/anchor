@@ -1,0 +1,880 @@
+{
+  "kind": "retrieval",
+  "dataset": "smoke",
+  "startedAt": "2026-11-01T05:09:24.900Z",
+  "settings": {
+    "k": 5,
+    "configs": [
+      "dense",
+      "bm25",
+      "hybrid",
+      "hybrid+route",
+      "hybrid+rerank",
+      "anchor-noretry",
+      "anchor-static",
+      "anchor"
+    ],
+    "threshold": "server default",
+    "rerankDelay": 6500
+  },
+  "summary": [
+    {
+      "config": "dense",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 542,
+      "latencyP50": 492,
+      "latencyP95": 895
+    },
+    {
+      "config": "bm25",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 0,
+      "latencyP50": 0,
+      "latencyP95": 0
+    },
+    {
+      "config": "hybrid",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 482,
+      "latencyP50": 479,
+      "latencyP95": 494
+    },
+    {
+      "config": "hybrid+route",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 547,
+      "latencyP50": 482,
+      "latencyP95": 1120
+    },
+    {
+      "config": "hybrid+rerank",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 1100,
+      "latencyP50": 1223,
+      "latencyP95": 1288
+    },
+    {
+      "config": "anchor-noretry",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 1239,
+      "latencyP50": 1242,
+      "latencyP95": 1592,
+      "answeredRate": 0.857,
+      "abstainRate": 1,
+      "retryRate": 0,
+      "retryPrecision": null
+    },
+    {
+      "config": "anchor-static",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 4601,
+      "latencyP50": 1207,
+      "latencyP95": 12259,
+      "answeredRate": 0.857,
+      "abstainRate": 1,
+      "retryRate": 0.4,
+      "retryPrecision": 0
+    },
+    {
+      "config": "anchor",
+      "n": 10,
+      "errors": 0,
+      "recall": 1,
+      "mrr": 1,
+      "latencyMean": 4810,
+      "latencyP50": 1264,
+      "latencyP95": 10635,
+      "answeredRate": 0.857,
+      "abstainRate": 1,
+      "retryRate": 0.4,
+      "retryPrecision": 0
+    }
+  ],
+  "rows": [
+    {
+      "config": "dense",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 895,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "dense",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 508,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "dense",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 487,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "dense",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 497,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "dense",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 492,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "dense",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 464,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "dense",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 553,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "dense",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 480
+    },
+    {
+      "config": "dense",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 563
+    },
+    {
+      "config": "dense",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 485
+    },
+    {
+      "config": "bm25",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 0,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "bm25",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 0,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "bm25",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 0,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "bm25",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 0,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "bm25",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 0,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "bm25",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 0,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "bm25",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 0,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "bm25",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 0
+    },
+    {
+      "config": "bm25",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 0
+    },
+    {
+      "config": "bm25",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 0
+    },
+    {
+      "config": "hybrid",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 477,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 478,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 483,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 490,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 479,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 482,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 475,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 485
+    },
+    {
+      "config": "hybrid",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 494
+    },
+    {
+      "config": "hybrid",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 476
+    },
+    {
+      "config": "hybrid+route",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 464,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+route",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 526,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+route",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1120,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+route",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 487,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+route",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 471,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+route",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 476,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+route",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 496,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+route",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 460
+    },
+    {
+      "config": "hybrid+route",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 482
+    },
+    {
+      "config": "hybrid+route",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 483
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 902,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1242,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1240,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 1261,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 881,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 1288,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 836,
+      "recall": 1,
+      "rr": 1
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 1232
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 1223
+    },
+    {
+      "config": "hybrid+rerank",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 890
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 892,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.921,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1269,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.527,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1210,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.184,
+      "confident": false,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 1242,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.933,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 884,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.763,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 1592,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.865,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1536,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.796,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 1247,
+      "topScore": 0.029,
+      "confident": false,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 1225,
+      "topScore": 0.251,
+      "confident": false,
+      "retries": 0
+    },
+    {
+      "config": "anchor-noretry",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 1292,
+      "topScore": 0.082,
+      "confident": false,
+      "retries": 0
+    },
+    {
+      "config": "anchor-static",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 880,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.921,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-static",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 902,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.527,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-static",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 12259,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.184,
+      "confident": false,
+      "retries": 2,
+      "retryHelped": false
+    },
+    {
+      "config": "anchor-static",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 844,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.933,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-static",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 1248,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.763,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-static",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 865,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.865,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-static",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1207,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.796,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor-static",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 10117,
+      "topScore": 0.029,
+      "confident": false,
+      "retries": 2
+    },
+    {
+      "config": "anchor-static",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 8675,
+      "topScore": 0.251,
+      "confident": false,
+      "retries": 2
+    },
+    {
+      "config": "anchor-static",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 9010,
+      "topScore": 0.082,
+      "confident": false,
+      "retries": 2
+    },
+    {
+      "config": "anchor",
+      "id": "s01",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 1273,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.921,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor",
+      "id": "s02",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1246,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.527,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor",
+      "id": "s03",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 10635,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.184,
+      "confident": false,
+      "retries": 2,
+      "retryHelped": false
+    },
+    {
+      "config": "anchor",
+      "id": "s04",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 1264,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.933,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor",
+      "id": "s05",
+      "category": "numeric",
+      "answerable": true,
+      "latencyMs": 1213,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.763,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor",
+      "id": "s06",
+      "category": "exact",
+      "answerable": true,
+      "latencyMs": 1263,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.865,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor",
+      "id": "s07",
+      "category": "paraphrase",
+      "answerable": true,
+      "latencyMs": 1188,
+      "recall": 1,
+      "rr": 1,
+      "topScore": 0.796,
+      "confident": true,
+      "retries": 0
+    },
+    {
+      "config": "anchor",
+      "id": "u01",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 10496,
+      "topScore": 0.029,
+      "confident": false,
+      "retries": 2
+    },
+    {
+      "config": "anchor",
+      "id": "u02",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 9789,
+      "topScore": 0.251,
+      "confident": false,
+      "retries": 2
+    },
+    {
+      "config": "anchor",
+      "id": "u03",
+      "category": "unanswerable",
+      "answerable": false,
+      "latencyMs": 9733,
+      "topScore": 0.082,
+      "confident": false,
+      "retries": 2
+    }
+  ]
+}
