@@ -25,6 +25,7 @@ export default function Workspace({ session, onLogout }) {
   const [asking, setAsking] = useState(false);
   const [rightTab, setRightTab] = useState('trace');
   const [source, setSource] = useState(null); // passage open in the viewer
+  const [docs, setDocs] = useState([]);
 
   const openSource = (passage) => {
     setSource(passage);
@@ -71,13 +72,15 @@ export default function Workspace({ session, onLogout }) {
           <h1 className="text-lg font-semibold">Anchor</h1>
           <button onClick={onLogout} className="text-xs text-slate-500 underline">Change key</button>
         </div>
-        <DocPanel gemini={gemini} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
+        <DocPanel gemini={gemini} selectedIds={selectedIds} setSelectedIds={setSelectedIds} onDocs={setDocs} />
         <SettingsPanel settings={settings} setSettings={setSettings} models={session.models} />
       </aside>
 
       <Chat
         messages={messages}
         asking={asking}
+        askingMode={settings.mode}
+        searchedDocs={docs.filter((d) => selectedIds.includes(d.docId)).map((d) => d.docName)}
         canAsk={selectedIds.length > 0}
         onAsk={ask}
         onNewChat={newChat}

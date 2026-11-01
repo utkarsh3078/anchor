@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Markdown from './Markdown';
+import Thinking from './Thinking';
 
 const ABSTAIN_TEXT = {
   low_retrieval_confidence: 'The retrieved evidence was too weak to answer reliably.',
@@ -88,7 +89,7 @@ function ErrorMessage({ msg, models, onSwitchModel, onRetry }) {
 }
 
 export default function Chat({
-  messages, asking, canAsk, onAsk, onNewChat, onShowTrace, onOpenSource, traceId, models, onSwitchModel, onRetry,
+  messages, asking, askingMode, searchedDocs, canAsk, onAsk, onNewChat, onShowTrace, onOpenSource, traceId, models, onSwitchModel, onRetry,
 }) {
   const [query, setQuery] = useState('');
   const bottom = useRef(null);
@@ -132,7 +133,7 @@ export default function Chat({
             />
           );
         })}
-        {asking && <p className="text-sm text-slate-500">Searching and checking evidence…</p>}
+        {asking && <Thinking mode={askingMode} docs={searchedDocs} />}
         <div ref={bottom} />
       </div>
 

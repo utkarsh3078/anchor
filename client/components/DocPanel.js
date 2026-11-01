@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 
 // Document library: list with checkboxes (questions search only checked docs),
 // upload a file, paste text, delete.
-export default function DocPanel({ gemini, selectedIds, setSelectedIds }) {
+export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs }) {
   const [docs, setDocs] = useState([]);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -16,6 +16,7 @@ export default function DocPanel({ gemini, selectedIds, setSelectedIds }) {
   async function refresh(selectNewId) {
     const list = await api('/api/documents');
     setDocs(list);
+    onDocs?.(list);
     const ids = new Set(list.map((d) => d.docId));
     setSelectedIds((sel) => {
       const kept = sel.filter((id) => ids.has(id));
