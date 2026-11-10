@@ -1,6 +1,7 @@
 import { geminiContext, geminiHttpError } from '../lib/gemini.js';
 import { loadGateModel } from '../lib/gate.js';
 import { config } from '../config.js';
+import { usage } from '../lib/usage.js';
 
 const DEFAULT_WEIGHTS = { keyword: 0.5, dense: 0.5 };
 // Provisional. Smoke test (prose manual): answerable 0.18-0.92, unanswerable 0.03-0.25.
@@ -18,6 +19,7 @@ export const badRequest = (message) => Object.assign(new Error(message), { statu
 // (e.g. gemini_quota -> offer a model switch, gemini_key_invalid -> ask for the key again)
 export function sendError(res, e) {
   const gemini = geminiHttpError(e);
+  if (gemini?.body.error === 'gemini_quota') usage.noteLimit(res.req?.gemini, gemini.body);
   if (gemini) return res.status(gemini.status).json(gemini.body);
   if (!e.status) console.error(e);
   res.status(e.status || 500).json({ error: e.code || (e.status ? 'error' : 'server_error'), message: e.message });

@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { config } from './config.js';
 import { ts, ensureCollection } from './lib/typesense.js';
-import { mongoEnabled, pingDb } from './lib/db.js';
+import { collection, mongoEnabled, pingDb, safeWrite } from './lib/db.js';
+import { usage, mongoUsageStore } from './lib/usage.js';
 import { sendError } from './routes/common.js';
 import documents from './routes/documents.js';
 import search from './routes/search.js';
@@ -40,7 +41,10 @@ try {
   console.error(`Cannot reach Typesense at ${host}:${port} (${e.code ?? e.message}). Is Docker running? Try: docker start typesense`);
   process.exit(1);
 }
-if (mongoEnabled()) console.log('MongoDB:', await pingDb());
+if (mongoEnabled()) {
+  console.log('MongoDB:', await pingDb());
+  usage.attachStore(mongoUsageStore({ safeWrite, collection })); // daily usage counts survive restarts
+}
 if (!config.corsOrigins) console.warn('CORS_ORIGIN not set: allowing all origins (fine for local dev only)');
 if (!config.requireUserKey) console.warn('REQUIRE_USER_KEY is not true: requests without X-Gemini-Key use the server key');
 app.listen(config.port, () => console.log(`Anchor server running on :${config.port}`));

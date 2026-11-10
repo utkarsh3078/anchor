@@ -1,4 +1,5 @@
 import { LruCache, cached } from './cache.js';
+import { usage } from './usage.js';
 
 // The evidence gate's middle zone: one Gemini request asking whether the retrieved
 // passages are enough to answer the question. Uses the rewrite model (X-Gemini-Rewrite-Model),
@@ -25,6 +26,7 @@ export async function contextSufficient(question, hits, gemini) {
       contents: `Passages:\n\n${passages}\n\nQuestion: ${question}`,
       config: { systemInstruction: SYSTEM, temperature: 0, responseMimeType: 'application/json', responseJsonSchema: SCHEMA },
     });
+    usage.record(gemini, gemini.rewriteModel, { tokens: res.usageMetadata?.totalTokenCount ?? 0 });
     return JSON.parse(res.text).sufficient === true;
   });
   return value;

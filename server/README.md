@@ -40,6 +40,8 @@ Later sessions: `docker start typesense anchor-mongo`.
 | `GATE_SUFFICIENCY` | no | default on; `false` = no Gemini call in the gate's middle zone (it then counts as not confident) |
 | `FUSION` | no | `rrf` (default) or `convex` |
 | `FUSION_ALPHA` | no | convex fusion's weight of the vector score, 0-1, default 0.5 (a placeholder until `eval/alpha-search.js` is run) |
+| `USAGE_TRACKING` | no | default on: counts what each key uses through this server for `GET /api/gemini/usage`; `false` = nothing counted or stored |
+| `GEMINI_EMBED_RPD`, `GEMINI_TEXT_RPM`, `GEMINI_TEXT_RPD` | no | limits shown next to the usage counts (they limit nothing): defaults 1000, 5, 20 |
 | `COHERE_API_KEY` | for rerank/anchor | trial keys: 10 calls/min |
 | `COHERE_RERANK_MODEL` | no | default `rerank-v3.5` |
 | `CONFIDENCE_SIGNALS` | no | default on; `false` = no per-attempt confidence signals computed, returned or logged (the behaviour before they existed) |
@@ -240,6 +242,31 @@ When abstaining: `abstained: true`, `answer: null`, `citations: []`, and `abstai
 `no_passages` (nothing retrieved; Gemini is not called).
 Baseline modes have `retrieval.confidence: null`. Follow-up questions are answered
 standalone; chat history is stored, not used as context.
+
+### Key usage (an estimate)
+
+`GET /api/gemini/usage` (with `X-Gemini-Key`; no Gemini call) returns what that key has
+used through this server, next to the configured limits:
+
+```jsonc
+{ "enabled": true, "estimate": true, "day": "2026-11-10", "resetsInSec": 79670, "persisted": true,
+  "models": [{ "model": "gemini-embedding-001", "kind": "embedding",
+    "limits": { "requestsPerMinute": 100, "tokensPerMinute": 30000, "requestsPerDay": 1000 },
+    "minute": { "requests": 54, "tokens": 12000 }, "today": { "requests": 212, "tokens": 50000 },
+    "limited": null }] }
+```
+
+It lists the embedding model, the caller's answer model and every model used today.
+Google offers no way to read a key's limits or remaining quota, so this is not the key's
+real state: use of the same key elsewhere (AI Studio, the eval judge) is not seen, and
+the limits are configured defaults. Text models all show one default (5 a minute, 20 a
+day, the free tier noted for the default answer model). Embedding requests count one
+per text and their tokens are estimated; text requests use the token count Gemini
+returns. `limited` is set when Google refused a request for that model, until the wait
+it gave is over. Days follow Google's quota day (midnight Pacific). Daily counts are
+stored in MongoDB (`usage`, one document per key hash, model and day; the key itself is
+never stored) and survive a restart; the last minute and `limited` are in memory only.
+`persisted: false` means MongoDB was not available and the counts started with the process.
 
 ### Chats (need `MONGODB_URI`, else 503; scoped to the caller's key)
 

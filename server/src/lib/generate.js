@@ -1,4 +1,5 @@
 import { LruCache, cached } from './cache.js';
+import { usage } from './usage.js';
 
 // Complete but grounded: list-style questions (syllabus, steps, topics) get every item the
 // passages contain, formatted as Markdown; every line carries its citation.
@@ -55,6 +56,7 @@ export async function generateAnswer(question, hits, gemini) {
         responseJsonSchema: SCHEMA,
       },
     });
+    usage.record(gemini, gemini.model, { tokens: res.usageMetadata?.totalTokenCount ?? 0 });
     return JSON.parse(res.text);
   });
 

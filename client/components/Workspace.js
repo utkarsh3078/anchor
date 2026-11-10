@@ -6,6 +6,7 @@ import { pickDefaultModel } from '@/lib/models';
 import { askBody, loadPrefs, savePrefs } from '@/lib/settings';
 import DocPanel from './DocPanel';
 import Advanced from './Advanced';
+import Usage from './Usage';
 import Chat from './Chat';
 import SourceDrawer from './SourceDrawer';
 
@@ -23,6 +24,8 @@ export default function Workspace({ session, onLogout }) {
   const [chatId, setChatId] = useState(null);
   const [asking, setAsking] = useState(false);
   const [source, setSource] = useState(null); // passage open in the drawer
+  const [usageKey, setUsageKey] = useState(0); // bumped after anything that uses the key, to refresh the Usage panel
+  const usageChanged = useCallback(() => setUsageKey((n) => n + 1), []);
 
   const closeSource = useCallback(() => setSource(null), []);
   const searched = docs.filter((d) => selectedIds.includes(d.docId)).map((d) => d.docName);
@@ -46,6 +49,7 @@ export default function Workspace({ session, onLogout }) {
       add({ role: 'error', error, query });
     } finally {
       setAsking(false);
+      usageChanged();
     }
   }
 
@@ -66,7 +70,7 @@ export default function Workspace({ session, onLogout }) {
         <h1 className="text-lg font-semibold">Anchor</h1>
         <DocPanel
           gemini={{ key: session.key }} selectedIds={selectedIds} setSelectedIds={setSelectedIds}
-          onDocs={setDocs} onChangeKey={onLogout}
+          onDocs={(list) => { setDocs(list); usageChanged(); }} onChangeKey={onLogout}
         />
         <div className="md:mt-auto">
           <Advanced
@@ -74,6 +78,12 @@ export default function Workspace({ session, onLogout }) {
             settings={prefs.settings} setSettings={setSettings}
             showDetails={prefs.showDetails} setShowDetails={setShowDetails} onChangeKey={onLogout}
           />
+          <details open className="mt-3 rounded border border-slate-200 px-3 py-2 text-sm">
+            <summary className="cursor-pointer select-none text-slate-600">API usage and limits</summary>
+            <div className="pb-1 pt-3">
+              <Usage gemini={{ key: session.key, model: choice.model }} refreshKey={usageKey} />
+            </div>
+          </details>
         </div>
       </aside>
 

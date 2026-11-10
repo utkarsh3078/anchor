@@ -2,6 +2,7 @@ import { config } from '../config.js';
 import { LruCache, cached } from './cache.js';
 import { geminiHttpError } from './gemini.js';
 import { MinuteBudget, estimateTokens, planBatches } from './pace.js';
+import { usage } from './usage.js';
 
 // 100 texts per request is the batch embedding maximum; fewer requests per upload
 const BATCH = 100;
@@ -14,12 +15,15 @@ const DEFAULT_QUOTA_WAIT_SEC = 60;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function call(gemini, texts, taskType) {
-  return gemini.ai.models.embedContent({
+async function call(gemini, texts, taskType) {
+  const res = await gemini.ai.models.embedContent({
     model: config.gemini.embedModel,
     contents: texts,
     config: { taskType, outputDimensionality: config.gemini.dim },
   });
+  // Each text counts as one request, as in the pacing; tokens are the same estimate
+  usage.record(gemini, config.gemini.embedModel, { requests: texts.length, tokens: texts.reduce((a, t) => a + estimateTokens(t), 0) });
+  return res;
 }
 
 async function embed(gemini, texts, taskType) {

@@ -1,4 +1,5 @@
 import { LruCache, cached } from './cache.js';
+import { usage } from './usage.js';
 
 const SYSTEM = `Rewrite a search query for a document search engine.
 Output exactly one query: at most 12 words, no quotes, no explanation, no answer.
@@ -23,6 +24,7 @@ export async function reformulateQuery(question, triedQueries, weakHits, gemini)
       contents: prompt,
       config: { systemInstruction: SYSTEM, temperature: 0 },
     });
+    usage.record(gemini, gemini.rewriteModel, { tokens: res.usageMetadata?.totalTokenCount ?? 0 });
     return (res.text ?? '').trim().split('\n')[0].replace(/^["']|["']$/g, '').trim();
   });
   return value || question;

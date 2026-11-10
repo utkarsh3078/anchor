@@ -16,6 +16,9 @@ export const config = {
   // Compute and log per-attempt confidence signals (lib/signals.js). false = the
   // behaviour before they existed: nothing extra computed, returned or stored.
   confidenceSignals: process.env.CONFIDENCE_SIGNALS !== 'false',
+  // Count what each key uses through this server and serve it at GET /api/gemini/usage.
+  // false = nothing counted or stored.
+  usageTracking: process.env.USAGE_TRACKING !== 'false',
   // How the keyword and vector lists are merged (lib/fusion.js): 'rrf' (weighted
   // reciprocal rank fusion, the default and the earlier behaviour) or 'convex' (min-max
   // normalised scores, alpha * vector + (1 - alpha) * BM25). A request can override both.
@@ -44,6 +47,12 @@ export const config = {
     embedPacing: process.env.EMBED_PACING !== 'false',
     embedRpm: Number(process.env.GEMINI_EMBED_RPM) || 100,
     embedTpm: Number(process.env.GEMINI_EMBED_TPM) || 30000,
+    // Shown next to the usage counts (lib/usage.js); they limit nothing. One default for
+    // every text model: the free tier of the default answer model as recorded in the
+    // project notes (5 requests a minute, 20 a day). Other models and paid keys differ.
+    embedRpd: Number(process.env.GEMINI_EMBED_RPD) || 1000,
+    textRpm: Number(process.env.GEMINI_TEXT_RPM) || 5,
+    textRpd: Number(process.env.GEMINI_TEXT_RPD) || 20,
     genModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     dim: 768, // must match num_dim in the Typesense schema
   },
