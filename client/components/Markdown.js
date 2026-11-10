@@ -4,7 +4,7 @@
 // headings, plus [n] / [1, 3] citation markers rendered as clickable chips.
 const CITE = /(\[\d+(?:\s*,\s*\d+)*\])/g;
 
-function Inline({ text, onCite }) {
+function Inline({ text, onCite, citeTitle }) {
   return text.split(CITE).map((part, i) => {
     const cite = part.match(/^\[(.+)\]$/);
     if (cite) {
@@ -14,7 +14,7 @@ function Inline({ text, onCite }) {
             <button
               key={n}
               onClick={() => onCite(Number(n))}
-              title="Open the source passage"
+              title={citeTitle?.(Number(n)) ?? 'Open the source passage'}
               className="rounded bg-blue-100 px-1.5 font-sans text-[11px] font-medium leading-5 text-blue-800 hover:bg-blue-200"
             >
               {n.trim()}
@@ -31,7 +31,8 @@ function Inline({ text, onCite }) {
   });
 }
 
-export default function Markdown({ text, onCite }) {
+// citeTitle(n): optional hover text for citation chip n (e.g. its page)
+export default function Markdown({ text, onCite, citeTitle }) {
   const blocks = [];
   let list = null;
   const flush = () => {
@@ -63,11 +64,11 @@ export default function Markdown({ text, onCite }) {
     <div className="space-y-2">
       {blocks.map((b, i) => {
         if (b.type === 'h') return <h4 key={i} className="pt-1 font-sans text-sm font-semibold uppercase tracking-wide text-slate-700">{b.text}</h4>;
-        if (b.type === 'p') return <p key={i}><Inline text={b.text} onCite={onCite} /></p>;
+        if (b.type === 'p') return <p key={i}><Inline text={b.text} onCite={onCite} citeTitle={citeTitle} /></p>;
         const List = b.type;
         return (
           <List key={i} className={`space-y-1 pl-6 ${b.type === 'ul' ? 'list-disc' : 'list-decimal'}`}>
-            {b.items.map((item, j) => <li key={j}><Inline text={item} onCite={onCite} /></li>)}
+            {b.items.map((item, j) => <li key={j}><Inline text={item} onCite={onCite} citeTitle={citeTitle} /></li>)}
           </List>
         );
       })}

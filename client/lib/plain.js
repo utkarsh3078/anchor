@@ -1,0 +1,67 @@
+// Plain-words text for the simple view. Pure functions (no React, no fetch) so they can
+// be unit-tested with `npm test`.
+
+// One message for every abstention reason: the reader only needs to know the answer
+// is not in what they uploaded. (The reasons stay in the API response for the evaluation.)
+export function abstainText(docCount = 1) {
+  return docCount > 1 ? "I couldn't find this in your documents." : "I couldn't find this in your document.";
+}
+
+const GENERIC = 'Something went wrong. Please try again.';
+
+// err: an ApiError ({ code, status, body }) or any Error.
+// Returns { text, switchModel, changeKey }: what to say, and which way out to offer
+// besides "Try again".
+export function plainError(err) {
+  const out = (text, extra = {}) => ({ text, switchModel: false, changeKey: false, ...extra });
+  const body = err?.body ?? {};
+
+  switch (err?.code) {
+    case 'network':
+      return out("Can't reach Anchor right now. Check your internet connection and try again.");
+    case 'gemini_quota': {
+      if (body.scope === 'day') {
+        return out("Your Gemini key has used up today's free limit for this model. Switch to another model, or try again tomorrow.", { switchModel: true });
+      }
+      const wait = body.retryAfterSec ? `about ${body.retryAfterSec} seconds` : 'a minute';
+      return out(`Your Gemini key has hit its free limit for now. Wait ${wait} and try again, or switch to another model.`, { switchModel: true });
+    }
+    case 'gemini_key_invalid':
+    case 'gemini_key_required':
+      return out("Your Gemini key isn't working. Please enter it again.", { changeKey: true });
+    case 'gemini_model_unavailable':
+      return out("This model isn't available for your key. Please pick another one.", { switchModel: true });
+    case 'gemini_unavailable':
+      return out('Gemini is having trouble right now. Please try again in a moment.');
+    case 'gemini_error':
+      return out("Gemini couldn't handle that request. Please try again.");
+    case 'cohere_quota':
+      return out('Anchor is busy right now. Wait a minute and try again.');
+    case 'cohere_error':
+    case 'rerank_unavailable':
+      return out("Part of Anchor's search isn't available right now. Please try again in a moment.");
+    case 'file_too_large':
+      return out('That file is too big. Files can be up to 25 MB.');
+    case 'no_text':
+      return out("I couldn't read any text in that file. Scanned PDFs (photos of pages) don't work yet.");
+    case 'not_found':
+      return out("The original file isn't saved for this document. Upload it again to see its pages.");
+    default:
+      return out(GENERIC);
+  }
+}
+
+// Citations grouped into the pages they point to, in reading order, for the line of
+// page chips under an answer. Each page keeps its first passage (opened on click) and
+// the citation numbers that land on it. multiDoc says whether chips need the file name.
+export function citedPages(citations = []) {
+  const byPage = new Map();
+  for (const c of citations) {
+    const key = `${c.docName}\u0000${c.page}`;
+    const entry = byPage.get(key) ?? { docName: c.docName, page: c.page, first: c, numbers: [] };
+    entry.numbers.push(c.n);
+    byPage.set(key, entry);
+  }
+  const pages = [...byPage.values()].sort((a, b) => a.docName.localeCompare(b.docName) || a.page - b.page);
+  return { multiDoc: new Set(pages.map((p) => p.docName)).size > 1, pages };
+}
