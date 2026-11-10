@@ -24,6 +24,20 @@ test('plainError: quota offers a model switch and says how long to wait', () => 
   assert.match(day.text, /tomorrow/);
 });
 
+test('plainError: an embedding quota (uploads, or the search step) offers no model switch', () => {
+  const upload = plainError(apiError('gemini_quota', { scope: 'minute', retryAfterSec: 20, model: null }), { upload: true });
+  assert.equal(upload.switchModel, false);
+  assert.match(upload.text, /about 20 seconds/);
+  assert.doesNotMatch(upload.text, /another model/);
+
+  const search = plainError(apiError('gemini_quota', { scope: 'day', model: 'gemini-embedding-001' }));
+  assert.equal(search.switchModel, false);
+  assert.match(search.text, /tomorrow/);
+
+  // An answer-model quota on an upload-free request still offers the switch
+  assert.equal(plainError(apiError('gemini_quota', { scope: 'day', model: 'gemini-2.5-flash' })).switchModel, true);
+});
+
 test('plainError: a rejected or missing key asks for the key again', () => {
   for (const code of ['gemini_key_invalid', 'gemini_key_required']) {
     const e = plainError(apiError(code));

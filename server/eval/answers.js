@@ -11,6 +11,7 @@
 import { parseArgs } from 'util';
 import { makeJudge } from './judge.js';
 import { geminiHttpError } from '../src/lib/gemini.js';
+import { attemptLog } from '../src/lib/signals.js';
 import { citationPrecision, anyRelevant, mean, percentile, shares } from './metrics.js';
 import {
   makeApi, geminiHeaders, loadDataset, resolveDocs, openCheckpoint, sleep, round, errorGuard,
@@ -51,6 +52,8 @@ function scoreRow(mode, q, res) {
     lowConfidence: res.lowConfidence ?? false, overview: res.overview ?? false,
     abstained: res.abstained, abstainReason: res.abstainReason ?? null,
     retries: res.retrieval.retries, latencyMs: res.latencyMs,
+    // Per-attempt confidence signals (anchor modes; empty without a rerank)
+    bestAttempt: res.retrieval.bestAttempt ?? null, attempts: attemptLog(res.retrieval, q.question),
     answer: res.answer,
     // Passage text is kept so a failed judge call can be redone on --resume without re-asking
     citations: res.citations.map(({ n, docName, page, text }) => ({ n, docName, page, text })),

@@ -26,6 +26,7 @@ export async function anchorRetrieve(question, opts, deps = {}) {
       query, topScore, weights: result.weights, hits: result.hits,
       latencyMs: result.latencyMs, timings: result.timings, trace: result.trace,
     };
+    if (result.signals) attempt.signals = result.signals; // logged per attempt, not used to decide
     attempts.push(attempt);
     if (!best || topScore > best.topScore) best = { index: i, topScore, hits: result.hits };
 

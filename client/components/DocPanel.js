@@ -9,6 +9,7 @@ import { plainError } from '@/lib/plain';
 export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs, onChangeKey }) {
   const [docs, setDocs] = useState(null); // null until the first load finishes
   const [busy, setBusy] = useState('');
+  const [slow, setSlow] = useState(false); // the current upload has run for a while
   const [error, setError] = useState(null); // { text, changeKey, reload }
   const [pasteOpen, setPasteOpen] = useState(false);
   const [paste, setPaste] = useState({ name: '', text: '' });
@@ -36,14 +37,19 @@ export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function run(label, fn) {
+  // upload: the request embeds text, so it can be slow and its quota errors are the
+  // embedding model's
+  async function run(label, fn, { upload = false } = {}) {
     setBusy(label);
     setError(null);
+    const timer = upload && setTimeout(() => setSlow(true), 20000);
     try {
       await fn();
     } catch (e) {
-      setError(plainError(e));
+      setError(plainError(e, { upload }));
     } finally {
+      clearTimeout(timer);
+      setSlow(false);
       setBusy('');
     }
   }
@@ -53,14 +59,14 @@ export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs, 
     form.append('file', file);
     const r = await api('/api/documents', { method: 'POST', form, gemini });
     await refresh(r.docId);
-  });
+  }, { upload: true });
 
   const submitPaste = () => run('Reading your text…', async () => {
     const r = await api('/api/documents/text', { method: 'POST', json: paste, gemini });
     setPaste({ name: '', text: '' });
     setPasteOpen(false);
     await refresh(r.docId);
-  });
+  }, { upload: true });
 
   const remove = (doc) => {
     if (!confirm(`Remove ${doc.docName}? You can upload it again later.`)) return;
@@ -159,7 +165,12 @@ export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs, 
       {busy && (
         <p className="flex items-center gap-2 text-xs text-slate-600" role="status">
           <span className="inline-block h-3 w-3 shrink-0 rounded-full border-2 border-slate-300 border-t-slate-700 motion-safe:animate-spin" />
-          <span className="min-w-0 break-words">{busy} Longer documents take more time.</span>
+          <span className="min-w-0 break-words">
+            {busy}{' '}
+            {slow
+              ? "Still reading. Large documents are read in steps to stay within your Gemini key's free per-minute limit, so this can take a few minutes."
+              : 'Longer documents take more time.'}
+          </span>
         </p>
       )}
       {error && (

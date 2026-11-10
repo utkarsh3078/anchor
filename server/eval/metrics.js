@@ -1,3 +1,5 @@
+import { attemptLog } from '../src/lib/signals.js';
+
 // Gold evidence is page-level ({ doc, page }) because chunk ids change on every
 // upload while page numbers don't.
 export const isRelevant = (hit, gold) => gold.some((g) => g.doc === hit.docName && g.page === hit.page);
@@ -15,6 +17,16 @@ export function recallAtK(hits, gold, k) {
 export function reciprocalRank(hits, gold) {
   const i = hits.findIndex((h) => isRelevant(h, gold));
   return i === -1 ? 0 : 1 / (i + 1);
+}
+
+// Every reranked attempt of a retrieval response with its confidence signals, labelled
+// with whether that attempt's hits contain a gold page (false for unanswerable questions:
+// there is nothing to find). res: an anchor response (attempts[]) or a reranked hybrid one.
+// [] for configs without a rerank.
+export function labelledAttempts(res, q) {
+  const hitsOf = (i) => (res.attempts ? res.attempts[i].hits : res.hits);
+  return attemptLog(res, q.question)
+    .map((a) => ({ ...a, goldRetrieved: q.answerable ? anyRelevant(hitsOf(a.attempt), q.gold) : false }));
 }
 
 export const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);

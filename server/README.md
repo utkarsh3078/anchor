@@ -32,8 +32,11 @@ Later sessions: `docker start typesense anchor-mongo`.
 | `GEMINI_API_KEY` | local only | fallback when no `X-Gemini-Key` is sent; eval scripts and judge |
 | `GEMINI_MODEL` | no | default answer model when the client doesn't pick one (default `gemini-2.5-flash`) |
 | `GEMINI_JUDGE_MODEL` | no | eval judge model (default: `GEMINI_MODEL`) |
+| `EMBED_PACING` | no | default on: uploads stay inside the embedding model's per-minute limits and wait out a per-minute 429 (see Uploads and the embedding limits); `false` = batches back to back, a 429 fails the upload |
+| `GEMINI_EMBED_RPM` / `GEMINI_EMBED_TPM` | no | per-minute request and token limits uploads are paced to; defaults 100 / 30000 (free tier) |
 | `COHERE_API_KEY` | for rerank/anchor | trial keys: 10 calls/min |
 | `COHERE_RERANK_MODEL` | no | default `rerank-v3.5` |
+| `CONFIDENCE_SIGNALS` | no | default on; `false` = no per-attempt confidence signals computed, returned or logged (the behaviour before they existed) |
 | `TYPESENSE_HOST/PORT/PROTOCOL/API_KEY` | yes | |
 | `MONGODB_URI` | no | enables chat history, document metadata, eval-run logs |
 | `MONGODB_DB` | no | default `anchor` |
@@ -111,7 +114,48 @@ Uploads strip running PDF headers/footers before chunking, and keep the original
 | `/api/search/dense` | | baseline 1 |
 | `/api/search/keyword` | `engine`: `bm25` (default) or `typesense` | |
 | `/api/search/hybrid` | `weights`: `{ keyword, dense }` (default 0.5/0.5) or `"auto"`; `rerank`: bool | baseline 2; `trace` has keyword/dense/fused/rerank lists and `routing` |
-| `/api/search/anchor` | `weights` (default `"auto"`), `threshold` (0-1, default 0.15), `maxRetries` (0-3, default 1) | adds `confidence`, `retries`, `bestAttempt`, `attempts[]` (each with query, weights, hits, trace) |
+| `/api/search/anchor` | `weights` (default `"auto"`), `threshold` (0-1, default 0.15), `maxRetries` (0-3, default 1) | adds `confidence`, `retries`, `bestAttempt`, `attempts[]` (each with query, weights, hits, trace, signals) |
+
+### Confidence signals (logged, not yet used to decide)
+
+Every reranked retrieval (each Anchor attempt, and `/api/search/hybrid` with
+`rerank: true`) carries `signals` (lib/signals.js):
+
+| Field | Meaning |
+|---|---|
+| `topScore` | top rerank score (0 when nothing was retrieved) |
+| `top2Gap` | 1st minus 2nd rerank score; `null` with fewer than two reranked passages |
+| `top3Mean` | mean of the top 3 rerank scores (of the 1 or 2 there are, if fewer) |
+| `overlap10` | passages in both the BM25 top 10 and the vector top 10 (0-10) |
+| `topInBoth` | whether the top reranked passage is in both of those top-10 lists |
+
+The reranker is asked for at least 3 passages even when `k` is smaller (same single
+Cohere call), so the signals don't depend on `k`; the response still has the top `k`.
+`/api/ask` stores them per attempt in the `messages` collection as
+`attempts: [{ attempt, query, signals }]` with `bestAttempt` (`attempts` is empty for
+`dense`, plain `hybrid` and whole-document questions: no rerank, no scores). The eval
+runners store the same rows (see eval/README.md). The confidence check still uses
+`topScore` against `threshold` only. `CONFIDENCE_SIGNALS=false` turns all of this off.
+
+### Uploads and the embedding limits
+
+An upload embeds every chunk with `gemini-embedding-001`. Its free tier allows 100
+requests and 30,000 tokens per minute and 1,000 requests per day (the project owner's
+AI Studio figures, Nov 2026). Chunks go in batches of up to 100, so a document over
+about 100 chunks used to send a second batch within the same minute, get a 429, and
+lose the batches already embedded. With pacing (lib/embed.js, lib/pace.js):
+
+- batches are sized to 100 texts and 80% of the token limit (tokens are estimated at
+  4 characters each, not measured), and each batch waits until the last minute's usage
+  for that key leaves room; every text is counted as one request
+- a batch refused by a per-minute limit waits the delay Gemini returns (60 s if none)
+  and is sent again, up to 3 times; earlier batches are kept
+- a daily limit or any other error fails the upload at once
+- question embeddings are counted in the same per-key budget but never wait
+
+So a large document takes roughly one minute per 100 chunks, and the request stays
+open that long. Pacing state is in memory per server process. Measured so far: unit
+tests with a fake client and clock only; no large upload has been run against Gemini.
 
 ### Ask (retrieval + answer)
 

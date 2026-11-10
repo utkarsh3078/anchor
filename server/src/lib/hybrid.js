@@ -3,6 +3,8 @@ import { denseSearch, bm25Search, getKeywordIndex } from './retrievers.js';
 import { weightedRrf } from './fusion.js';
 import { rerank } from './rerank.js';
 import { routeQuery } from './route.js';
+import { confidenceSignals, SIGNAL_RERANK_TOP } from './signals.js';
+import { config } from '../config.js';
 import { ms, timed } from './timing.js';
 
 const rankList = (hits) => hits.map((h, i) => ({ id: h.id, rank: i + 1, score: h.score }));
@@ -23,16 +25,23 @@ function tracePassages(...lists) {
 // weights: { keyword, dense } for static weights, or 'auto' to route per query.
 // rerankQuery lets a retry retrieve with a reformulated query but still be scored
 // against the user's original question. gemini = the request's Gemini context (key, models).
+// signals (default: CONFIDENCE_SIGNALS) adds the reranked result's confidence signals.
+// deps swaps the retrievers and reranker for fakes in tests.
 export async function hybridSearch(query, {
   k, docIds, candidates, weights, useRerank = false, rerankQuery = query, gemini,
-}) {
+  signals = config.confidenceSignals,
+}, deps = {}) {
+  const {
+    embed = embedQuery, searchDense = denseSearch, searchKeyword = bm25Search,
+    keywordIndex = getKeywordIndex, rerankHits = rerank,
+  } = deps;
   const t0 = performance.now();
-  const routing = weights === 'auto' ? routeQuery(query, (await getKeywordIndex()).postings) : null;
+  const routing = weights === 'auto' ? routeQuery(query, (await keywordIndex()).postings) : null;
   const used = routing ? routing.weights : weights;
 
   const [dense, keyword] = await Promise.all([
-    timed(async () => denseSearch(await embedQuery(gemini, query), { k: candidates, docIds })),
-    timed(() => bm25Search(query, { k: candidates, docIds })),
+    timed(async () => searchDense(await embed(gemini, query), { k: candidates, docIds })),
+    timed(() => searchKeyword(query, { k: candidates, docIds })),
   ]);
   const fused = weightedRrf({ keyword: keyword.result, dense: dense.result }, used);
 
@@ -48,10 +57,16 @@ export async function hybridSearch(query, {
   }
 
   const pool = fused.slice(0, candidates);
-  const reranked = await timed(() => rerank(rerankQuery, pool.map((f) => f.hit), { topN: k }));
+  // The signals need the top 3 rerank scores, so ask for at least that many even when
+  // k is smaller (same single Cohere call); the caller still gets the top k
+  const topN = signals ? Math.max(k, SIGNAL_RERANK_TOP) : k;
+  const reranked = await timed(() => rerankHits(rerankQuery, pool.map((f) => f.hit), { topN }));
+  const hits = reranked.result.slice(0, k);
   timings.rerankMs = reranked.ms;
   trace.fused = pool.map((f) => ({ id: f.hit.id, score: f.score, ranks: f.ranks }));
-  trace.rerank = reranked.result.map((h) => ({ id: h.id, score: h.score }));
-  trace.passages = tracePassages(keyword.result, dense.result, pool.map((f) => f.hit), reranked.result);
-  return { latencyMs: ms(t0), weights: used, timings, hits: reranked.result, trace };
+  trace.rerank = hits.map((h) => ({ id: h.id, score: h.score }));
+  trace.passages = tracePassages(keyword.result, dense.result, pool.map((f) => f.hit), hits);
+  const result = { latencyMs: ms(t0), weights: used, timings, hits, trace };
+  if (signals) result.signals = confidenceSignals({ reranked: reranked.result, keyword: keyword.result, dense: dense.result });
+  return result;
 }

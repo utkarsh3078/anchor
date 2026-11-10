@@ -4,6 +4,7 @@ import { retrieve, MODES } from '../lib/retrieve.js';
 import { generateAnswer } from '../lib/generate.js';
 import { withNeighbours } from '../lib/context.js';
 import { isOverviewQuery, overviewPassages } from '../lib/overview.js';
+import { attemptLog } from '../lib/signals.js';
 import { ms, timed } from '../lib/timing.js';
 import { safeWrite } from '../lib/db.js';
 import { badRequest, parseAnchorOptions, parseWeights, route, withGemini } from './common.js';
@@ -87,8 +88,10 @@ function abstention(reason, extra = {}) {
   return { abstained: true, abstainReason: reason, answer: null, citations: [], ...extra };
 }
 
-// What gets stored: enough to show history and analyse runs, without the full trace
-function toMessage(query, r) {
+// What gets stored: enough to show history and analyse runs, without the full trace.
+// attempts: one row per retrieval attempt with its confidence signals (lib/signals.js);
+// empty for modes without a rerank.
+export function toMessage(query, r) {
   return {
     chatId: r.chatId,
     mode: r.mode,
@@ -102,6 +105,8 @@ function toMessage(query, r) {
     lowConfidence: r.lowConfidence,
     overview: r.overview,
     retries: r.retrieval.retries,
+    bestAttempt: r.retrieval.bestAttempt ?? null,
+    attempts: attemptLog(r.retrieval, query),
     latencyMs: r.latencyMs,
     createdAt: new Date(),
   };

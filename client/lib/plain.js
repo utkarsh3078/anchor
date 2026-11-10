@@ -12,18 +12,27 @@ const GENERIC = 'Something went wrong. Please try again.';
 // err: an ApiError ({ code, status, body }) or any Error.
 // Returns { text, switchModel, changeKey }: what to say, and which way out to offer
 // besides "Try again".
-export function plainError(err) {
+// upload: the request was an upload. Uploads (and the search step of a question) use
+// Gemini's embedding model, which has its own limit and can't be swapped, so those quota
+// messages don't offer a model switch.
+export function plainError(err, { upload = false } = {}) {
   const out = (text, extra = {}) => ({ text, switchModel: false, changeKey: false, ...extra });
   const body = err?.body ?? {};
+  const embedding = upload || /embedding/i.test(body.model ?? '');
 
   switch (err?.code) {
     case 'network':
       return out("Can't reach Anchor right now. Check your internet connection and try again.");
     case 'gemini_quota': {
+      const wait = body.retryAfterSec ? `about ${body.retryAfterSec} seconds` : 'a minute';
+      if (embedding) {
+        return out(body.scope === 'day'
+          ? "Your Gemini key has used up today's free limit for reading and searching documents. Try again tomorrow, or use a different key."
+          : `Your Gemini key has hit its free limit for reading and searching documents. Wait ${wait} and try again.`);
+      }
       if (body.scope === 'day') {
         return out("Your Gemini key has used up today's free limit for this model. Switch to another model, or try again tomorrow.", { switchModel: true });
       }
-      const wait = body.retryAfterSec ? `about ${body.retryAfterSec} seconds` : 'a minute';
       return out(`Your Gemini key has hit its free limit for now. Wait ${wait} and try again, or switch to another model.`, { switchModel: true });
     }
     case 'gemini_key_invalid':

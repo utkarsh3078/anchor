@@ -42,6 +42,14 @@ production key. Every run is saved to `eval/results/<dataset>-<kind>-<timestamp>
 when `MONGODB_URI` is set, to the `evalRuns` collection. The report reads MongoDB when
 configured (`--source files` to force the JSON files).
 
+Rows of reranked configs (`hybrid+rerank` and the anchor ones) and of anchor answer modes
+also carry `attempts`: one entry per retrieval attempt with the query and its confidence
+`signals` (`topScore`, `top2Gap`, `top3Mean`, `overlap10`, `topInBoth`; defined in the
+server README). In retrieval runs each attempt has `goldRetrieved`: whether that attempt's
+own hits contain a gold page (always false for unanswerable questions). These are logged
+for fitting a gate later; no metric or report table uses them yet. A server started with
+`CONFIDENCE_SIGNALS=false` logs `signals: null`.
+
 The report's **confidence gate** table is computed from the `anchor-noretry`
 first-attempt scores already recorded, so include `anchor-noretry` in a retrieval run to
 pick a threshold without extra API calls. A live sweep is still needed to see how

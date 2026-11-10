@@ -8,7 +8,7 @@
 // embed the query. A run stopped by a quota continues with --resume, e.g. on another model.
 import { parseArgs } from 'util';
 import { CONFIGS, DEFAULT_CONFIGS } from './configs.js';
-import { anyRelevant, recallAtK, reciprocalRank, mean, percentile } from './metrics.js';
+import { anyRelevant, labelledAttempts, recallAtK, reciprocalRank, mean, percentile } from './metrics.js';
 import {
   makeApi, geminiHeaders, loadDataset, resolveDocs, openCheckpoint, sleep, round, errorGuard,
 } from './common.js';
@@ -38,11 +38,14 @@ function scoreRow(run, q, res, k) {
     row.recall = recallAtK(res.hits, q.gold, k);
     row.rr = reciprocalRank(res.hits, q.gold);
   }
+  const attempts = labelledAttempts(res, q); // confidence signals per reranked attempt
+  if (attempts.length) row.attempts = attempts;
   if (CONFIGS[run.config].anchor) {
     row.topScore = round(res.confidence.topScore);
     row.firstTopScore = round(res.attempts[0].topScore);
     row.confident = res.confidence.confident;
     row.retries = res.retries;
+    row.bestAttempt = res.bestAttempt;
     if (q.answerable && res.retries > 0) {
       // A retry "helped" if the first attempt missed the gold page and the final result has it
       row.retryHelped = !anyRelevant(res.attempts[0].hits, q.gold) && anyRelevant(res.hits, q.gold);
