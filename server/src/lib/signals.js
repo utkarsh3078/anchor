@@ -29,14 +29,17 @@ export function confidenceSignals({ reranked, keyword, dense }) {
   };
 }
 
-// The per-attempt rows that get stored: [{ attempt, query, signals }]. `retrieval` is an
+// The per-attempt rows that get stored: [{ attempt, query, signals }], plus the evidence
+// gate's verdict ({ probability, zone, sufficient }) for attempts it judged. `retrieval` is an
 // anchor result (attempts[]) or a single reranked hybrid result (signals at the top
 // level); retrieval without a rerank (dense, plain hybrid, whole-document overview) has
 // no rerank scores, so it logs no attempts. signals is null when the server runs with
 // CONFIDENCE_SIGNALS=false.
 export function attemptLog(retrieval, query) {
   if (Array.isArray(retrieval?.attempts)) {
-    return retrieval.attempts.map((a, i) => ({ attempt: i, query: a.query, signals: a.signals ?? null }));
+    return retrieval.attempts.map((a, i) => ({
+      attempt: i, query: a.query, signals: a.signals ?? null, ...(a.gate && { gate: a.gate }),
+    }));
   }
   if (retrieval?.signals) return [{ attempt: 0, query, signals: retrieval.signals }];
   return [];

@@ -4,7 +4,7 @@ import { hybridSearch } from '../lib/hybrid.js';
 import { anchorRetrieve } from '../lib/anchor.js';
 import { denseRetrieve } from '../lib/retrieve.js';
 import { ms } from '../lib/timing.js';
-import { badRequest, parseWeights, parseAnchorOptions, route, withGemini } from './common.js';
+import { badRequest, parseWeights, parseAnchorOptions, parseFusionOptions, route, withGemini } from './common.js';
 
 const router = Router();
 
@@ -27,13 +27,16 @@ router.post('/keyword', route(async ({ query, k, docIds }, body) => {
 }));
 
 // BASELINE 2: static-weight hybrid (BM25 + dense, weighted RRF).
-// rerank: true adds the Cohere rerank stage; weights: 'auto' adds query routing.
+// rerank: true adds the Cohere rerank stage; weights: 'auto' adds query routing;
+// fusion: 'convex' (+ alpha) swaps RRF for the convex combination of normalised scores.
 router.post('/hybrid', withGemini, route(async ({ query, k, docIds, candidates }, body, req) => {
   const weights = parseWeights(body.weights);
   const useRerank = body.rerank ?? false;
   if (typeof useRerank !== 'boolean') throw badRequest('rerank must be true or false');
 
-  const result = await hybridSearch(query, { k, docIds, candidates, weights, useRerank, gemini: req.gemini });
+  const result = await hybridSearch(query, {
+    k, docIds, candidates, weights, useRerank, gemini: req.gemini, ...parseFusionOptions(body),
+  });
   return { mode: useRerank ? 'hybrid+rerank' : 'hybrid', ...result };
 }));
 

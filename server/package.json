@@ -9,7 +9,10 @@
     "start": "node src/index.js",
     "eval": "node eval/run.js",
     "eval:answers": "node eval/answers.js",
-    "eval:report": "node eval/report.js"
+    "eval:report": "node eval/report.js",
+    "eval:split": "node eval/split.js",
+    "eval:fit-gate": "node eval/fit-gate.js",
+    "eval:alpha": "node eval/alpha-search.js"
   },
   "keywords": [],
   "type": "module",

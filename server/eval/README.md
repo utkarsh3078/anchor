@@ -17,6 +17,49 @@ npm run eval:answers -- eval/datasets/smoke.json --modes dense,hybrid,anchor
 npm run eval:report -- --dataset smoke --out ../report-smoke.md
 ```
 
+## Tuning and test halves
+
+Anything that is tuned is fitted on the **tuning** half and reported on the **test**
+half. `eval/split.js` deals the questions into the two halves, separately for each kind
+(answerable or not, and category), by a hash of the question id, so the result is the
+same on every run. Store it in the dataset so later additions can't move a question:
+
+```bash
+npm run eval:split -- eval/datasets/real.json            # show the halves
+npm run eval:split -- eval/datasets/real.json --write    # store "split" on every question
+```
+
+`run.js` and `answers.js` take `--split tune|test|all` (default `all`) and record each
+row's half. The order of work for the gate and the fusion alpha:
+
+```bash
+# 1. Tuning half: collect signals (no text generation, one Cohere call per question)
+npm run eval -- eval/datasets/real.json --configs anchor-noretry --split tune
+# 2. Fit the gate on those rows. Writes server/data/gate-coefficients.json. No API calls
+npm run eval:fit-gate -- eval/datasets/real.json
+# 3. Pick the convex-fusion alpha on the tuning half (one embedding per question)
+npm run eval:alpha -- eval/datasets/real.json
+# 4. Test half: the comparison
+npm run eval -- eval/datasets/real.json --split test --alpha <best> \
+  --configs hybrid,hybrid-convex,anchor-noretry,anchor,anchor-gate,anchor-gate+check
+npm run eval:answers -- eval/datasets/real.json --split test --modes anchor,anchor-soft,anchor-gate,anchor-gate+check
+# 5. Report on the test half (the default)
+npm run eval:report -- --dataset real --out ../report-real.md --data ../report-real.json
+```
+
+`fit-gate.js` reads every finished retrieval run of the dataset in `eval/results/` (or
+`--runs a.json,b.json`), keeps only attempts of tuning-half questions that have signals
+and a gold label, counts an attempt logged by several configs once, and fits an
+L2-regularised logistic regression (`--lambda`, default 1) with label = `goldRetrieved`.
+It refuses a tuning set with a single class and warns below 20 examples. The numbers it
+prints are training numbers, not results.
+
+`alpha-search.js` fetches each tuning question's BM25 and vector candidate lists once
+(`/api/search/keyword` and `/api/search/dense`, 50 candidates, as the server uses) and
+fuses them locally for alpha = 0, 0.1, ..., 1 with the server's own fusion code. It
+reports Recall@k and MRR per alpha, RRF 0.5/0.5 on the same lists as a reference, and
+the best alpha (recall, then MRR, then nearest 0.5). It does not change any setting.
+
 ### Free tiers
 
 The runners send `GEMINI_API_KEY` from `.env` as `X-Gemini-Key` and bypass the server
@@ -61,10 +104,27 @@ Each adds one component to the previous: `dense`, `bm25`, `hybrid` (static 0.5/0
 `hybrid+route`, `hybrid+rerank`, `anchor-noretry` (route + rerank), `anchor-static`
 (rerank + retry, no routing), `anchor` (everything). Default: `dense,hybrid,anchor`.
 
+Alternatives to compare against those:
+
+- `hybrid-convex`: `hybrid` with convex fusion instead of RRF (`--alpha`, else the
+  server's `FUSION_ALPHA`); the row records the alpha used
+- `anchor-gate`: `anchor` with the evidence gate instead of the threshold, no
+  sufficiency check (the middle zone counts as not confident)
+- `anchor-gate+check`: the same with the sufficiency check (one Gemini request per
+  attempt in the middle zone)
+
+Every config pins `fusion` and `gate` in its request, so the server's `FUSION` and
+`EVIDENCE_GATE` settings can't change what a row means. The gate configs need the
+coefficients file: without it the threshold decides, each row says `gate.used: false`,
+and the summary's `gateUsed` is 0. Such a run is not a gate result.
+
 ## Answer modes (eval/answers.js)
 
 `dense`, `hybrid` (no confidence gate: Gemini is the only abstention check),
 `anchor-noretry`, `anchor`. Default: `dense,hybrid,anchor`. `--no-judge` skips grading.
+Also `hybrid-convex`, `anchor-soft` (the UI default: answers below the threshold),
+`anchor-gate` and `anchor-gate+check` (strict, like `anchor`). The coverage-risk curve
+at answer level needs `anchor-soft`, because it answers whatever the gate would say.
 
 ## Dataset format
 
@@ -105,6 +165,26 @@ Answer runs:
   at least one citation on a gold page
 - **Faithfulness**: judge's verdict on whether the answer is supported by the passages it
   cites (`supported` / `partial` / `unsupported`)
+
+Answer or abstain (report, per config or mode, on the chosen half):
+
+- **Answer rate**: questions answered / all questions
+- **Accuracy on answered**: correct answers / graded answers. An answer to an
+  unanswerable question is wrong. In a retrieval run there is no answer, so the column
+  is "gold page retrieved when answered", a proxy
+- **Unanswerable rejected**: unanswerable questions not answered / unanswerable questions
+- **False abstention**: answerable questions not answered / answerable questions
+- **Coverage-risk curve**: questions ranked by a confidence score and answered at or
+  above a cut-off; coverage = answered / all, risk = wrong / answered. Two scores are
+  compared on the same questions: the top rerank score (the threshold; marked at 0.3
+  and at the server default) and the gate's probability (marked at its cut-offs),
+  recomputed in the report from the logged signals and the coefficients file. Sources:
+  `anchor-soft` answer rows (true correctness) and `anchor-noretry` retrieval rows
+  (proxy). **AURC** is the area under that curve, lower is better. `--data file.json`
+  writes every point.
+
+The report computes these on `--split test` by default. Runs made before rows recorded
+their half are used whole, and the report says so.
 
 The judge (eval/judge.js) is a Gemini model grading Gemini answers, which can be biased.
 Check a random sample of its verdicts by hand and report the agreement rate in the paper.

@@ -61,3 +61,57 @@ export function gateCurve(rows, thresholds) {
     abstainRate: mean(unans.map((r) => (r.score < t ? 1 : 0))),
   }));
 }
+
+// How a configuration decides to answer or abstain. rows: [{ answerable, answered, correct }];
+// correct is true/false for an answered row, or null when nobody graded it. An answered
+// unanswerable question is always wrong.
+//   answerRate             answered / all questions
+//   accuracyOnAnswered     correct / answered (graded answers only; `ungraded` counts the rest)
+//   unanswerableRejection  unanswerable questions not answered / unanswerable questions
+//   falseAbstention        answerable questions not answered / answerable questions
+export function decisionMetrics(rows) {
+  const answered = rows.filter((r) => r.answered);
+  const graded = answered.filter((r) => r.correct != null);
+  return {
+    n: rows.length,
+    answerRate: mean(rows.map((r) => (r.answered ? 1 : 0))),
+    accuracyOnAnswered: mean(graded.map((r) => (r.correct ? 1 : 0))),
+    ungraded: answered.length - graded.length,
+    unanswerableRejection: mean(rows.filter((r) => !r.answerable).map((r) => (r.answered ? 0 : 1))),
+    falseAbstention: mean(rows.filter((r) => r.answerable).map((r) => (r.answered ? 0 : 1))),
+  };
+}
+
+// One point of a coverage-risk curve: answer every question whose score is at least
+// `cutoff`. rows: [{ score, correct, passes }]; passes: false marks a question that
+// would not be answered whatever the gate says (the answer step itself abstained).
+// coverage = answered / all questions; risk = wrong answers / answered (null when none).
+export function riskCoverageAt(rows, cutoff) {
+  const answered = rows.filter((r) => r.score >= cutoff && r.passes !== false);
+  return {
+    cutoff,
+    answered: answered.length,
+    coverage: rows.length ? answered.length / rows.length : null,
+    risk: answered.length ? answered.filter((r) => !r.correct).length / answered.length : null,
+  };
+}
+
+// The whole curve: one point per distinct score, strictest cut-off first
+export function riskCoverage(rows) {
+  return [...new Set(rows.map((r) => r.score))].sort((a, b) => b - a).map((cutoff) => riskCoverageAt(rows, cutoff));
+}
+
+// Area under the coverage-risk curve: the risk averaged over the answers as they are
+// admitted from the most to the least confident. Lower is better; a score that ranks
+// every correct answer above every wrong one gives the lowest value possible for that
+// set of answers. null when no question can be answered.
+export function aurc(rows) {
+  let area = 0;
+  let previous = 0;
+  for (const p of riskCoverage(rows)) {
+    if (p.answered === previous) continue;
+    area += (p.answered - previous) * p.risk;
+    previous = p.answered;
+  }
+  return previous ? area / previous : null;
+}

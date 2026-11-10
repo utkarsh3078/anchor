@@ -1,4 +1,6 @@
 import { geminiContext, geminiHttpError } from '../lib/gemini.js';
+import { loadGateModel } from '../lib/gate.js';
+import { config } from '../config.js';
 
 const DEFAULT_WEIGHTS = { keyword: 0.5, dense: 0.5 };
 // Provisional. Smoke test (prose manual): answerable 0.18-0.92, unanswerable 0.03-0.25.
@@ -57,6 +59,33 @@ export function parseWeights(weights = DEFAULT_WEIGHTS) {
   return { keyword: keyword / (keyword + dense), dense: dense / (keyword + dense) };
 }
 
+// fusion: 'rrf' or 'convex' (default FUSION); alpha: the convex weight of the vector
+// score, 0 to 1 (default FUSION_ALPHA). alpha is ignored by rrf.
+export function parseFusionOptions(body = {}, defaults = config.fusion) {
+  const fusion = body.fusion ?? defaults.method;
+  if (!['rrf', 'convex'].includes(fusion)) throw badRequest('fusion must be "rrf" or "convex"');
+  const alpha = body.alpha ?? defaults.alpha;
+  if (typeof alpha !== 'number' || alpha < 0 || alpha > 1) throw badRequest('alpha must be a number from 0 to 1');
+  return { fusion, alpha };
+}
+
+// Evidence gate options: gate (default EVIDENCE_GATE), gateLow / gateHigh (zone cut-offs)
+// and sufficiencyCheck (the middle zone's Gemini call). Returns undefined when the gate
+// is off; model is null when there is no coefficients file (the threshold then decides).
+export function parseGateOptions(body = {}, { defaults = config.gate, loadModel = loadGateModel } = {}) {
+  const bool = (name, fallback) => {
+    const v = body[name] ?? fallback;
+    if (typeof v !== 'boolean') throw badRequest(`${name} must be true or false`);
+    return v;
+  };
+  if (!bool('gate', defaults.enabled)) return undefined;
+  const low = body.gateLow ?? defaults.low;
+  const high = body.gateHigh ?? defaults.high;
+  const ok = (x) => typeof x === 'number' && x >= 0 && x <= 1;
+  if (!ok(low) || !ok(high) || low > high) throw badRequest('gateLow and gateHigh must be numbers from 0 to 1 with gateLow <= gateHigh');
+  return { model: loadModel(), low, high, sufficiency: bool('sufficiencyCheck', defaults.sufficiency) };
+}
+
 // Full Anchor routes per query by default; pass static weights to ablate routing.
 // threshold 0 never retries or abstains on retrieval grounds; maxRetries 0 disables retry
 export function parseAnchorOptions(body = {}) {
@@ -67,7 +96,10 @@ export function parseAnchorOptions(body = {}) {
   if (!Number.isInteger(maxRetries) || maxRetries < 0 || maxRetries > 3) {
     throw badRequest('maxRetries must be an integer from 0 to 3');
   }
-  return { weights: parseWeights(body.weights ?? 'auto'), threshold, maxRetries };
+  return {
+    weights: parseWeights(body.weights ?? 'auto'), threshold, maxRetries,
+    gate: parseGateOptions(body), ...parseFusionOptions(body),
+  };
 }
 
 // handler(params, body, req) -> JSON response

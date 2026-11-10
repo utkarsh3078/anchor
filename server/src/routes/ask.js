@@ -22,6 +22,9 @@ const router = Router();
 // In real use the hard gate mostly blocked answerable questions (whole-document and
 // "question 2"-style questions score 0.02-0.11) while Gemini caught the unanswerable ones.
 // strict: true restores the hard gate (the evaluation uses it).
+// With the evidence gate active (gate on and a coefficients file present, lib/gate.js) the
+// gate decides instead of the threshold and strict defaults to true: an attempt the gate
+// doesn't accept abstains. strict: false keeps the soft behaviour with the gate too.
 // Whole-document questions ("what is inside the pdf?") in anchor mode skip retrieval and
 // use passages sampled across the selected documents (overview: false to turn off).
 // Each exchange is saved under chatId (generated if absent) when MongoDB is configured.
@@ -41,7 +44,7 @@ router.post('/', withGemini, route(async ({ query, k, docIds, candidates }, body
     return v;
   };
   const useNeighbours = flag('neighbours', true);
-  const strict = flag('strict', false);
+  const strict = flag('strict', Boolean(mode === 'anchor' && opts.gate?.model));
   const overview = mode === 'anchor' && flag('overview', true) && isOverviewQuery(query);
   // Baseline hybrid uses static weights unless told otherwise; anchor routes by default
   const weights = mode === 'hybrid' ? parseWeights(body.weights) : opts.weights;

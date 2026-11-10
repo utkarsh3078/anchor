@@ -2,7 +2,9 @@
 //   node eval/run.js eval/datasets/smoke.json [--configs dense,hybrid,anchor] [--k 5]
 //     [--threshold 0.3 | --threshold 0.1,0.2,0.3] [--rerank-delay 6500] [--upload]
 //     [--model M] [--rewrite-model M] [--resume eval/results/<run>.partial.json]
-//     [--base http://localhost:4000]
+//     [--split tune|test|all] [--alpha 0.6] [--base http://localhost:4000]
+// --split runs one fixed half of the dataset (eval/split.js); every row records its half.
+// --alpha sets the convex-fusion weight for hybrid-convex (else the server's FUSION_ALPHA).
 // Several thresholds run each anchor config once per threshold (labelled anchor@0.2 etc).
 // Only anchor configs with retries call Gemini for text (query rewrites); the rest only
 // embed the query. A run stopped by a quota continues with --resume, e.g. on another model.
@@ -12,6 +14,7 @@ import { anyRelevant, labelledAttempts, recallAtK, reciprocalRank, mean, percent
 import {
   makeApi, geminiHeaders, loadDataset, resolveDocs, openCheckpoint, sleep, round, errorGuard,
 } from './common.js';
+import { assignSplits, questionsIn } from './split.js';
 
 const { values: args, positionals } = parseArgs({
   allowPositionals: true,
@@ -25,15 +28,19 @@ const { values: args, positionals } = parseArgs({
     model: { type: 'string' },
     'rewrite-model': { type: 'string' },
     resume: { type: 'string' },
+    split: { type: 'string', default: 'all' },
+    alpha: { type: 'string' },
     base: { type: 'string', default: process.env.ANCHOR_URL || 'http://localhost:4000' },
   },
 });
 
-function scoreRow(run, q, res, k) {
+function scoreRow(run, q, res, k, split) {
   const row = {
-    config: run.label, base: run.config, id: q.id, category: q.category ?? null,
+    config: run.label, base: run.config, id: q.id, category: q.category ?? null, split,
     answerable: q.answerable, latencyMs: res.latencyMs,
   };
+  const fusion = (res.trace ?? res.attempts?.[0]?.trace)?.fusion;
+  if (fusion?.method === 'convex') row.alpha = fusion.alpha;
   if (q.answerable) {
     row.recall = recallAtK(res.hits, q.gold, k);
     row.rr = reciprocalRank(res.hits, q.gold);
@@ -46,6 +53,7 @@ function scoreRow(run, q, res, k) {
     row.confident = res.confidence.confident;
     row.retries = res.retries;
     row.bestAttempt = res.bestAttempt;
+    if (res.confidence.gate) row.gate = res.confidence.gate; // used: false = the threshold decided
     if (q.answerable && res.retries > 0) {
       // A retry "helped" if the first attempt missed the gold page and the final result has it
       row.retryHelped = !anyRelevant(res.attempts[0].hits, q.gold) && anyRelevant(res.hits, q.gold);
@@ -77,16 +85,20 @@ function summarise(run, rows) {
       retryRate: round(mean(ok.map((r) => (r.retries > 0 ? 1 : 0)))),
       retryPrecision: retried.length ? round(mean(retried.map((r) => (r.retryHelped ? 1 : 0)))) : null,
     });
+    // Share of questions the evidence gate really decided (0 = no coefficients file: the
+    // config ran on the threshold and is not a gate result)
+    if (CONFIGS[run.config].gate) s.gateUsed = round(mean(ok.map((r) => (r.gate?.used ? 1 : 0))));
   }
   return s;
 }
 
 // One run per config, or one per (anchor config, threshold) for a sweep
-function planRuns(configs, thresholds) {
+function planRuns(configs, thresholds, alpha) {
   return configs.flatMap((config) => {
-    const anchor = CONFIGS[config].anchor;
+    const { anchor, convex } = CONFIGS[config];
+    const fixed = convex && alpha != null ? { alpha } : {};
     if (!anchor || thresholds.length <= 1) {
-      return [{ label: config, config, extra: anchor && thresholds.length ? { threshold: thresholds[0] } : {} }];
+      return [{ label: config, config, extra: { ...fixed, ...(anchor && thresholds.length ? { threshold: thresholds[0] } : {}) } }];
     }
     return thresholds.map((t) => ({ label: `${config}@${t}`, config, extra: { threshold: t } }));
   });
@@ -104,28 +116,33 @@ async function main() {
   const checkpoint = await openCheckpoint({
     kind: 'retrieval',
     dataset: dataset.name,
-    settings: { k: Number(args.k), configs, thresholds, rerankDelay: Number(args['rerank-delay']) },
+    settings: {
+      k: Number(args.k), configs, thresholds, rerankDelay: Number(args['rerank-delay']),
+      split: args.split, alpha: args.alpha == null ? null : Number(args.alpha),
+    },
     resume: args.resume,
   });
-  const { k, rerankDelay } = checkpoint.settings;
-  const runs = planRuns(checkpoint.settings.configs, checkpoint.settings.thresholds);
+  const { k, rerankDelay, split = 'all', alpha = null } = checkpoint.settings;
+  const runs = planRuns(checkpoint.settings.configs, checkpoint.settings.thresholds, alpha);
+  const splits = assignSplits(dataset.questions);
+  const questions = questionsIn(dataset, split);
 
   const docIds = await resolveDocs(api, dataset, datasetDir, { upload: args.upload });
-  console.log(`${dataset.name}: ${dataset.questions.length} questions x ${runs.length} runs, k=${k}`);
+  console.log(`${dataset.name}: ${questions.length} questions (split: ${split}) x ${runs.length} runs, k=${k}`);
 
   const guard = errorGuard();
   try {
     for (const run of runs) {
       const { path: route, body, rerankCalls } = CONFIGS[run.config];
-      for (const q of dataset.questions) {
+      for (const q of questions) {
         if (checkpoint.isDone(run.label, q.id)) continue;
         try {
           const res = await api('POST', route, { query: q.question, k, docIds, ...body, ...run.extra });
-          await checkpoint.add(scoreRow(run, q, res, k));
+          await checkpoint.add(scoreRow(run, q, res, k, splits.get(q.id)));
           guard.ok();
           if (rerankDelay) await sleep(rerankDelay * rerankCalls(res));
         } catch (e) {
-          await checkpoint.add({ config: run.label, base: run.config, id: q.id, answerable: q.answerable, error: e.message });
+          await checkpoint.add({ config: run.label, base: run.config, id: q.id, split: splits.get(q.id), answerable: q.answerable, error: e.message });
           console.error(`  ${run.label} ${q.id}: ${e.message}`);
           guard.fail(e);
         }

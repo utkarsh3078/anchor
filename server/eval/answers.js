@@ -2,6 +2,7 @@
 //   node eval/answers.js eval/datasets/smoke.json [--modes dense,hybrid,anchor] [--k 5]
 //     [--threshold 0.3] [--no-judge] [--rerank-delay 6500] [--upload] [--base ...]
 //     [--model M] [--rewrite-model M] [--judge-model M] [--resume <run>.partial.json]
+//     [--split tune|test|all]   one fixed half of the dataset (eval/split.js); rows record their half
 // Answerable questions: was it answered, is it correct, do citations point at gold pages.
 // Unanswerable questions: did it abstain. Answered rows are graded for faithfulness
 // (answer vs its cited passages) and correctness (vs the reference) by judge.js.
@@ -16,15 +17,23 @@ import { citationPrecision, anyRelevant, mean, percentile, shares } from './metr
 import {
   makeApi, geminiHeaders, loadDataset, resolveDocs, openCheckpoint, sleep, round, errorGuard,
 } from './common.js';
+import { assignSplits, questionsIn } from './split.js';
 
 // Anchor runs strict (hard confidence gate) so abstention is measured as designed;
-// anchor-soft is the UI default (answers below the threshold, flagged lowConfidence)
+// anchor-soft is the UI default (answers below the threshold, flagged lowConfidence).
+// Fusion and gate are pinned so the server's FUSION / EVIDENCE_GATE settings can't change
+// what a mode means. The gate modes need the coefficients file; without it the threshold
+// decides and the rows say gate.used = false.
+const RRF = { fusion: 'rrf' };
 const MODES = {
   dense: { mode: 'dense' },
-  hybrid: { mode: 'hybrid' },
-  'anchor-noretry': { mode: 'anchor', maxRetries: 0, strict: true },
-  anchor: { mode: 'anchor', strict: true },
-  'anchor-soft': { mode: 'anchor' },
+  hybrid: { mode: 'hybrid', ...RRF },
+  'hybrid-convex': { mode: 'hybrid', fusion: 'convex' },
+  'anchor-noretry': { mode: 'anchor', maxRetries: 0, strict: true, gate: false, ...RRF },
+  anchor: { mode: 'anchor', strict: true, gate: false, ...RRF },
+  'anchor-soft': { mode: 'anchor', strict: false, gate: false, ...RRF },
+  'anchor-gate': { mode: 'anchor', strict: true, gate: true, sufficiencyCheck: false, ...RRF },
+  'anchor-gate+check': { mode: 'anchor', strict: true, gate: true, sufficiencyCheck: true, ...RRF },
 };
 
 const { values: args, positionals } = parseArgs({
@@ -40,15 +49,17 @@ const { values: args, positionals } = parseArgs({
     'rewrite-model': { type: 'string' },
     'judge-model': { type: 'string' },
     resume: { type: 'string' },
+    split: { type: 'string', default: 'all' },
     base: { type: 'string', default: process.env.ANCHOR_URL || 'http://localhost:4000' },
   },
 });
 
 const judgeAnswer = args['no-judge'] ? null : makeJudge(args['judge-model']);
 
-function scoreRow(mode, q, res) {
+function scoreRow(mode, q, res, split) {
   const row = {
-    mode, id: q.id, category: q.category ?? null, answerable: q.answerable, model: res.model,
+    mode, id: q.id, category: q.category ?? null, split, answerable: q.answerable, model: res.model,
+    gate: res.retrieval.confidence?.gate ?? null, // used: false = the threshold decided
     lowConfidence: res.lowConfidence ?? false, overview: res.overview ?? false,
     abstained: res.abstained, abstainReason: res.abstainReason ?? null,
     retries: res.retrieval.retries, latencyMs: res.latencyMs,
@@ -106,6 +117,8 @@ function summarise(mode, rows) {
       ['low_retrieval_confidence', 'not_in_passages', 'no_passages'].map((k) => [k, ok.filter((r) => r.abstainReason === k).length]),
     ),
     models: [...new Set(ok.map((r) => r.model).filter(Boolean))], // more than one = mixed run, say so
+    // Gate modes: share of questions the evidence gate really decided (0 = no coefficients file)
+    gateUsed: MODES[mode].gate ? round(mean(ok.map((r) => (r.gate?.used ? 1 : 0)))) : null,
     unjudged: answered.filter((r) => !r.faithfulness).length,
   };
   if (judged.length) {
@@ -131,20 +144,22 @@ async function main() {
     dataset: dataset.name,
     settings: {
       k: Number(args.k), modes, threshold: args.threshold ? Number(args.threshold) : null,
-      judge: !args['no-judge'], rerankDelay: Number(args['rerank-delay']),
+      judge: !args['no-judge'], rerankDelay: Number(args['rerank-delay']), split: args.split,
     },
     resume: args.resume,
   });
-  const { k, threshold, rerankDelay } = checkpoint.settings;
+  const { k, threshold, rerankDelay, split = 'all' } = checkpoint.settings;
   const thresholdBody = threshold == null ? {} : { threshold };
+  const splits = assignSplits(dataset.questions);
+  const questions = questionsIn(dataset, split);
 
   const docIds = await resolveDocs(api, dataset, datasetDir, { upload: args.upload });
-  console.log(`${dataset.name}: ${dataset.questions.length} questions x ${checkpoint.settings.modes.length} modes, k=${k}`);
+  console.log(`${dataset.name}: ${questions.length} questions (split: ${split}) x ${checkpoint.settings.modes.length} modes, k=${k}`);
 
   const guard = errorGuard();
   try {
     for (const mode of checkpoint.settings.modes) {
-      for (const q of dataset.questions) {
+      for (const q of questions) {
         const done = checkpoint.find(mode, q.id);
         try {
           if (done) {
@@ -153,7 +168,7 @@ async function main() {
             await checkpoint.save();
           } else {
             const res = await api('POST', '/api/ask', { query: q.question, k, docIds, ...MODES[mode], ...thresholdBody });
-            const row = scoreRow(mode, q, res);
+            const row = scoreRow(mode, q, res, splits.get(q.id));
             await checkpoint.add(row);
             if (needsJudge(row)) await judge(row, q).finally(() => checkpoint.save());
             const rerankCalls = MODES[mode].mode === 'anchor' ? res.retrieval.attempts.length : 0;
@@ -162,7 +177,7 @@ async function main() {
           guard.ok();
         } catch (e) {
           if (!checkpoint.find(mode, q.id)) {
-            await checkpoint.add({ mode, id: q.id, answerable: q.answerable, error: e.message });
+            await checkpoint.add({ mode, id: q.id, split: splits.get(q.id), answerable: q.answerable, error: e.message });
           }
           console.error(`  ${mode} ${q.id}: ${e.message}`);
           guard.fail(e);

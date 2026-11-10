@@ -70,7 +70,8 @@ function fakeDeps(rerankScores) {
     },
   };
 }
-const searchOpts = { docIds: [], candidates: 10, weights: { keyword: 0.5, dense: 0.5 }, useRerank: true };
+// signals is set explicitly so the tests don't depend on CONFIDENCE_SIGNALS in a local .env
+const searchOpts = { docIds: [], candidates: 10, weights: { keyword: 0.5, dense: 0.5 }, useRerank: true, signals: true };
 
 test('hybridSearch: a reranked result carries its signals', async () => {
   const { deps } = fakeDeps({ b: 0.9, a: 0.6, e: 0.3, c: 0.1 });

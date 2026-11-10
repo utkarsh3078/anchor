@@ -34,6 +34,12 @@ Later sessions: `docker start typesense anchor-mongo`.
 | `GEMINI_JUDGE_MODEL` | no | eval judge model (default: `GEMINI_MODEL`) |
 | `EMBED_PACING` | no | default on: uploads stay inside the embedding model's per-minute limits and wait out a per-minute 429 (see Uploads and the embedding limits); `false` = batches back to back, a 429 fails the upload |
 | `GEMINI_EMBED_RPM` / `GEMINI_EMBED_TPM` | no | per-minute request and token limits uploads are paced to; defaults 100 / 30000 (free tier) |
+| `EVIDENCE_GATE` | no | default off; `true` = the evidence gate decides instead of the fixed threshold (needs the coefficients file, see Evidence gate) |
+| `GATE_COEFFICIENTS` | no | path of the coefficients file (default `server/data/gate-coefficients.json`, written by `eval/fit-gate.js`) |
+| `GATE_LOW` / `GATE_HIGH` | no | the gate's zone cut-offs, default 0.3 / 0.7 (provisional, not tuned) |
+| `GATE_SUFFICIENCY` | no | default on; `false` = no Gemini call in the gate's middle zone (it then counts as not confident) |
+| `FUSION` | no | `rrf` (default) or `convex` |
+| `FUSION_ALPHA` | no | convex fusion's weight of the vector score, 0-1, default 0.5 (a placeholder until `eval/alpha-search.js` is run) |
 | `COHERE_API_KEY` | for rerank/anchor | trial keys: 10 calls/min |
 | `COHERE_RERANK_MODEL` | no | default `rerank-v3.5` |
 | `CONFIDENCE_SIGNALS` | no | default on; `false` = no per-attempt confidence signals computed, returned or logged (the behaviour before they existed) |
@@ -84,6 +90,7 @@ means ask for the key again.
 | `/api/search/dense`, `/hybrid`, `/anchor` with `maxRetries: 0` | 0 | 1 (cached per query text) |
 | `/api/search/anchor` | 1 per retry (default max 1) | 1 per attempt |
 | `/api/ask` mode `anchor` | 0 if retrieval abstains, else 1, plus 1 per retry | 1 per attempt |
+| evidence gate on, with the sufficiency check | 1 more for each attempt that lands in the middle zone | 0 more |
 | `/api/ask` mode `dense` / `hybrid` | 1 (0 if nothing retrieved) | 1 |
 
 Identical requests are served from in-memory caches (query embeddings, rewrites, and
@@ -113,10 +120,55 @@ Uploads strip running PDF headers/footers before chunking, and keep the original
 |---|---|---|
 | `/api/search/dense` | | baseline 1 |
 | `/api/search/keyword` | `engine`: `bm25` (default) or `typesense` | |
-| `/api/search/hybrid` | `weights`: `{ keyword, dense }` (default 0.5/0.5) or `"auto"`; `rerank`: bool | baseline 2; `trace` has keyword/dense/fused/rerank lists and `routing` |
-| `/api/search/anchor` | `weights` (default `"auto"`), `threshold` (0-1, default 0.15), `maxRetries` (0-3, default 1) | adds `confidence`, `retries`, `bestAttempt`, `attempts[]` (each with query, weights, hits, trace, signals) |
+| `/api/search/hybrid` | `weights`: `{ keyword, dense }` (default 0.5/0.5) or `"auto"`; `rerank`: bool; `fusion`, `alpha` | baseline 2; `trace` has keyword/dense/fused/rerank lists, `routing` and `fusion` |
+| `/api/search/anchor` | `weights` (default `"auto"`), `threshold` (0-1, default 0.15), `maxRetries` (0-3, default 1); `fusion`, `alpha`; `gate`, `gateLow`, `gateHigh`, `sufficiencyCheck` | adds `confidence`, `retries`, `bestAttempt`, `attempts[]` (each with query, weights, hits, trace, signals, and `gate` when the gate judged it) |
 
-### Confidence signals (logged, not yet used to decide)
+### Fusion: RRF or convex combination
+
+`fusion: "rrf"` (default) merges the BM25 and vector lists by rank with weighted
+reciprocal rank fusion. `fusion: "convex"` merges their scores instead (lib/fusion.js):
+each list is min-max normalised over its candidates, then
+`score = alpha * vector + (1 - alpha) * BM25`; a passage missing from a list scores 0
+there, and so does the last passage of a list. `alpha` is one fixed number (0 = BM25
+only, 1 = vectors only), so convex fusion uses neither `weights` nor query routing; the
+response reports `weights: { keyword: 1 - alpha, dense: alpha }` and
+`trace.fusion: { method, alpha }`. Defaults come from `FUSION` and `FUSION_ALPHA`; a
+request's `fusion` / `alpha` override them, also on `/api/ask`. Pick alpha with
+`eval/alpha-search.js`; 0.5 is a placeholder, and nothing has been measured yet.
+
+### Evidence gate
+
+Off by default. With `gate: true` (or `EVIDENCE_GATE=true`) and a coefficients file,
+each Anchor attempt is judged by the gate (lib/gate.js) instead of `topScore >= threshold`:
+
+1. The attempt's confidence signals become one probability through a logistic
+   regression: `sigmoid(intercept + sum(weight * (feature - mean) / std))`, features in
+   the order `topScore, top2Gap, top3Mean, overlap10 / 10, topInBoth` (a missing gap
+   counts as 0, a missing top-3 mean as the top score).
+2. The probability falls in a zone: `>= gateHigh` **high**: confident, answer;
+   `< gateLow` **low**: not confident, retry if retries are left;
+   in between **middle**: one Gemini request (lib/sufficiency.js, on the rewrite model)
+   asks whether the passages are sufficient to answer; confident only if it says yes.
+   With `sufficiencyCheck: false` the middle zone counts as not confident and costs no call.
+3. A confident attempt ends the retry loop and is used. Otherwise the attempt with the
+   highest probability is used and is not confident.
+
+`confidence.gate` reports what decided: `{ used: true, probability, zone, sufficient,
+low, high, sufficiencyCheck }`, or `{ used: false, reason }` when the threshold decided
+after all: `no_coefficients` (the file is missing or invalid) or `no_signals`
+(`CONFIDENCE_SIGNALS=false`). The file is re-read when it changes.
+
+On `/api/ask`, an active gate (on and with a file) makes `strict` default to `true`: a
+question the gate does not accept abstains with `low_retrieval_confidence`. Send
+`strict: false` to keep answering with `lowConfidence: true`. The simple client sends
+neither, so turning the gate on makes it abstain where the gate says so.
+
+The coefficients come from `eval/fit-gate.js` (tuning split only). The cut-offs 0.3 /
+0.7 are provisional. Nothing about the gate has been measured on real data yet: the
+logic is covered by unit tests with fake search, a fake sufficiency check and a
+hand-made model.
+
+### Confidence signals (logged; the evidence gate's inputs)
 
 Every reranked retrieval (each Anchor attempt, and `/api/search/hybrid` with
 `rerank: true`) carries `signals` (lib/signals.js):
@@ -134,8 +186,9 @@ Cohere call), so the signals don't depend on `k`; the response still has the top
 `/api/ask` stores them per attempt in the `messages` collection as
 `attempts: [{ attempt, query, signals }]` with `bestAttempt` (`attempts` is empty for
 `dense`, plain `hybrid` and whole-document questions: no rerank, no scores). The eval
-runners store the same rows (see eval/README.md). The confidence check still uses
-`topScore` against `threshold` only. `CONFIDENCE_SIGNALS=false` turns all of this off.
+runners store the same rows (see eval/README.md). Unless the evidence gate is on, the
+confidence check uses `topScore` against `threshold` only. `CONFIDENCE_SIGNALS=false`
+turns all of this off, and with it the gate (it has nothing to read).
 
 ### Uploads and the embedding limits
 
@@ -160,8 +213,9 @@ tests with a fake client and clock only; no large upload has been run against Ge
 ### Ask (retrieval + answer)
 
 `POST /api/ask` with the retrieval parameters plus `mode` (`anchor` default, `dense`,
-`hybrid`), `chatId` (optional; generated if absent), and for anchor `weights`,
-`threshold`, `maxRetries`.
+`hybrid`), `chatId` (optional; generated if absent), `fusion` / `alpha`, and for anchor
+`weights`, `threshold`, `maxRetries`, `strict` and the gate options (`gate`, `gateLow`,
+`gateHigh`, `sufficiencyCheck`).
 
 ```jsonc
 {

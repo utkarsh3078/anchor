@@ -82,6 +82,34 @@ function Gauge({ score, threshold, strict, abstained }) {
   );
 }
 
+const ZONE_TEXT = {
+  high: 'high zone, so Anchor answered',
+  low: 'low zone, so Anchor did not accept the evidence',
+};
+
+// The evidence gate's verdict (server lib/gate.js): one probability from the confidence
+// signals, placed in a low / middle / high zone by two cut-offs
+function GateGauge({ gate, confident }) {
+  let verdict = ZONE_TEXT[gate.zone];
+  if (gate.zone === 'middle') {
+    if (gate.sufficient === true) verdict = 'middle zone; Gemini judged the passages sufficient, so Anchor answered';
+    else if (gate.sufficient === false) verdict = 'middle zone; Gemini judged the passages insufficient';
+    else verdict = 'middle zone, and the sufficiency check is off, so the evidence was not accepted';
+  }
+  return (
+    <div className="space-y-1 px-2">
+      <div className="relative h-3 rounded bg-slate-200">
+        <div className={`h-3 rounded ${confident ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: pct(gate.probability) }} />
+        <div className="absolute -top-1 h-5 w-0.5 bg-slate-500" style={{ left: pct(gate.low) }} title={`low cut-off ${gate.low}`} />
+        <div className="absolute -top-1 h-5 w-0.5 bg-slate-900" style={{ left: pct(gate.high) }} title={`high cut-off ${gate.high}`} />
+      </div>
+      <p className="text-xs text-slate-600">
+        Evidence gate probability <b>{gate.probability.toFixed(3)}</b> (cut-offs {gate.low} / {gate.high}): {verdict}
+      </p>
+    </div>
+  );
+}
+
 // Right panel: how the answer was produced, step by step
 export default function Trace({ message, onOpen }) {
   const data = message?.data;
@@ -167,7 +195,11 @@ export default function Trace({ message, onOpen }) {
       )}
 
       {trace.fused && (
-        <Step n={++step} title="Fusion (weighted RRF)" note="both lists merged by rank">
+        <Step
+          n={++step}
+          title={trace.fusion?.method === 'convex' ? `Fusion (convex, alpha ${trace.fusion.alpha})` : 'Fusion (weighted RRF)'}
+          note={trace.fusion?.method === 'convex' ? 'normalised scores merged' : 'both lists merged by rank'}
+        >
           {trace.fused.slice(0, TOP).map((f, i) => (
             <PassageRow
               key={f.id} rank={i + 1} passage={passage(f.id)} cited={citedAs.get(f.id)} onOpen={onOpen}
@@ -199,11 +231,23 @@ export default function Trace({ message, onOpen }) {
       )}
 
       {r.confidence && (
-        <Step n={++step} title="Confidence check">
-          <Gauge
-            score={r.confidence.topScore} threshold={r.confidence.threshold}
-            strict={data.strict} abstained={data.abstainReason === 'low_retrieval_confidence'}
-          />
+        <Step n={++step} title="Confidence check" note={r.confidence.gate?.used ? 'evidence gate' : 'fixed threshold'}>
+          {r.confidence.gate?.used && <GateGauge gate={r.confidence.gate} confident={r.confidence.confident} />}
+          {r.confidence.gate && !r.confidence.gate.used && (
+            <p className="px-2 text-xs text-amber-800">
+              The evidence gate is on but {r.confidence.gate.reason === 'no_coefficients' ? 'has no coefficients file' : 'got no confidence signals'}, so the threshold decided.
+            </p>
+          )}
+          {r.confidence.gate?.used ? (
+            <p className="px-2 text-xs text-slate-500">
+              Best rerank score {r.confidence.topScore.toFixed(3)} (one of the gate&apos;s inputs; the threshold {r.confidence.threshold} was not used).
+            </p>
+          ) : (
+            <Gauge
+              score={r.confidence.topScore} threshold={r.confidence.threshold}
+              strict={data.strict} abstained={data.abstainReason === 'low_retrieval_confidence'}
+            />
+          )}
         </Step>
       )}
 

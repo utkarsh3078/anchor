@@ -1,6 +1,6 @@
 import { embedQuery } from './embed.js';
 import { denseSearch, bm25Search, getKeywordIndex } from './retrievers.js';
-import { weightedRrf } from './fusion.js';
+import { weightedRrf, convexFusion } from './fusion.js';
 import { rerank } from './rerank.js';
 import { routeQuery } from './route.js';
 import { confidenceSignals, SIGNAL_RERANK_TOP } from './signals.js';
@@ -23,30 +23,38 @@ function tracePassages(...lists) {
 // BM25 + dense fused with weighted RRF (baseline 2), optionally followed by a Cohere
 // rerank of the top `candidates` fused hits. Returns the top k plus a trace of every stage.
 // weights: { keyword, dense } for static weights, or 'auto' to route per query.
+// fusion: 'rrf' (default: FUSION) or 'convex', which merges min-max normalised scores with
+// one fixed alpha (default: FUSION_ALPHA) and so uses neither `weights` nor routing.
 // rerankQuery lets a retry retrieve with a reformulated query but still be scored
 // against the user's original question. gemini = the request's Gemini context (key, models).
 // signals (default: CONFIDENCE_SIGNALS) adds the reranked result's confidence signals.
 // deps swaps the retrievers and reranker for fakes in tests.
 export async function hybridSearch(query, {
   k, docIds, candidates, weights, useRerank = false, rerankQuery = query, gemini,
-  signals = config.confidenceSignals,
+  signals = config.confidenceSignals, fusion = config.fusion.method, alpha = config.fusion.alpha,
 }, deps = {}) {
   const {
     embed = embedQuery, searchDense = denseSearch, searchKeyword = bm25Search,
     keywordIndex = getKeywordIndex, rerankHits = rerank,
   } = deps;
   const t0 = performance.now();
-  const routing = weights === 'auto' ? routeQuery(query, (await keywordIndex()).postings) : null;
-  const used = routing ? routing.weights : weights;
+  const convex = fusion === 'convex';
+  const routing = weights === 'auto' && !convex ? routeQuery(query, (await keywordIndex()).postings) : null;
+  // Reported the same way for both methods: the share given to each list
+  const used = convex ? { keyword: Math.round((1 - alpha) * 1e6) / 1e6, dense: alpha } : (routing ? routing.weights : weights);
 
   const [dense, keyword] = await Promise.all([
     timed(async () => searchDense(await embed(gemini, query), { k: candidates, docIds })),
     timed(() => searchKeyword(query, { k: candidates, docIds })),
   ]);
-  const fused = weightedRrf({ keyword: keyword.result, dense: dense.result }, used);
+  const lists = { keyword: keyword.result, dense: dense.result };
+  const fused = convex ? convexFusion(lists, alpha) : weightedRrf(lists, used);
 
   const timings = { denseMs: dense.ms, keywordMs: keyword.ms };
-  const trace = { routing, keyword: rankList(keyword.result), dense: rankList(dense.result) };
+  const trace = {
+    routing, fusion: convex ? { method: 'convex', alpha } : { method: 'rrf' },
+    keyword: rankList(keyword.result), dense: rankList(dense.result),
+  };
 
   if (!useRerank) {
     const top = fused.slice(0, k);
