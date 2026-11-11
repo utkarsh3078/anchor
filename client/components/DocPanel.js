@@ -1,19 +1,36 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { ClipboardPaste, FileText, Search, Upload, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import { plainError } from '@/lib/plain';
 
-// Document list: tick the documents a question should search, upload a file, paste
-// text, remove. onChangeKey (optional) lets a rejected key lead back to the setup screen.
-export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs, onChangeKey }) {
+const field =
+  'w-full rounded-control border border-border-strong bg-surface px-3 py-2 text-sm placeholder:text-muted';
+
+// The documents panel: tick the documents a question should search, find one by name,
+// upload a file, paste text, remove. onChangeKey (optional) lets a rejected key lead back
+// to the key screen. ref: { pickFile(), openPaste() } for the buttons elsewhere on the
+// screen that start an upload.
+export default function DocPanel({ ref, className = '', gemini, selectedIds, setSelectedIds, onDocs, onChangeKey }) {
   const [docs, setDocs] = useState(null); // null until the first load finishes
   const [busy, setBusy] = useState('');
   const [slow, setSlow] = useState(false); // the current upload has run for a while
   const [error, setError] = useState(null); // { text, changeKey, reload }
   const [pasteOpen, setPasteOpen] = useState(false);
   const [paste, setPaste] = useState({ name: '', text: '' });
+  const [filter, setFilter] = useState('');
   const fileInput = useRef(null);
+  const pasteName = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    pickFile: () => fileInput.current?.click(),
+    openPaste: () => setPasteOpen(true),
+  }), []);
+
+  useEffect(() => {
+    if (pasteOpen) pasteName.current?.focus();
+  }, [pasteOpen]);
 
   async function refresh(selectNewId) {
     const list = await api('/api/documents');
@@ -78,71 +95,32 @@ export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs, 
 
   const toggle = (id) => setSelectedIds((sel) => (sel.includes(id) ? sel.filter((x) => x !== id) : [...sel, id]));
   const list = docs ?? [];
+  const needle = filter.trim().toLowerCase();
+  const shown = needle ? list.filter((d) => d.docName.toLowerCase().includes(needle)) : list;
 
   return (
-    <section className="space-y-3">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Documents</h2>
-
-      {docs === null && !error && <p className="text-sm text-slate-500">Loading your documents…</p>}
-      {docs !== null && list.length === 0 && (
-        <p className="text-sm text-slate-600">No documents yet. Upload a PDF or text file to start.</p>
-      )}
-
-      {list.length > 0 && (
-        <>
-          <ul className="space-y-1">
-            {list.map((d) => (
-              <li key={d.docId} className="flex items-center gap-2 rounded px-1 py-1 text-sm hover:bg-slate-50">
-                <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2">
-                  <input type="checkbox" checked={selectedIds.includes(d.docId)} onChange={() => toggle(d.docId)} />
-                  <span className="truncate" title={d.docName}>{d.docName}</span>
-                </label>
-                <span className="shrink-0 text-xs text-slate-400">{d.pages} {d.pages === 1 ? 'page' : 'pages'}</span>
-                <button
-                  onClick={() => remove(d)} disabled={!!busy} aria-label={`Remove ${d.docName}`} title="Remove"
-                  className="shrink-0 px-1 text-xs text-slate-400 hover:text-red-600 disabled:opacity-40"
-                >
-                  ✕
-                </button>
-              </li>
-            ))}
-          </ul>
-          <p className="text-xs text-slate-500">Questions look only in the ticked documents.</p>
-        </>
-      )}
-
-      <button
-        disabled={!!busy} onClick={() => fileInput.current?.click()}
-        className="w-full rounded bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-      >
-        Upload a document
-      </button>
-      <input
-        ref={fileInput}
-        type="file"
-        accept=".pdf,.txt,.md"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          e.target.value = '';
-          if (file) upload(file);
-        }}
-      />
-      <p className="text-xs text-slate-500">
-        PDF, .txt or .md, up to 25 MB.{' '}
-        <button disabled={!!busy} onClick={() => setPasteOpen((o) => !o)} className="underline disabled:opacity-50">
-          {pasteOpen ? 'Cancel pasting' : 'Or paste text instead'}
+    <section className={`flex flex-col ${className}`} aria-labelledby="docs-title">
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="docs-title" className="text-2xl font-semibold tracking-tight">Documents</h2>
+        <button
+          type="button" disabled={!!busy} onClick={() => setPasteOpen((o) => !o)}
+          aria-expanded={pasteOpen} aria-label={pasteOpen ? 'Cancel pasting' : 'Paste text instead of a file'}
+          title={pasteOpen ? 'Cancel pasting' : 'Paste text instead of a file'}
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-2 text-muted transition-colors duration-200 hover:text-fg disabled:opacity-50"
+        >
+          {pasteOpen ? <X className="size-[18px]" aria-hidden /> : <ClipboardPaste className="size-[18px]" aria-hidden />}
         </button>
-      </p>
+      </div>
 
       {pasteOpen && (
-        <div className="space-y-2">
+        <div className="mt-4 space-y-2 rounded-card border border-border bg-surface-2/60 p-3">
           <input
+            ref={pasteName}
             value={paste.name}
             onChange={(e) => setPaste((p) => ({ ...p, name: e.target.value }))}
             placeholder="A name, e.g. Lecture notes"
             aria-label="Name for the pasted text"
-            className="w-full rounded border border-slate-300 px-2 py-1 text-sm"
+            className={field}
           />
           <textarea
             value={paste.text}
@@ -150,36 +128,107 @@ export default function DocPanel({ gemini, selectedIds, setSelectedIds, onDocs, 
             rows={5}
             placeholder="Paste your text here…"
             aria-label="Text to add"
-            className="w-full rounded border border-slate-300 px-2 py-1 text-sm"
+            className={field}
           />
           <button
+            type="button"
             disabled={!!busy || !paste.name.trim() || !paste.text.trim()}
             onClick={submitPaste}
-            className="w-full rounded border border-slate-300 px-2 py-1 text-sm disabled:opacity-50"
+            className="h-10 w-full rounded-full border border-border-strong bg-surface text-sm font-medium transition-colors duration-200 hover:bg-surface-2 disabled:opacity-50"
           >
             Add this text
           </button>
         </div>
       )}
 
-      {busy && (
-        <p className="flex items-center gap-2 text-xs text-slate-600" role="status">
-          <span className="inline-block h-3 w-3 shrink-0 rounded-full border-2 border-slate-300 border-t-slate-700 motion-safe:animate-spin" />
-          <span className="min-w-0 break-words">
-            {busy}{' '}
-            {slow
-              ? "Still reading. Large documents are read in steps to stay within your Gemini key's free per-minute limit, so this can take a few minutes."
-              : 'Longer documents take more time.'}
-          </span>
-        </p>
+      {list.length > 1 && (
+        <label className="relative mt-4 block">
+          <span className="sr-only">Find a document by name</span>
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
+          <input
+            type="search" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Search…"
+            className="h-11 w-full rounded-full border border-border-strong bg-surface pl-10 pr-4 text-sm placeholder:text-muted"
+          />
+        </label>
       )}
-      {error && (
-        <div className="rounded border border-red-200 bg-red-50 p-2 text-xs text-red-800" role="alert">
-          <p>{error.text}</p>
-          {error.reload && <button onClick={load} className="mt-1 underline">Try again</button>}
-          {error.changeKey && onChangeKey && <button onClick={onChangeKey} className="mt-1 underline">Enter key again</button>}
-        </div>
-      )}
+
+      <div className="-mx-1 mt-3 min-h-0 flex-1 overflow-y-auto px-1">
+        {docs === null && !error && <p className="py-2 text-sm text-muted">Loading your documents…</p>}
+        {docs !== null && list.length === 0 && (
+          <div className="flex flex-col items-center rounded-card border border-dashed border-border-strong px-4 py-8 text-center">
+            <FileText className="size-6 text-subtle" aria-hidden />
+            <p className="mt-2 font-medium">No documents yet</p>
+            <p className="mt-1 text-sm text-muted">Upload a PDF or a text file to start.</p>
+          </div>
+        )}
+        {list.length > 0 && shown.length === 0 && <p className="py-2 text-sm text-muted">No document has “{filter.trim()}” in its name.</p>}
+
+        {shown.length > 0 && (
+          <ul className="divide-y divide-border">
+            {shown.map((d) => (
+              <li key={d.docId} className="group flex items-start gap-1 py-3">
+                <label className="flex min-w-0 flex-1 cursor-pointer items-start gap-3">
+                  <input
+                    type="checkbox" checked={selectedIds.includes(d.docId)} onChange={() => toggle(d.docId)}
+                    className="mt-0.5 size-[18px] shrink-0 accent-primary"
+                  />
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium leading-snug" title={d.docName}>{d.docName}</span>
+                    <span className="block text-sm text-muted">{d.pages} {d.pages === 1 ? 'page' : 'pages'}</span>
+                  </span>
+                </label>
+                <button
+                  type="button" onClick={() => remove(d)} disabled={!!busy} aria-label={`Remove ${d.docName}`} title="Remove"
+                  className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-subtle transition-colors duration-200 hover:bg-danger-soft hover:text-danger-fg disabled:opacity-40"
+                >
+                  <X className="size-4" aria-hidden />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {list.length > 0 && <p className="pb-1 pt-2 text-xs text-muted">Questions look only in the ticked documents.</p>}
+      </div>
+
+      <div className="mt-3 space-y-3">
+        {busy && (
+          <p className="flex items-start gap-2 text-xs text-muted" role="status">
+            <span className="mt-0.5 inline-block size-3 shrink-0 rounded-full border-2 border-border-strong border-t-fg motion-safe:animate-spin" />
+            <span className="min-w-0 break-words">
+              {busy}{' '}
+              {slow
+                ? "Still reading. Large documents are read in steps to stay within your Gemini key's free per-minute limit, so this can take a few minutes."
+                : 'Longer documents take more time.'}
+            </span>
+          </p>
+        )}
+        {error && (
+          <div className="rounded-control border border-danger/25 bg-danger-soft p-3 text-xs text-danger-fg" role="alert">
+            <p>{error.text}</p>
+            {error.reload && <button type="button" onClick={load} className="mt-1 font-medium underline underline-offset-2">Try again</button>}
+            {error.changeKey && onChangeKey && <button type="button" onClick={onChangeKey} className="mt-1 font-medium underline underline-offset-2">Enter key again</button>}
+          </div>
+        )}
+
+        <button
+          type="button" disabled={!!busy} onClick={() => fileInput.current?.click()}
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary font-medium text-primary-fg shadow-ink transition-[background-color,transform] duration-200 ease-out hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50"
+        >
+          <Upload className="size-4" aria-hidden /> Upload a document
+        </button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".pdf,.txt,.md"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = '';
+            if (file) upload(file);
+          }}
+        />
+        <p className="text-center text-xs text-muted">PDF, .txt or .md, up to 25 MB</p>
+      </div>
     </section>
   );
 }

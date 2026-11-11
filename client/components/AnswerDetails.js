@@ -8,16 +8,16 @@ const ABSTAIN_REASONS = {
   no_passages: 'nothing was retrieved from the selected documents',
 };
 
-// "Retrieval details" under an answer, shown only when turned on under Advanced: the
+// "Retrieval details" under an answer, shown only when turned on in Settings: the
 // same step-by-step trace as the classic view (scores, weights, confidence, retries).
 export default function AnswerDetails({ data, query, onOpenSource }) {
   return (
     <details className="mt-2 text-sm">
-      <summary className="w-fit cursor-pointer select-none text-slate-600 underline-offset-2 hover:underline">
+      <summary className="w-fit cursor-pointer select-none text-muted underline-offset-4 hover:underline">
         Retrieval details
       </summary>
-      <div className="mt-2 rounded border border-slate-200">
-        <p className="border-b border-slate-200 px-3 py-2 text-xs text-slate-600">
+      <div className="mt-2 rounded-control border border-border">
+        <p className="border-b border-border px-3 py-2 text-xs text-muted">
           {data.model && <>Model <b>{data.model}</b>{data.cached ? ' (cached answer)' : ''}</>}
           {data.abstained && <> · Abstained: {ABSTAIN_REASONS[data.abstainReason] ?? data.abstainReason}</>}
           {data.lowConfidence && <> · Answered below the confidence threshold</>}

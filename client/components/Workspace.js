@@ -1,19 +1,26 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import { pickDefaultModel } from '@/lib/models';
 import { askBody, loadPrefs, savePrefs } from '@/lib/settings';
+import Shell from './ui/Shell';
+import Sidebar from './Sidebar';
 import DocPanel from './DocPanel';
-import Advanced from './Advanced';
+import SettingsView from './SettingsView';
 import Usage from './Usage';
 import Chat from './Chat';
 import SourceDrawer from './SourceDrawer';
 
-// The main screen: documents on the left, chat on the right
+const isWide = () => window.matchMedia('(min-width: 1280px)').matches; // Tailwind's xl: documents beside the chat
+
+// The main screen, three parts inside one shell: the rail (screens, key), the current
+// screen (ask / settings / key usage), and the documents. Below xl the documents are a
+// screen of their own; below lg the rail becomes a row of tabs.
 export default function Workspace({ session, onLogout }) {
+  const [view, setView] = useState('ask'); // 'ask' | 'docs' | 'settings' | 'usage'
   const [choice, setChoice] = useState({ model: pickDefaultModel(session), rewriteModel: '' });
-  // Retrieval settings and "show retrieval details" (under Advanced), remembered per browser
+  // Retrieval settings and "show retrieval details" (Settings screen), remembered per browser
   const [prefs, setPrefs] = useState(loadPrefs);
   useEffect(() => savePrefs(prefs), [prefs]);
   const setSettings = (next) => setPrefs((p) => ({ ...p, settings: typeof next === 'function' ? next(p.settings) : next }));
@@ -24,8 +31,9 @@ export default function Workspace({ session, onLogout }) {
   const [chatId, setChatId] = useState(null);
   const [asking, setAsking] = useState(false);
   const [source, setSource] = useState(null); // passage open in the drawer
-  const [usageKey, setUsageKey] = useState(0); // bumped after anything that uses the key, to refresh the Usage panel
+  const [usageKey, setUsageKey] = useState(0); // bumped after anything that uses the key, to refresh the usage screen
   const usageChanged = useCallback(() => setUsageKey((n) => n + 1), []);
+  const docPanel = useRef(null); // { pickFile, openPaste }
 
   const closeSource = useCallback(() => setSource(null), []);
   const searched = docs.filter((d) => selectedIds.includes(d.docId)).map((d) => d.docName);
@@ -64,30 +72,23 @@ export default function Workspace({ session, onLogout }) {
     setSource(null);
   }
 
+  // Uploading and pasting live in the documents panel; when that panel is a screen of
+  // its own, go there to show the progress
+  const toDocs = (action) => () => {
+    docPanel.current?.[action]();
+    if (!isWide()) setView('docs');
+  };
+
+  const screen = 'min-h-0 min-w-0 flex-1 flex-col';
   return (
-    <div className="flex h-full flex-col md:flex-row">
-      <aside className="flex max-h-[45%] shrink-0 flex-col gap-5 overflow-y-auto border-b border-slate-200 bg-white p-4 md:max-h-none md:w-72 md:border-b-0 md:border-r">
-        <h1 className="text-lg font-semibold">Anchor</h1>
-        <DocPanel
-          gemini={{ key: session.key }} selectedIds={selectedIds} setSelectedIds={setSelectedIds}
-          onDocs={(list) => { setDocs(list); usageChanged(); }} onChangeKey={onLogout}
-        />
-        <div className="md:mt-auto">
-          <Advanced
-            models={session.models} choice={choice} setChoice={setChoice}
-            settings={prefs.settings} setSettings={setSettings}
-            showDetails={prefs.showDetails} setShowDetails={setShowDetails} onChangeKey={onLogout}
-          />
-          <details open className="mt-3 rounded border border-slate-200 px-3 py-2 text-sm">
-            <summary className="cursor-pointer select-none text-slate-600">API usage and limits</summary>
-            <div className="pb-1 pt-3">
-              <Usage gemini={{ key: session.key, model: choice.model }} refreshKey={usageKey} />
-            </div>
-          </details>
-        </div>
-      </aside>
+    <Shell className="mx-auto flex h-full max-w-[1560px] flex-col overflow-hidden lg:flex-row">
+      <Sidebar
+        view={view} setView={setView} tickedCount={selectedIds.length}
+        keyTail={session.key.slice(-4)} onChangeKey={onLogout}
+      />
 
       <Chat
+        className={`${screen} ${view === 'ask' ? 'flex' : view === 'docs' ? 'hidden xl:flex' : 'hidden'}`}
         messages={messages}
         asking={asking}
         docCount={docs.length}
@@ -99,11 +100,47 @@ export default function Workspace({ session, onLogout }) {
         onNewChat={newChat}
         onRetry={(failed) => ask(failed.query, { failed })}
         onSwitchModel={switchModel}
+        onModel={(model) => setChoice((c) => ({ ...c, model }))}
         onChangeKey={onLogout}
         onOpenSource={setSource}
+        onAttach={toDocs('pickFile')}
+        onPaste={toDocs('openPaste')}
+        onOpenSettings={() => setView('settings')}
       />
 
+      {view === 'settings' && (
+        <SettingsView
+          className={`flex ${screen}`}
+          models={session.models} choice={choice} setChoice={setChoice}
+          settings={prefs.settings} setSettings={setSettings}
+          showDetails={prefs.showDetails} setShowDetails={setShowDetails} onChangeKey={onLogout}
+        />
+      )}
+
+      {view === 'usage' && (
+        <main className={`flex ${screen} overflow-y-auto px-4 py-6 sm:px-8 lg:py-10`}>
+          <div className="mx-auto w-full max-w-2xl">
+            <h1 className="text-3xl font-semibold tracking-tight">Key usage</h1>
+            <p className="mt-1.5 text-muted">What your Gemini key has used through Anchor, next to its free limits.</p>
+            <div className="mt-6 rounded-card border border-border bg-surface p-5 shadow-soft sm:p-6">
+              <Usage gemini={{ key: session.key, model: choice.model }} refreshKey={usageKey} />
+            </div>
+          </div>
+        </main>
+      )}
+
+      {/* Always mounted (it owns the list and the upload); a screen of its own below xl */}
+      <aside
+        className={`${view === 'docs' ? 'flex' : 'hidden'} min-h-0 flex-1 flex-col bg-surface p-4 sm:p-5 lg:m-3 lg:rounded-panel lg:shadow-soft xl:flex xl:w-[340px] xl:flex-none 2xl:w-[380px]`}
+      >
+        <DocPanel
+          ref={docPanel} className="min-h-0 flex-1"
+          gemini={{ key: session.key }} selectedIds={selectedIds} setSelectedIds={setSelectedIds}
+          onDocs={(list) => { setDocs(list); usageChanged(); }} onChangeKey={onLogout}
+        />
+      </aside>
+
       <SourceDrawer source={source} onClose={closeSource} />
-    </div>
+    </Shell>
   );
 }

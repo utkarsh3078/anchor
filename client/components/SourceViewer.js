@@ -103,12 +103,12 @@ function PdfPage({ file, pageNumber, passage, onPageCount }) {
 
 function TextDoc({ text, passage }) {
   const at = passage ? text.toLowerCase().indexOf(passage.slice(0, 80).toLowerCase()) : -1;
-  if (at < 0) return <pre className="whitespace-pre-wrap text-sm">{text}</pre>;
+  if (at < 0) return <pre className="whitespace-pre-wrap font-sans text-sm">{text}</pre>;
   const end = Math.min(text.length, at + passage.length);
   return (
-    <pre className="whitespace-pre-wrap text-sm">
+    <pre className="whitespace-pre-wrap font-sans text-sm">
       {text.slice(0, at)}
-      <mark ref={(el) => el?.scrollIntoView({ block: 'center' })} className="bg-yellow-200">{text.slice(at, end)}</mark>
+      <mark ref={(el) => el?.scrollIntoView({ block: 'center' })} className="rounded-sm bg-highlight text-fg">{text.slice(at, end)}</mark>
       {text.slice(end)}
     </pre>
   );
@@ -135,36 +135,36 @@ export default function SourceViewer({ source }) {
     return () => { cancelled = true; };
   }, [docId]);
 
-  if (!source) return <p className="p-4 text-sm text-slate-500">Click a citation or a passage in the trace to open its source here.</p>;
+  if (!source) return <p className="p-4 text-sm text-muted">Click a citation or a passage in the trace to open its source here.</p>;
 
   const onCitedPage = page === source.page;
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-slate-200 px-3 py-2 text-sm">
+      <div className="flex items-center gap-2 border-b border-border px-4 py-2 text-sm">
         <span className="flex-1 truncate font-medium" title={source.docName}>{source.docName}</span>
         {file?.kind === 'pdf' && (
           <>
-            <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="rounded border px-2 disabled:opacity-40">‹</button>
+            <button type="button" aria-label="Previous page" disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="size-8 rounded-full border border-border-strong hover:bg-surface-2 disabled:opacity-40">‹</button>
             <span className="text-xs tabular-nums">p. {page}{pageCount ? ` / ${pageCount}` : ''}</span>
-            <button disabled={pageCount != null && page >= pageCount} onClick={() => setPage((p) => p + 1)} className="rounded border px-2 disabled:opacity-40">›</button>
+            <button type="button" aria-label="Next page" disabled={pageCount != null && page >= pageCount} onClick={() => setPage((p) => p + 1)} className="size-8 rounded-full border border-border-strong hover:bg-surface-2 disabled:opacity-40">›</button>
           </>
         )}
-        <a href={`${API_URL}/api/documents/${docId}/file#page=${page}`} target="_blank" rel="noreferrer" className="text-xs underline">Open</a>
+        <a href={`${API_URL}/api/documents/${docId}/file#page=${page}`} target="_blank" rel="noreferrer" className="text-xs font-medium text-accent underline underline-offset-2">Open</a>
       </div>
       {file?.kind === 'pdf' && !onCitedPage && (
-        <button onClick={() => setPage(source.page)} className="bg-blue-50 px-3 py-1 text-left text-xs text-blue-800">
+        <button type="button" onClick={() => setPage(source.page)} className="bg-accent-soft px-4 py-1.5 text-left text-xs text-accent-soft-fg">
           Back to the cited passage on p. {source.page}
         </button>
       )}
-      <div data-scroll className="flex-1 overflow-y-auto bg-slate-100 p-3">
+      <div data-scroll className="flex-1 overflow-y-auto bg-surface-2 p-3">
         {error && (
           <div className="space-y-2 text-sm">
-            <p className="text-red-700">{error}</p>
-            <p className="text-xs text-slate-500">Passage text (p. {source.page}):</p>
-            <blockquote className="whitespace-pre-wrap border-l-4 border-yellow-300 bg-white p-3">{source.text}</blockquote>
+            <p className="text-danger-fg">{error}</p>
+            <p className="text-xs text-muted">Passage text (p. {source.page}):</p>
+            <blockquote className="whitespace-pre-wrap rounded-r-control border-l-4 border-highlight bg-surface p-3">{source.text}</blockquote>
           </div>
         )}
-        {!error && !file && <p className="text-sm text-slate-500">Loading document…</p>}
+        {!error && !file && <p className="text-sm text-muted">Loading document…</p>}
         {file?.kind === 'pdf' && (
           <PdfPage file={file} pageNumber={page} passage={onCitedPage ? source.text : null} onPageCount={setPageCount} />
         )}

@@ -15,7 +15,7 @@ function Inline({ text, onCite, citeTitle }) {
               key={n}
               onClick={() => onCite(Number(n))}
               title={citeTitle?.(Number(n)) ?? 'Open the source passage'}
-              className="rounded bg-blue-100 px-1.5 font-sans text-[11px] font-medium leading-5 text-blue-800 hover:bg-blue-200"
+              className="rounded-full bg-accent-soft px-2 font-sans text-[11px] font-semibold leading-5 text-accent-soft-fg transition-colors duration-200 hover:bg-accent hover:text-accent-fg"
             >
               {n.trim()}
             </button>
@@ -63,7 +63,7 @@ export default function Markdown({ text, onCite, citeTitle }) {
   return (
     <div className="space-y-2">
       {blocks.map((b, i) => {
-        if (b.type === 'h') return <h4 key={i} className="pt-1 font-sans text-sm font-semibold uppercase tracking-wide text-slate-700">{b.text}</h4>;
+        if (b.type === 'h') return <h4 key={i} className="pt-1 font-sans text-sm font-semibold uppercase tracking-wide text-muted">{b.text}</h4>;
         if (b.type === 'p') return <p key={i}><Inline text={b.text} onCite={onCite} citeTitle={citeTitle} /></p>;
         const List = b.type;
         return (

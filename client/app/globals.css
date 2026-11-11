@@ -1,10 +1,291 @@
 @import "tailwindcss";
 
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+/* Design tokens. Components use only these names (bg-surface, text-muted, rounded-card…),
+   so dark mode is a change of variables, not a second set of classes.
+   Look: a soft grey-blue to peach page, one translucent "shell" holding each screen,
+   white cards, ink-black pill buttons, and an iridescent accent (the spark, icons).
+   Theme: follows the system unless the toggle set <html data-theme="light|dark">.
+   [data-theme="light"] on any element forces the light tokens for that subtree. */
+:root,
+[data-theme="light"] {
+  --bg: #e9e4e1;            /* solid fallback behind the page gradient */
+  --page:
+    radial-gradient(120% 90% at 100% 100%, #f0916f 0%, transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, #edc4af 0%, transparent 60%),
+    linear-gradient(180deg, #c8cfd7 0%, #d9d6d8 45%, #e9c8b7 100%);
+  --shell: rgb(250 249 248 / 0.8);
+  --shell-border: rgb(255 255 255 / 0.7);
+  --surface: #ffffff;
+  --surface-2: #f1efed;
+  --fg: #121316;
+  --muted: #5a5b62;         /* 5.4:1 on the shell at its darkest (over the coral corner) */
+  --subtle: #8c8d94;        /* decorative only (icons, dividers), not body text */
+  --border: rgb(18 19 22 / 0.09);
+  --border-strong: rgb(18 19 22 / 0.2);
+  --primary: #121316;       /* buttons, the visitor's own messages */
+  --primary-hover: #2c2d33;
+  --primary-fg: #ffffff;
+  --accent: #ad4526;        /* links and small highlights; 5.6:1 on white */
+  --accent-hover: #8e3519;
+  --accent-fg: #ffffff;
+  --accent-soft: #fde8de;
+  --accent-soft-fg: #7a2f16;
+  --steel-1: #66717e;       /* the key card in the sidebar; white text 5:1 or better */
+  --steel-2: #525c68;
+  --highlight: #fbe3a1;
+  --ok: #1c8a4c;
+  --ok-soft: #dcf3e4;
+  --ok-fg: #115430;
+  --warn: #c27706;
+  --warn-soft: #fbf1dc;
+  --warn-fg: #7a4f0a;
+  --danger: #c93a2b;
+  --danger-soft: #fbe9e7;
+  --danger-fg: #9a2b1f;
+  --kw: #b45309;            /* keyword channel in the retrieval trace */
+  --kw-soft: #fdecc8;
+  --kw-fg: #713f12;
+  --sem: #4f46e5;           /* semantic channel in the retrieval trace */
+  --sem-soft: #e0e7ff;
+  --sem-fg: #312e81;
+  --iris-1: #f08a5d;
+  --iris-2: #dc6fa6;
+  --iris-3: #8d7be0;
+  --iris-4: #5c9fe6;
+  --ring: #ad4526;
+  --shadow-color: 60 40 30;
+  color-scheme: light;
 }
 
-/* Indeterminate progress bar in the "thinking" card */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171b;
+    --page:
+      radial-gradient(120% 90% at 100% 100%, #6e3725 0%, transparent 55%),
+      radial-gradient(90% 70% at 0% 100%, #3b2a2b 0%, transparent 60%),
+      linear-gradient(180deg, #14171c 0%, #1a1b20 50%, #261d1d 100%);
+    --shell: rgb(23 24 28 / 0.8);
+    --shell-border: rgb(255 255 255 / 0.08);
+    --surface: #1f2126;
+    --surface-2: #2a2c32;
+    --fg: #f2f1ef;
+    --muted: #adaeb5;
+    --subtle: #7b7c84;
+    --border: rgb(255 255 255 / 0.09);
+    --border-strong: rgb(255 255 255 / 0.2);
+    --primary: #f4f3f1;
+    --primary-hover: #ffffff;
+    --primary-fg: #121316;
+    --accent: #f2a584;
+    --accent-hover: #f7bfa6;
+    --accent-fg: #2b1109;
+    --accent-soft: #3d241b;
+    --accent-soft-fg: #f6c6b0;
+    --steel-1: #343a43;
+    --steel-2: #272c33;
+    --highlight: #6a531c;
+    --ok: #4cc38a;
+    --ok-soft: #173326;
+    --ok-fg: #a6e6c4;
+    --warn: #e0a23a;
+    --warn-soft: #3a2f17;
+    --warn-fg: #f0cf8a;
+    --danger: #ef7d6f;
+    --danger-soft: #3d221e;
+    --danger-fg: #f3aba1;
+    --kw: #b45309;
+    --kw-soft: #3d2a10;
+    --kw-fg: #f5cf8e;
+    --sem: #4f46e5;
+    --sem-soft: #25264d;
+    --sem-fg: #c3c8fb;
+    --iris-1: #f7a57e;
+    --iris-2: #ec8fbb;
+    --iris-3: #ab9cf0;
+    --iris-4: #84b8f2;
+    --ring: #f2a584;
+    --shadow-color: 0 0 0;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #15171b;
+  --page:
+    radial-gradient(120% 90% at 100% 100%, #6e3725 0%, transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, #3b2a2b 0%, transparent 60%),
+    linear-gradient(180deg, #14171c 0%, #1a1b20 50%, #261d1d 100%);
+  --shell: rgb(23 24 28 / 0.8);
+  --shell-border: rgb(255 255 255 / 0.08);
+  --surface: #1f2126;
+  --surface-2: #2a2c32;
+  --fg: #f2f1ef;
+  --muted: #adaeb5;
+  --subtle: #7b7c84;
+  --border: rgb(255 255 255 / 0.09);
+  --border-strong: rgb(255 255 255 / 0.2);
+  --primary: #f4f3f1;
+  --primary-hover: #ffffff;
+  --primary-fg: #121316;
+  --accent: #f2a584;
+  --accent-hover: #f7bfa6;
+  --accent-fg: #2b1109;
+  --accent-soft: #3d241b;
+  --accent-soft-fg: #f6c6b0;
+  --steel-1: #343a43;
+  --steel-2: #272c33;
+  --highlight: #6a531c;
+  --ok: #4cc38a;
+  --ok-soft: #173326;
+  --ok-fg: #a6e6c4;
+  --warn: #e0a23a;
+  --warn-soft: #3a2f17;
+  --warn-fg: #f0cf8a;
+  --danger: #ef7d6f;
+  --danger-soft: #3d221e;
+  --danger-fg: #f3aba1;
+  --kw: #b45309;
+  --kw-soft: #3d2a10;
+  --kw-fg: #f5cf8e;
+  --sem: #4f46e5;
+  --sem-soft: #25264d;
+  --sem-fg: #c3c8fb;
+  --iris-1: #f7a57e;
+  --iris-2: #ec8fbb;
+  --iris-3: #ab9cf0;
+  --iris-4: #84b8f2;
+  --ring: #f2a584;
+  --shadow-color: 0 0 0;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-shell: var(--shell);
+  --color-shell-border: var(--shell-border);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-fg: var(--accent-soft-fg);
+  --color-steel-1: var(--steel-1);
+  --color-steel-2: var(--steel-2);
+  --color-highlight: var(--highlight);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-ok-fg: var(--ok-fg);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-fg: var(--warn-fg);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-fg: var(--danger-fg);
+  --color-kw: var(--kw);
+  --color-kw-soft: var(--kw-soft);
+  --color-kw-fg: var(--kw-fg);
+  --color-sem: var(--sem);
+  --color-sem-soft: var(--sem-soft);
+  --color-sem-fg: var(--sem-fg);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+
+  --radius-control: 12px;
+  --radius-bubble: 20px;
+  --radius-card: 22px;
+  --radius-panel: 28px;
+  --radius-shell: 34px;
+
+  --shadow-soft: 0 1px 2px rgb(var(--shadow-color) / 0.04), 0 6px 20px rgb(var(--shadow-color) / 0.06);
+  --shadow-lift: 0 2px 6px rgb(var(--shadow-color) / 0.06), 0 18px 44px rgb(var(--shadow-color) / 0.12);
+  --shadow-shell: 0 30px 80px rgb(var(--shadow-color) / 0.2);
+  /* the ink pill: a faint top highlight and a soft drop */
+  --shadow-ink: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 6px 16px rgb(var(--shadow-color) / 0.22);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    background: var(--bg);
+  }
+  body {
+    color: var(--fg);
+  }
+  /* The page gradient, fixed behind everything (a pseudo-element because
+     background-attachment: fixed is unreliable on phones) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--page);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--accent-soft-fg);
+  }
+  button, summary, select, label[for] {
+    cursor: pointer;
+  }
+  button:disabled, select:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* The spark (components/ui/Spark.js): petals breathe, rays turn slowly */
+@keyframes spark-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+@keyframes spark-turn {
+  0%, 100% { transform: rotate(45deg) scale(1); opacity: 0.7; }
+  50% { transform: rotate(57deg) scale(0.92); opacity: 0.45; }
+}
+/* The spark's viewBox is centred on 0,0, so that is the point to turn and scale around
+   (with view-box, "center" would be the middle of a box that starts at 0,0) */
+.spark-petals, .spark-rays {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+.spark-petals { animation: spark-breathe 7s ease-in-out infinite; }
+.spark-rays { transform: rotate(45deg); animation: spark-turn 7s ease-in-out infinite; }
+/* While Anchor is working on an answer */
+.spark-busy .spark-petals { animation-duration: 1.6s; }
+.spark-busy .spark-rays { animation-duration: 1.6s; }
+
+/* Non-essential motion off for people who ask for less */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+/* Indeterminate progress bar in the classic "thinking" card */
 @keyframes anchor-slide {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(300%); }
