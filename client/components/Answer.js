@@ -1,5 +1,6 @@
 'use client';
 
+import { Layers, TriangleAlert } from 'lucide-react';
 import Markdown from './Markdown';
 import AnswerDetails from './AnswerDetails';
 import { abstainText, citedPages } from '@/lib/plain';
@@ -18,7 +19,7 @@ export default function Answer({ data, query, docCount, showDetails, onOpenSourc
   if (data.abstained) {
     return (
       <div className={box}>
-        <p className="font-serif text-[17px] leading-relaxed">{abstainText(docCount)}</p>
+        <p className="text-base font-medium leading-7">{abstainText(docCount)}</p>
         <p className="mt-1 text-sm text-muted">
           Try asking in different words, or check that the right document is ticked.
         </p>
@@ -42,22 +43,24 @@ export default function Answer({ data, query, docCount, showDetails, onOpenSourc
   return (
     <div className={box}>
       {data.lowConfidence && (
-        <p className="mb-3 rounded-control bg-warn-soft px-3 py-2 text-sm text-warn-fg">
+        <p className="mb-4 flex items-start gap-2 rounded-control bg-warn-soft px-3 py-2 text-sm text-warn-fg">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           I'm less sure about this answer. Please check it against the pages below.
         </p>
       )}
       {data.overview && (
-        <p className="mb-3 rounded-control bg-surface-2 px-3 py-2 text-sm text-muted">
-          This is a summary built from parts taken from across {docCount > 1 ? 'your documents' : 'your document'}.
+        <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-muted">
+          <Layers className="size-3.5 shrink-0" aria-hidden />
+          A summary built from parts taken from across {docCount > 1 ? 'your documents' : 'your document'}
         </p>
       )}
 
-      <div className="font-serif text-[17px] leading-relaxed">
+      <div className="text-base leading-7">
         <Markdown text={data.answer} onCite={open} citeTitle={citeTitle} />
       </div>
 
       {pages.length > 0 && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3 text-sm">
+        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-4 text-sm">
           <span className="text-muted">{multiDoc ? 'From' : `From ${pages[0].docName}:`}</span>
           {pages.map((p) => (
             <button key={`${p.docName}-${p.page}`} onClick={() => onOpenSource(p.first)} className={chip} title="Open this page">

@@ -95,8 +95,8 @@ export default function HeroIllustration() {
         transition={t(fade(0.54))}
       >
         <rect x="196" y="252" width="224" height="80" rx="14" className="fill-surface stroke-border" strokeWidth="1.5" style={{ filter: 'drop-shadow(0 6px 16px rgb(0 0 0 / 0.08))' }} />
-        <text x="214" y="279" className="fill-fg font-serif" fontSize="15">The final exam is on</text>
-        <text x="214" y="298" className="fill-fg font-serif" fontSize="15">Monday, 14 May.</text>
+        <text x="214" y="279" className="fill-fg font-sans" fontSize="14.5">The final exam is on</text>
+        <text x="214" y="298" className="fill-fg font-sans" fontSize="14.5" fontWeight="600">Monday, 14 May.</text>
         <motion.g
           animate={pick({ opacity: SHOW, scale: [0.7, 0.7, 1, 1, 1, 0.7] })}
           transition={t(fade(0.62))}

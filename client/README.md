@@ -38,7 +38,10 @@ Three parts inside the shell (`components/Workspace.js`):
    they are Upload / Paste text / How it works; otherwise they start a question in the box
    (Summarise, List the topics, Find a detail) without sending it, because every question
    uses the visitor's quota. The question box has Attach (upload), the answer-model picker
-   and Settings. Answers (Markdown) carry numbered citations and a line of page chips;
+   and Settings. Answers are rendered from the model's Markdown (`lib/markdown.js` parses,
+   `components/Markdown.js` draws): sentence-case headings, bullets with one level of
+   nesting, and citations as small raised marks placed after the sentence's punctuation
+   ("…14 May [1]." is shown as "…14 May.¹"), plus a line of page chips;
    clicking either opens that page in a drawer with the passage highlighted (pdf.js). "Why
    this answer?" under each answer is closed by default and lists the supporting passages.
 3. **Documents** (`DocPanel`, right from 1280 px; a screen of its own below that): tick the
@@ -76,7 +79,8 @@ fixed light colours whatever the theme (`data-theme="light"` on its wrapper).
 ## Tests
 
 ```bash
-npm test    # node --test: plain-words errors, page grouping, default model, settings
+npm test    # node --test: plain-words errors, page grouping, default model, settings,
+            # usage rows, answer Markdown parsing
 ```
 
 ## Files
@@ -87,6 +91,7 @@ npm test    # node --test: plain-words errors, page grouping, default model, set
 - `lib/api.js`: fetch wrapper that adds the `X-Gemini-*` headers and turns server errors
   (`{ error, message }`) into `ApiError`
 - `lib/plain.js`: abstention sentence, error code -> plain sentence, citations -> pages
+- `lib/markdown.js`: answer text -> blocks and inline tokens (citations grouped, punctuation moved in front of them)
 - `lib/models.js`: default answer model
 - `lib/settings.js`: retrieval defaults, `/api/ask` body, remembered Advanced choices
 - `lib/highlight.js`: finds the pdf.js text items of a cited passage on its page

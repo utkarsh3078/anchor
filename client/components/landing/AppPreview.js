@@ -7,7 +7,8 @@ const DOCS = [
 ];
 
 const chip = 'rounded-full border border-border-strong bg-surface px-2.5 py-0.5 text-[11px] font-medium';
-const cite = 'mx-0.5 rounded-full bg-accent-soft px-1.5 font-sans text-[10px] font-semibold leading-4 text-accent-soft-fg';
+const cite =
+  'ml-0.5 inline-flex size-4 items-center justify-center rounded-full bg-accent-soft align-[0.25em] text-[9px] font-semibold leading-none text-accent-soft-fg';
 
 // A small, static copy of the chat screen for the landing page, drawn with the same
 // tokens as the real one (components/Workspace.js), so the two always match. The question
@@ -45,9 +46,9 @@ export default function AppPreview() {
           </div>
 
           <div className="rounded-card border border-border bg-surface p-4 shadow-soft">
-            <p className="font-serif text-base leading-relaxed sm:text-[17px]">
-              The final exam is on <strong>Monday, 14 May</strong><span className={cite}>1</span> and covers
-              units 1 to 5<span className={cite}>2</span>.
+            <p className="text-[15px] leading-relaxed">
+              The final exam is on <strong className="font-semibold">Monday, 14 May</strong>.<span className={cite}>1</span> It
+              covers units 1 to 5.<span className={cite}>2</span>
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border pt-3 text-xs">
               <span className="text-muted">From syllabus.pdf:</span>

@@ -1,18 +1,25 @@
 import { LruCache, cached } from './cache.js';
 import { usage } from './usage.js';
 
-// Complete but grounded: list-style questions (syllabus, steps, topics) get every item the
-// passages contain, formatted as Markdown; every line carries its citation.
+// Complete but grounded: questions for a specific list (a syllabus, steps, the topics of a
+// unit) get every item the passages contain; questions about the document as a whole get
+// a short overview instead of a copy of its contents. Every line carries its citation.
 const SYSTEM = `Answer the question using ONLY the numbered passages. Rules:
 1. Cite every sentence and every bullet with the passage number(s) it comes from, e.g. [2] or [1, 3].
+   Put the citation once, at the end of the sentence or bullet.
 2. If the passages do not state the answer, return answerable=false and answer="". Do not guess.
 3. Never use outside knowledge, even if you know the answer.
-4. Be complete: if the question asks for a list, syllabus, steps or topics, include every relevant
-   item found in the passages, grouped under short headings (e.g. "**Unit 1**") with "- " bullets.
-5. Be direct: start with the answer, no preamble or closing remarks. Short questions get short answers.
-   If asked what a document contains or for a summary, summarise the passages (they are spread
-   across the document) by topic.
-6. Use Markdown only for headings in bold, "- " bullets and **bold** terms.`;
+4. Be direct: open with one or two plain sentences that answer the question, no preamble or closing
+   remarks. Short questions get short answers, with no headings or bullets.
+5. Be complete when a specific list is asked for (a syllabus, the steps of a procedure, the topics
+   of a unit, the members of a team): include every relevant item found in the passages, grouped
+   under short headings (e.g. "**Unit 1**") with "- " bullets.
+6. If asked what a document contains, for its main topics or for a summary: say in one sentence what
+   the document is, then give 3 to 6 bullets, one per topic, as "- **Topic**: one line about it".
+   Summarise (the passages are spread across the document); do not copy out every name, number
+   or item, and do not add headings.
+7. Keep it easy to scan: one idea per bullet, about 20 words at most, bold only the key term.
+8. Use Markdown only for headings in bold, "- " bullets and **bold** terms.`;
 
 const SCHEMA = {
   type: 'object',

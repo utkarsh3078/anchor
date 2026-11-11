@@ -6,8 +6,8 @@ import { THEME_KEY } from '@/lib/theme';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-// Serif for answers only (text that comes from the visitor's documents)
-const newsreader = Newsreader({ subsets: ['latin'], variable: '--font-newsreader', display: 'swap' });
+// Serif: only the classic view's answers still use it, so it is not preloaded
+const newsreader = Newsreader({ subsets: ['latin'], variable: '--font-newsreader', display: 'swap', preload: false });
 
 export const metadata = {
   title: 'Anchor',
