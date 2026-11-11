@@ -8,7 +8,8 @@ import { saveFile } from './files.js';
 
 // pages: [{ page, text }]. Chunks, embeds and indexes one document; records its
 // metadata in MongoDB when configured. file = { buffer, contentType } of the original,
-// stored so the client can open the cited page.
+// stored so the client can open the cited page. The document belongs to the uploading
+// key (gemini.keyHash, see lib/scope.js).
 export async function indexDocument(docName, pages, { source, sizeBytes, gemini, file }) {
   const chunks = chunkPages(pages);
   if (!chunks.length) {
@@ -20,6 +21,7 @@ export async function indexDocument(docName, pages, { source, sizeBytes, gemini,
   const docs = chunks.map((c, i) => ({
     id: `${docId}_${c.chunkIndex}`,
     docId,
+    owner: gemini.keyHash,
     docName,
     page: c.page,
     chunkIndex: c.chunkIndex,
@@ -42,7 +44,7 @@ export async function indexDocument(docName, pages, { source, sizeBytes, gemini,
 
   const meta = { docId, docName, pages: pages.length, chunks: chunks.length, failed: failed.length };
   await safeWrite('documents', (col) => col.insertOne({
-    _id: docId, ...meta, source, sizeBytes, uploadedAt: new Date(),
+    _id: docId, ...meta, owner: gemini.keyHash, source, sizeBytes, uploadedAt: new Date(),
   }));
   return meta;
 }

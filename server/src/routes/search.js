@@ -4,7 +4,7 @@ import { hybridSearch } from '../lib/hybrid.js';
 import { anchorRetrieve } from '../lib/anchor.js';
 import { denseRetrieve } from '../lib/retrieve.js';
 import { ms } from '../lib/timing.js';
-import { badRequest, parseWeights, parseAnchorOptions, parseFusionOptions, route, withGemini } from './common.js';
+import { badRequest, parseWeights, parseAnchorOptions, parseFusionOptions, route, withGemini, withOwner } from './common.js';
 
 const router = Router();
 
@@ -16,8 +16,9 @@ router.post('/dense', withGemini, route(async ({ query, k, docIds }, _body, req)
   { mode: 'dense', ...(await denseRetrieve(query, { k, docIds, gemini: req.gemini })) }
 )));
 
-// Keyword-only retrieval (no Gemini call). engine: 'bm25' (default) or 'typesense'
-router.post('/keyword', route(async ({ query, k, docIds }, body) => {
+// Keyword-only retrieval (no Gemini call; the key only says whose documents to search).
+// engine: 'bm25' (default) or 'typesense'
+router.post('/keyword', withOwner, route(async ({ query, k, docIds }, body) => {
   const engine = body.engine ?? 'bm25';
   if (!['bm25', 'typesense'].includes(engine)) throw badRequest(`unknown engine: ${engine}`);
   const search = engine === 'bm25' ? bm25Search : typesenseKeywordSearch;

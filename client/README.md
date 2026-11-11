@@ -46,7 +46,10 @@ Three parts inside the shell (`components/Workspace.js`):
    this answer?" under each answer is closed by default and lists the supporting passages.
 3. **Documents** (`DocPanel`, right from 1280 px; a screen of its own below that): tick the
    documents a question should search, search them by name, upload a PDF/txt/md, paste
-   text (the round button), remove.
+   text (the round button), remove. The library is per key: the server lists only the
+   documents uploaded with the key in use, so every document request (list, remove, the
+   original file for the source viewer) sends `X-Gemini-Key`. The viewer's "Open" link is a
+   blob URL of the fetched file, because a plain link could not carry that header.
 4. **Abstention**: every abstention reason shows the same sentence, "I couldn't find this
    in your document."
 5. **Settings** (`SettingsView`), everything the ask screen hides:

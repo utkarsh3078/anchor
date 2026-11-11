@@ -107,7 +107,7 @@ export default function Workspace({ session, onLogout }) {
           ))}
         </div>
         <div className={`min-h-0 flex-1 ${rightTab === 'trace' ? 'overflow-y-auto' : ''}`}>
-          {rightTab === 'trace' ? <Trace message={traced} onOpen={openSource} /> : <SourceViewer source={source} />}
+          {rightTab === 'trace' ? <Trace message={traced} onOpen={openSource} /> : <SourceViewer source={source} apiKey={session.key} />}
         </div>
       </aside>
     </div>

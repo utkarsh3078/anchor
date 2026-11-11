@@ -5,7 +5,7 @@ import SourceViewer from './SourceViewer';
 
 // Slides over the right side when a page chip or citation is clicked, so the main
 // screen keeps its layout. Esc or the backdrop closes it.
-export default function SourceDrawer({ source, onClose }) {
+export default function SourceDrawer({ source, apiKey, onClose }) {
   useEffect(() => {
     if (!source) return undefined;
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -23,7 +23,7 @@ export default function SourceDrawer({ source, onClose }) {
           <button type="button" onClick={onClose} autoFocus className="h-9 shrink-0 rounded-full border border-border-strong px-4 text-sm font-medium transition-colors duration-200 hover:bg-surface-2">Close</button>
         </div>
         <div className="min-h-0 flex-1">
-          <SourceViewer source={source} />
+          <SourceViewer source={source} apiKey={apiKey} />
         </div>
       </div>
     </div>

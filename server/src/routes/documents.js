@@ -6,7 +6,9 @@ import { ts, COLLECTION } from '../lib/typesense.js';
 import { invalidateKeywordIndex } from '../lib/retrievers.js';
 import { collection, safeWrite } from '../lib/db.js';
 import { deleteFile, loadFile } from '../lib/files.js';
-import { badRequest, sendError, withGemini } from './common.js';
+import { canAccess, canSee } from '../lib/scope.js';
+import { config } from '../config.js';
+import { badRequest, sendError, withGemini, withOwner } from './common.js';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -14,7 +16,10 @@ const upload = multer({
 });
 const router = Router();
 
-// Uploads embed every chunk, so they need the caller's Gemini key (X-Gemini-Key)
+// Uploads embed every chunk, so they need the caller's Gemini key (X-Gemini-Key). The
+// other routes make no Gemini call; there the key only says whose documents these are
+// (lib/scope.js). A document of another key answers 404, the same as one that doesn't exist.
+const notFound = (res) => res.status(404).json({ error: 'not_found', message: 'Document not found' });
 
 // Upload + index a PDF or .txt/.md file
 router.post('/', withGemini, upload.single('file'), async (req, res) => {
@@ -53,15 +58,16 @@ router.post('/text', withGemini, async (req, res) => {
   }
 });
 
-// List indexed documents: [{ docId, docName, pages, chunks, uploadedAt? }]
+// List the caller's documents: [{ docId, docName, pages, chunks, uploadedAt? }]
 // Typesense is the source of truth for what is searchable; MongoDB adds metadata.
-router.get('/', async (_req, res) => {
+router.get('/', withOwner, async (req, res) => {
   try {
     const jsonl = await ts.collections(COLLECTION).documents()
-      .export({ include_fields: 'docId,docName,page' });
+      .export({ include_fields: 'docId,docName,page,owner' });
     const docs = new Map();
     for (const line of jsonl.split('\n').filter(Boolean)) {
-      const { docId, docName, page } = JSON.parse(line);
+      const { docId, docName, page, owner } = JSON.parse(line);
+      if (!config.sharedDocuments && !canSee(owner, req.gemini.keyHash)) continue;
       const doc = docs.get(docId) ?? { docId, docName, pages: 0, chunks: 0 };
       doc.chunks++;
       doc.pages = Math.max(doc.pages, page);
@@ -80,8 +86,9 @@ router.get('/', async (_req, res) => {
 });
 
 // The original upload, for the source viewer (404 for documents indexed before files were kept)
-router.get('/:docId/file', async (req, res) => {
+router.get('/:docId/file', withOwner, async (req, res) => {
   try {
+    if (!await canAccess(req.params.docId, req.gemini?.keyHash)) return notFound(res);
     const file = await loadFile(req.params.docId);
     if (!file) return res.status(404).json({ error: 'not_found', message: 'Original file not stored. Re-upload the document to view it.' });
     res.set('Content-Type', file.contentType || 'application/octet-stream');
@@ -94,8 +101,9 @@ router.get('/:docId/file', async (req, res) => {
 });
 
 // Remove a document and all its chunks
-router.delete('/:docId', async (req, res) => {
+router.delete('/:docId', withOwner, async (req, res) => {
   try {
+    if (!await canAccess(req.params.docId, req.gemini?.keyHash)) return notFound(res);
     const out = await ts.collections(COLLECTION).documents()
       .delete({ filter_by: `docId:=\`${req.params.docId}\`` });
     invalidateKeywordIndex();

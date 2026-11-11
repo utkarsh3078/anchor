@@ -38,7 +38,7 @@ export default function KeyGate({ onReady }) {
   }
 
   return (
-    <Shell className="mx-auto flex h-full max-w-[1560px] flex-col overflow-y-auto">
+    <Shell className="relative mx-auto flex h-full max-w-[1560px] flex-col overflow-y-auto">
       <header className="flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
         <Logo />
         <ThemeToggle />

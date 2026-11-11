@@ -193,7 +193,10 @@ export default function Chat({
         </header>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-8">
+      {/* relative: screen-reader-only text inside (e.g. on citation marks) is absolutely
+          positioned; without a positioned scroller it is laid out against the page, stays
+          put while the messages scroll, and makes the whole page scrollable */}
+      <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-8">
         {empty ? (
           <Welcome docCount={docCount} searched={searched} onAttach={onAttach} onPaste={onPaste} onStart={start} />
         ) : (

@@ -13,6 +13,9 @@ export const config = {
   // Production: true, so every Gemini call uses the visitor's own key (X-Gemini-Key).
   // Locally it can stay false and fall back to GEMINI_API_KEY.
   requireUserKey: process.env.REQUIRE_USER_KEY === 'true',
+  // Documents belong to the key that uploaded them (lib/scope.js). true = one library
+  // shared by every visitor, the behaviour before owners existed.
+  sharedDocuments: process.env.SHARED_DOCUMENTS === 'true',
   // Compute and log per-attempt confidence signals (lib/signals.js). false = the
   // behaviour before they existed: nothing extra computed, returned or stored.
   confidenceSignals: process.env.CONFIDENCE_SIGNALS !== 'false',
@@ -65,6 +68,8 @@ export const config = {
     port: Number(process.env.TYPESENSE_PORT),
     protocol: process.env.TYPESENSE_PROTOCOL,
     apiKey: process.env.TYPESENSE_API_KEY,
+    // Lets a second deployment or a test use its own collection on the same Typesense
+    collection: process.env.TYPESENSE_COLLECTION || 'chunks',
   },
   mongo: {
     uri: process.env.MONGODB_URI,

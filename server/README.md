@@ -45,7 +45,9 @@ Later sessions: `docker start typesense anchor-mongo`.
 | `COHERE_API_KEY` | for rerank/anchor | trial keys: 10 calls/min |
 | `COHERE_RERANK_MODEL` | no | default `rerank-v3.5` |
 | `CONFIDENCE_SIGNALS` | no | default on; `false` = no per-attempt confidence signals computed, returned or logged (the behaviour before they existed) |
+| `SHARED_DOCUMENTS` | no | default off: documents belong to the key that uploaded them (see Documents); `true` = one library shared by every visitor, as before owners existed |
 | `TYPESENSE_HOST/PORT/PROTOCOL/API_KEY` | yes | |
+| `TYPESENSE_COLLECTION` | no | default `chunks`; lets a second deployment or a test use its own collection on the same Typesense |
 | `MONGODB_URI` | no | enables chat history, document metadata, eval-run logs |
 | `MONGODB_DB` | no | default `anchor` |
 | `CORS_ORIGIN` | in production | comma-separated origins; unset allows all |
@@ -109,12 +111,25 @@ costs nothing. Quota errors (429) are not retried, since a retry would only burn
 |---|---|---|---|
 | POST | `/api/documents` | multipart `file` (PDF, .txt, .md; max 25 MB) | `{ docId, docName, pages, chunks, failed }` |
 | POST | `/api/documents/text` | `{ name, text }` | same |
-| GET | `/api/documents` | | `[{ docId, docName, pages, chunks, source?, uploadedAt? }]` |
+| GET | `/api/documents` | | the caller's documents: `[{ docId, docName, pages, chunks, source?, uploadedAt? }]` |
 | GET | `/api/documents/:docId/file` | | the original upload (PDF or text), for the source viewer; 404 `not_found` if uploaded before originals were stored |
 | DELETE | `/api/documents/:docId` | | Typesense delete result (also deletes the stored original) |
 
 Uploads strip running PDF headers/footers before chunking, and keep the original file
 (MongoDB GridFS, or `server/uploads/` without MongoDB).
+
+**Documents are per key.** Every document belongs to the Gemini key that uploaded it: its
+chunks carry `owner`, the same short SHA-256 hash of the key that scopes chats (the key
+itself is never stored). All five routes above therefore need `X-Gemini-Key` (the list,
+file and delete routes make no Gemini call; the key only says whose documents these are),
+and so does `/api/search/keyword`. A key lists, searches, opens and deletes only its own
+documents: `docIds` in a search or ask request are narrowed to the caller's documents in one
+place (`route()` in `routes/common.js`, logic in `lib/scope.js`), an empty `docIds` means
+"all of mine", and another key's document answers 404 like one that doesn't exist.
+Documents indexed before owners existed have no owner and stay visible to every key. A
+visitor who switches to another key starts with an empty library. `SHARED_DOCUMENTS=true`
+restores the single shared library. An existing collection gets the `owner` field added
+on the next start; nothing is re-indexed.
 
 ### Search (retrieval only)
 
@@ -294,6 +309,25 @@ See [eval/README.md](eval/README.md): retrieval runs (`npm run eval`), answer ru
 - Set `REQUIRE_USER_KEY=true` and leave `GEMINI_API_KEY` unset, so the server never
   spends its own quota. Set `CORS_ORIGIN` to the Vercel client URL. Server keys (Cohere,
   Typesense, MongoDB) only in env vars, never committed.
+
+Environment for the deployed server (everything not listed keeps its default: upload
+pacing on, confidence signals on, usage tracking on, evidence gate off, RRF fusion,
+per-key documents):
+
+```
+REQUIRE_USER_KEY=true
+COHERE_API_KEY=...
+TYPESENSE_HOST=xxx.a1.typesense.net
+TYPESENSE_PORT=443
+TYPESENSE_PROTOCOL=https
+TYPESENSE_API_KEY=...            # the cluster's admin key (the server creates the collection)
+MONGODB_URI=mongodb+srv://...
+MONGODB_DB=anchor_prod           # apart from the local / evaluation database
+CORS_ORIGIN=https://<your-app>.vercel.app
+```
+
+Do not copy `EMBED_PACING=false` or `CONFIDENCE_SIGNALS=false` from a local `.env`, and do
+not set `GEMINI_API_KEY`, `SHARED_DOCUMENTS` or `PORT` (Render provides the port).
 - Visitors' keys travel in a header on every request, so the deployed API must be HTTPS
   (Render is by default).
 - The BM25 index lives in memory per server instance and rebuilds from Typesense on the

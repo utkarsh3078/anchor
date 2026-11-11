@@ -64,7 +64,7 @@ export default function Sidebar({ view, setView, tickedCount, keyTail, onChangeK
         </div>
       </div>
 
-      <div className="mt-auto hidden rounded-card bg-linear-to-br from-steel-1 to-steel-2 p-4 text-white shadow-soft lg:block">
+      <div className="relative mt-auto hidden rounded-card bg-linear-to-br from-steel-1 to-steel-2 p-4 text-white shadow-soft lg:block">
         <div className="flex items-center gap-3">
           <span className="relative inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15">
             <KeyRound className="size-[18px]" aria-hidden />

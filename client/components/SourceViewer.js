@@ -16,23 +16,26 @@ function loadPdfjs() {
   return pdfjsPromise;
 }
 
-// One fetch per document per session
+// One fetch per document per session. The file belongs to the key that uploaded it, so
+// the key goes along in a header; that is also why "Open" uses a blob URL of the fetched
+// file and not a plain link to the server (a link can't carry the header).
 const files = new Map();
-function loadFile(docId) {
+function loadFile(docId, apiKey) {
   if (!files.has(docId)) {
     files.set(docId, (async () => {
-      const res = await fetch(`${API_URL}/api/documents/${docId}/file`);
+      const res = await fetch(`${API_URL}/api/documents/${docId}/file`, { headers: apiKey ? { 'X-Gemini-Key': apiKey } : {} });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.message || `Could not load the document (${res.status})`);
       }
-      const type = res.headers.get('content-type') || '';
-      if (type.includes('pdf')) {
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      if (blob.type.includes('pdf')) {
         const pdfjs = await loadPdfjs();
-        const data = new Uint8Array(await res.arrayBuffer());
-        return { kind: 'pdf', pdf: await pdfjs.getDocument({ data, verbosity: 0 }).promise, pdfjs };
+        const data = new Uint8Array(await blob.arrayBuffer());
+        return { kind: 'pdf', url, pdf: await pdfjs.getDocument({ data, verbosity: 0 }).promise, pdfjs };
       }
-      return { kind: 'text', text: await res.text() };
+      return { kind: 'text', url, text: await blob.text() };
     })().catch((e) => {
       files.delete(docId); // allow a retry
       throw e;
@@ -114,8 +117,9 @@ function TextDoc({ text, passage }) {
   );
 }
 
-// source = { id, docName, page, text } of a passage (citation or trace row)
-export default function SourceViewer({ source }) {
+// source = { id, docName, page, text } of a passage (citation or trace row); apiKey: the
+// visitor's Gemini key (the file is served only to the key that uploaded it)
+export default function SourceViewer({ source, apiKey }) {
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [page, setPage] = useState(source?.page ?? 1);
@@ -131,9 +135,9 @@ export default function SourceViewer({ source }) {
     let cancelled = false;
     setFile(null);
     setError('');
-    loadFile(docId).then((f) => !cancelled && setFile(f), (e) => !cancelled && setError(e.message));
+    loadFile(docId, apiKey).then((f) => !cancelled && setFile(f), (e) => !cancelled && setError(e.message));
     return () => { cancelled = true; };
-  }, [docId]);
+  }, [docId, apiKey]);
 
   if (!source) return <p className="p-4 text-sm text-muted">Click a citation or a passage in the trace to open its source here.</p>;
 
@@ -149,14 +153,16 @@ export default function SourceViewer({ source }) {
             <button type="button" aria-label="Next page" disabled={pageCount != null && page >= pageCount} onClick={() => setPage((p) => p + 1)} className="size-8 rounded-full border border-border-strong hover:bg-surface-2 disabled:opacity-40">›</button>
           </>
         )}
-        <a href={`${API_URL}/api/documents/${docId}/file#page=${page}`} target="_blank" rel="noreferrer" className="text-xs font-medium text-accent underline underline-offset-2">Open</a>
+        {file && (
+          <a href={file.kind === 'pdf' ? `${file.url}#page=${page}` : file.url} target="_blank" rel="noreferrer" className="text-xs font-medium text-accent underline underline-offset-2">Open</a>
+        )}
       </div>
       {file?.kind === 'pdf' && !onCitedPage && (
         <button type="button" onClick={() => setPage(source.page)} className="bg-accent-soft px-4 py-1.5 text-left text-xs text-accent-soft-fg">
           Back to the cited passage on p. {source.page}
         </button>
       )}
-      <div data-scroll className="flex-1 overflow-y-auto bg-surface-2 p-3">
+      <div data-scroll className="relative flex-1 overflow-y-auto overscroll-contain bg-surface-2 p-3">
         {error && (
           <div className="space-y-2 text-sm">
             <p className="text-danger-fg">{error}</p>

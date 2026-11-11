@@ -118,7 +118,7 @@ export default function Workspace({ session, onLogout }) {
       )}
 
       {view === 'usage' && (
-        <main className={`flex ${screen} overflow-y-auto px-4 py-6 sm:px-8 lg:py-10`}>
+        <main className={`relative flex ${screen} overflow-y-auto overscroll-contain px-4 py-6 sm:px-8 lg:py-10`}>
           <div className="mx-auto w-full max-w-2xl">
             <h1 className="text-3xl font-semibold tracking-tight">Key usage</h1>
             <p className="mt-1.5 text-muted">What your Gemini key has used through Anchor, next to its free limits.</p>
@@ -140,7 +140,7 @@ export default function Workspace({ session, onLogout }) {
         />
       </aside>
 
-      <SourceDrawer source={source} onClose={closeSource} />
+      <SourceDrawer source={source} apiKey={session.key} onClose={closeSource} />
     </Shell>
   );
 }

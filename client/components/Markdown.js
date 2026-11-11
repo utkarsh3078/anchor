@@ -3,7 +3,7 @@
 import { parseBlocks, parseInline } from '@/lib/markdown';
 
 const mark =
-  'inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-soft px-1 font-sans text-[10px] ' +
+  'relative inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-soft px-1 font-sans text-[10px] ' +
   'font-semibold leading-none text-accent-soft-fg transition-colors duration-200 hover:bg-accent hover:text-accent-fg';
 
 // Citation marks: small numbered dots raised like footnote marks, so they sit after the

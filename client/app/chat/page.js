@@ -80,10 +80,13 @@ function Home() {
 }
 
 // One screen-high frame over the page gradient; the shell inside holds the key screen,
-// then the workspace
+// then the workspace. The frame is fixed and clips, so this page itself never scrolls:
+// only the parts inside it do (messages, documents, settings, the source viewer). Being
+// positioned, it also contains any absolutely positioned descendant, which would
+// otherwise stretch the page (see the note on `relative` scrollers in Chat.js).
 export default function ChatPage() {
   return (
-    <div className="h-dvh p-2 sm:p-3 lg:p-5">
+    <div className="fixed inset-x-0 top-0 h-dvh overflow-hidden p-2 sm:p-3 lg:p-5">
       <Home />
     </div>
   );

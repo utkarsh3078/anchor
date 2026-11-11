@@ -33,7 +33,7 @@ export default function DocPanel({ ref, className = '', gemini, selectedIds, set
   }, [pasteOpen]);
 
   async function refresh(selectNewId) {
-    const list = await api('/api/documents');
+    const list = await api('/api/documents', { gemini }); // the key says whose documents to list
     setDocs(list);
     onDocs?.(list);
     const ids = new Set(list.map((d) => d.docId));
@@ -88,7 +88,7 @@ export default function DocPanel({ ref, className = '', gemini, selectedIds, set
   const remove = (doc) => {
     if (!confirm(`Remove ${doc.docName}? You can upload it again later.`)) return;
     run(`Removing ${doc.docName}…`, async () => {
-      await api(`/api/documents/${doc.docId}`, { method: 'DELETE' });
+      await api(`/api/documents/${doc.docId}`, { method: 'DELETE', gemini });
       await refresh();
     });
   };
@@ -152,7 +152,7 @@ export default function DocPanel({ ref, className = '', gemini, selectedIds, set
         </label>
       )}
 
-      <div className="-mx-1 mt-3 min-h-0 flex-1 overflow-y-auto px-1">
+      <div className="relative -mx-1 mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain px-1">
         {docs === null && !error && <p className="py-2 text-sm text-muted">Loading your documents…</p>}
         {docs !== null && list.length === 0 && (
           <div className="flex flex-col items-center rounded-card border border-dashed border-border-strong px-4 py-8 text-center">

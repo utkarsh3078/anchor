@@ -2,6 +2,7 @@ import { geminiContext, geminiHttpError } from '../lib/gemini.js';
 import { loadGateModel } from '../lib/gate.js';
 import { config } from '../config.js';
 import { usage } from '../lib/usage.js';
+import { scopedDocIds } from '../lib/scope.js';
 
 const DEFAULT_WEIGHTS = { keyword: 0.5, dense: 0.5 };
 // Provisional. Smoke test (prose manual): answerable 0.18-0.92, unanswerable 0.03-0.25.
@@ -33,6 +34,13 @@ export function withGemini(req, res, next) {
   } catch (e) {
     sendError(res, e);
   }
+}
+
+// For routes that make no Gemini call but touch documents: the key still says whose
+// documents they are, so it is required unless the library is shared (SHARED_DOCUMENTS)
+export function withOwner(req, res, next) {
+  if (config.sharedDocuments) return next();
+  withGemini(req, res, next);
 }
 
 export function parseParams(body = {}) {
@@ -104,10 +112,13 @@ export function parseAnchorOptions(body = {}) {
   };
 }
 
-// handler(params, body, req) -> JSON response
+// handler(params, body, req) -> JSON response. docIds are narrowed here to the documents
+// the caller's key owns, so no search route can reach another key's documents.
 export const route = (handler) => async (req, res) => {
   try {
-    res.json(await handler(parseParams(req.body), req.body, req));
+    const params = parseParams(req.body);
+    params.docIds = await scopedDocIds(params.docIds, req.gemini?.keyHash);
+    res.json(await handler(params, req.body, req));
   } catch (e) {
     sendError(res, e);
   }

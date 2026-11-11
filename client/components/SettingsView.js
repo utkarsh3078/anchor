@@ -20,7 +20,7 @@ export default function SettingsView({
   const changed = !isDefault(settings);
 
   return (
-    <main className={`${className} overflow-y-auto px-4 py-6 sm:px-8 lg:py-10`}>
+    <main className={`${className} relative overflow-y-auto overscroll-contain px-4 py-6 sm:px-8 lg:py-10`}>
       <div className="mx-auto w-full max-w-2xl">
         <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
         <p className="mt-1.5 text-muted">The defaults work well. Change these to see how Anchor finds its answers.</p>
