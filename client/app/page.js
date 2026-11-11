@@ -178,9 +178,8 @@ export default function Landing() {
           </section>
         </main>
 
-        <footer className={`${section} flex flex-col gap-1 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between`}>
+        <footer className={`${section} py-6 text-center text-sm text-muted`}>
           <p>Anchor answers questions from your documents, with the page it used.</p>
-          <p>A B.Tech term project, USICT, GGSIPU.</p>
         </footer>
       </Shell>
     </div>
