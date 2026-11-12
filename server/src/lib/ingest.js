@@ -5,15 +5,23 @@ import { ts, COLLECTION } from './typesense.js';
 import { invalidateKeywordIndex } from './retrievers.js';
 import { safeWrite } from './db.js';
 import { saveFile } from './files.js';
+import { config } from '../config.js';
 
 // pages: [{ page, text }]. Chunks, embeds and indexes one document; records its
 // metadata in MongoDB when configured. file = { buffer, contentType } of the original,
 // stored so the client can open the cited page. The document belongs to the uploading
 // key (gemini.keyHash, see lib/scope.js).
-export async function indexDocument(docName, pages, { source, sizeBytes, gemini, file }) {
+export async function indexDocument(docName, pages, { source, sizeBytes, gemini, file, maxChunks = config.limits.maxChunks }) {
   const chunks = chunkPages(pages);
   if (!chunks.length) {
     throw Object.assign(new Error('No extractable text (scanned PDF?)'), { status: 422, code: 'no_text' });
+  }
+  // Checked before embedding: every chunk is a Gemini embedding and a Typesense document
+  if (chunks.length > maxChunks) {
+    throw Object.assign(
+      new Error(`This document is too long (${chunks.length} passages; the limit is ${maxChunks}). Split it into smaller files.`),
+      { status: 422, code: 'too_many_chunks' },
+    );
   }
 
   const docId = randomUUID();

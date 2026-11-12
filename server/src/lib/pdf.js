@@ -1,9 +1,21 @@
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { config } from '../config.js';
+
+const unreadable = (message, code) => Object.assign(new Error(message), { status: 422, code });
 
 // Returns [{ page, text }] so every chunk can cite its exact page.
 // verbosity 0 = errors only (hides harmless font warnings like "TT: undefined function").
-export async function extractPages(buffer) {
-  const pdf = await pdfjs.getDocument({ data: new Uint8Array(buffer), verbosity: 0 }).promise;
+// maxPages is checked before any page is read, so a huge PDF costs no parsing time.
+export async function extractPages(buffer, { maxPages = config.limits.maxPages } = {}) {
+  let pdf;
+  try {
+    pdf = await pdfjs.getDocument({ data: new Uint8Array(buffer), verbosity: 0 }).promise;
+  } catch {
+    throw unreadable('This PDF could not be opened (damaged or password-protected?)', 'bad_pdf');
+  }
+  if (pdf.numPages > maxPages) {
+    throw unreadable(`PDFs can have up to ${maxPages} pages; this one has ${pdf.numPages}`, 'too_many_pages');
+  }
   const pages = [];
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await pdf.getPage(p);

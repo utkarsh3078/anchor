@@ -7,6 +7,7 @@ import { isOverviewQuery, overviewPassages } from '../lib/overview.js';
 import { attemptLog } from '../lib/signals.js';
 import { ms, timed } from '../lib/timing.js';
 import { safeWrite } from '../lib/db.js';
+import { limitQuestions } from '../lib/limits.js';
 import { badRequest, parseAnchorOptions, parseWeights, route, withGemini } from './common.js';
 
 const router = Router();
@@ -31,11 +32,11 @@ const router = Router();
 // Gemini calls use the caller's key and model (headers, see lib/gemini.js).
 // The answer sees the retrieved hits plus their neighbouring chunks (neighbours: false to
 // turn that off); `context` in the response lists exactly what Gemini was given.
-router.post('/', withGemini, route(async ({ query, k, docIds, candidates }, body, req) => {
+router.post('/', withGemini, limitQuestions, route(async ({ query, k, docIds, candidates }, body, req) => {
   const mode = body.mode ?? 'anchor';
   if (!MODES.includes(mode)) throw badRequest(`mode must be one of ${MODES.join(', ')}`);
   const chatId = body.chatId ?? randomUUID();
-  if (typeof chatId !== 'string') throw badRequest('chatId must be a string');
+  if (typeof chatId !== 'string' || !chatId || chatId.length > 100) throw badRequest('chatId must be a string of at most 100 characters');
 
   const opts = parseAnchorOptions(body);
   const flag = (name, fallback) => {

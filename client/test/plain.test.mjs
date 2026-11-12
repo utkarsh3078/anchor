@@ -104,3 +104,17 @@ test('pickDefaultModel: server default if the key has it, else a flash model, el
   assert.equal(pickDefaultModel({ models: [{ id: 'gemini-x-pro' }], defaultModel: 'gemini-gone' }), 'gemini-x-pro');
   assert.equal(pickDefaultModel({ models: [], defaultModel: 'gemini-gone' }), 'gemini-gone');
 });
+
+test('guardrail errors get plain sentences', async () => {
+  const { plainError } = await import('../lib/plain.js');
+  const err = (code, body = {}, message) => ({ code, body: { error: code, ...body }, message });
+  assert.match(plainError(err('rate_limited', { scope: 'minute', retryAfterSec: 42 })).text, /about 42 seconds/);
+  assert.match(plainError(err('rate_limited', { scope: 'day' }), { upload: true }).text, /today's limit for uploads/);
+  assert.match(plainError(err('cohere_budget')).text, /search limit for today/);
+  assert.match(plainError(err('query_too_long')).text, /1,000 characters/);
+  assert.match(plainError(err('too_many_documents', {}, 'You can keep up to 10 documents.')).text, /up to 10/);
+  assert.match(plainError(err('unsupported_file')).text, /PDF, \.txt and \.md/);
+  for (const c of ['upload_in_progress', 'too_many_pages', 'too_many_chunks', 'bad_pdf']) {
+    assert.notEqual(plainError(err(c)).text, 'Something went wrong. Please try again.', c);
+  }
+});

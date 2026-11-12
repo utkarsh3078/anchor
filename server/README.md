@@ -84,6 +84,46 @@ means ask for the key again.
 | `gemini_unavailable` | 503 | retry later |
 | `cohere_quota` | 429 | retry later, or use mode `hybrid` (no rerank) |
 | `bad_request`, `not_found`, `file_too_large`, `no_text` | 4xx | show the message |
+| `rate_limited` (`scope`: `minute` or `day`, `retryAfterSec`; `Retry-After` header) | 429 | wait, or try tomorrow |
+| `cohere_budget` | 503 | the server's daily Cohere budget is spent; try tomorrow |
+| `query_too_long` | 400 | shorten the question (max 1000 characters) |
+| `unsupported_file` (415), `too_many_pages` / `too_many_chunks` / `bad_pdf` (422), `too_many_documents` (409), `upload_in_progress` (429) | 4xx | show the message |
+| `server_error` | 500 | unexpected; the details are in the server log only |
+
+### Guardrails (src/lib/limits.js)
+
+Visitors spend their own Gemini quota, but every question also spends the server's Cohere
+calls, Typesense and MongoDB, and CORS does not stop direct API calls. So:
+
+- **Always on** (input caps): `query` at most 1000 characters, `candidates` at most 100
+  (one Cohere search unit), `docIds` at most 100 strings, `chatId` at most 100 characters;
+  uploads only `.pdf` / `.txt` / `.md`, one file, 25 MB, at most `MAX_UPLOAD_PAGES` (400)
+  pages, checked before parsing, and `MAX_UPLOAD_CHUNKS` (2000) chunks, checked before any
+  embedding call; document names cut to 200 characters. Unexpected errors answer
+  `server_error` without their message (it can carry hosts or upstream replies).
+- **Rate limits** (on when `REQUIRE_USER_KEY=true`, i.e. production; `RATE_LIMITS=true|false`
+  overrides; off locally so evaluation runs aren't throttled). In memory, so a restart
+  resets them; one instance only, as the BM25 index already requires.
+
+| What | Per key | Per IP |
+|---|---|---|
+| Questions: `/api/ask`, `/api/search/*` | `LIMIT_QUESTIONS_PER_MINUTE` (4; a question is up to 2 Cohere calls) / `LIMIT_QUESTIONS_PER_DAY` (100) | 3x the key limits |
+| Uploads (file or pasted) | 3 a minute / `LIMIT_UPLOADS_PER_DAY` (15), one at a time | 6 a minute / 3x per day |
+| Key checks `/api/gemini/models` | | 20 a minute / 500 a day |
+| Reads (documents, files, chats, usage) | | 120 a minute / 5000 a day |
+| Documents kept | `LIMIT_DOCS_PER_KEY` (10) | |
+| Cohere rerank calls, whole server | `COHERE_DAILY_CALLS` (150) a day | |
+
+**Cohere per-minute pacing (always on, also locally):** the Cohere key's limit (`COHERE_RPM`,
+default 10 = trial key) is shared by every visitor, so rerank calls are spaced server-wide:
+each takes the next free slot in a rolling minute and waits for it rather than being sent
+and refused. A slot more than 30 s away answers 429 `cohere_quota` (with `retryAfterSec`) at
+once. A 429 from Cohere itself still waits and retries (up to 3). `COHERE_RPM=0` turns pacing off.
+
+A refused request is not counted against the other rules, so a burst from one key does not
+also use up its IP's allowance. Set `TRUST_PROXY=1` behind Render's proxy so per-IP limits
+see the visitor's address. A key that can't see any documents never reaches Cohere (nothing
+to rerank), so made-up keys cost nothing but requests.
 
 ### Gemini requests per action (free tiers count requests)
 
@@ -103,7 +143,7 @@ costs nothing. Quota errors (429) are not retried, since a retry would only burn
 
 **Retrieval parameters** shared by `/api/search/*` and `/api/ask`:
 `query` (required), `k` (1-50, default 5), `docIds` (restrict to these documents),
-`candidates` (pool per retriever before fusion/rerank, k-250, default 50).
+`candidates` (pool per retriever before fusion/rerank, k-100, default 50).
 
 ### Documents
 

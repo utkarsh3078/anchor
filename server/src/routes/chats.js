@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { collection } from '../lib/db.js';
+import { limitReads } from '../lib/limits.js';
 import { sendError, withGemini } from './common.js';
 
 // Chats belong to the Gemini key that created them (stored as a short SHA-256 hash, never
 // the key), so visitors only see their own history. No Gemini call is made here.
 const router = Router();
-router.use(withGemini);
+router.use(withGemini, limitReads);
 
 async function messages(res) {
   const col = await collection('messages');

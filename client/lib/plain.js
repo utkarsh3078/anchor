@@ -49,6 +49,27 @@ export function plainError(err, { upload = false } = {}) {
     case 'cohere_error':
     case 'rerank_unavailable':
       return out("Part of Anchor's search isn't available right now. Please try again in a moment.");
+    case 'rate_limited': {
+      const what = upload ? 'uploads' : 'questions';
+      if (body.scope === 'day') return out(`You've reached today's limit for ${what} on this site. Please try again tomorrow.`);
+      const wait = body.retryAfterSec ? `about ${body.retryAfterSec} seconds` : 'a minute';
+      return out(`That's a lot of ${what} in a short time. Wait ${wait} and try again.`);
+    }
+    case 'cohere_budget':
+      return out("Anchor has reached its search limit for today. Please try again tomorrow.");
+    case 'query_too_long':
+      return out('That question is too long. Please keep it under 1,000 characters.');
+    case 'too_many_documents':
+      return out(err.message || 'You have the maximum number of documents. Remove one to add another.');
+    case 'upload_in_progress':
+      return out('Another upload is still running. Wait for it to finish, then try again.');
+    case 'unsupported_file':
+      return out('Only PDF, .txt and .md files can be added.');
+    case 'too_many_pages':
+    case 'too_many_chunks':
+      return out(err.message || 'That document is too long. Split it into smaller files.');
+    case 'bad_pdf':
+      return out("That PDF couldn't be opened. It may be damaged or password-protected.");
     case 'file_too_large':
       return out('That file is too big. Files can be up to 25 MB.');
     case 'no_text':

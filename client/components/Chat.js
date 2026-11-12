@@ -241,6 +241,7 @@ export default function Chat({
               ref={box}
               rows={1}
               value={query}
+              maxLength={1000}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) submit(e);

@@ -22,8 +22,14 @@ export function sendError(res, e) {
   const gemini = geminiHttpError(e);
   if (gemini?.body.error === 'gemini_quota') usage.noteLimit(res.req?.gemini, gemini.body);
   if (gemini) return res.status(gemini.status).json(gemini.body);
-  if (!e.status) console.error(e);
-  res.status(e.status || 500).json({ error: e.code || (e.status ? 'error' : 'server_error'), message: e.message });
+  // Unexpected errors are logged in full but answered generically: their messages can
+  // carry internal details (hosts, paths, upstream responses)
+  if (!e.status) {
+    console.error(e);
+    return res.status(500).json({ error: 'server_error', message: 'Something went wrong on the server.' });
+  }
+  if (e.retryAfterSec) res.set('Retry-After', String(e.retryAfterSec));
+  res.status(e.status).json({ error: e.code || 'error', message: e.message, ...(e.retryAfterSec && { retryAfterSec: e.retryAfterSec }) });
 }
 
 // Attaches req.gemini (the caller's key and chosen models) for routes that call Gemini
@@ -43,14 +49,25 @@ export function withOwner(req, res, next) {
   withGemini(req, res, next);
 }
 
-export function parseParams(body = {}) {
-  const { query, k = 5, docIds = [], candidates = 50 } = body;
+// Caps on what one request can ask for. The query goes to Gemini (embedding, answer) and
+// Cohere, and is stored with the chat, so its length is capped; candidates is the Cohere
+// rerank pool (100 = one Cohere search unit).
+const MAX_CANDIDATES = 100;
+const MAX_DOC_IDS = 100;
+
+export function parseParams(body = {}, { maxQueryChars = config.limits.maxQueryChars } = {}) {
+  const { query, k = 5, docIds = [], candidates = 50 } = body ?? {};
   if (typeof query !== 'string' || !query.trim()) throw badRequest('query is required');
-  if (!Number.isInteger(k) || k < 1 || k > 50) throw badRequest('k must be an integer from 1 to 50');
-  if (!Number.isInteger(candidates) || candidates < k || candidates > 250) {
-    throw badRequest('candidates must be an integer from k to 250');
+  if (query.trim().length > maxQueryChars) {
+    throw Object.assign(badRequest(`query must be at most ${maxQueryChars} characters`), { code: 'query_too_long' });
   }
-  if (!Array.isArray(docIds)) throw badRequest('docIds must be an array');
+  if (!Number.isInteger(k) || k < 1 || k > 50) throw badRequest('k must be an integer from 1 to 50');
+  if (!Number.isInteger(candidates) || candidates < k || candidates > MAX_CANDIDATES) {
+    throw badRequest(`candidates must be an integer from k to ${MAX_CANDIDATES}`);
+  }
+  if (!Array.isArray(docIds) || docIds.length > MAX_DOC_IDS || !docIds.every((d) => typeof d === 'string' && d.length <= 100)) {
+    throw badRequest(`docIds must be an array of at most ${MAX_DOC_IDS} document ids`);
+  }
   return { query: query.trim(), k, docIds, candidates };
 }
 

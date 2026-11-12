@@ -59,6 +59,25 @@ export const config = {
     genModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
     dim: 768, // must match num_dim in the Typesense schema
   },
+  // Guardrails for a public server (lib/limits.js). On by default when REQUIRE_USER_KEY=true
+  // (production), off locally so evaluation runs aren't throttled; RATE_LIMITS overrides.
+  // Input caps (query length, pages and chunks per upload, file types) always apply.
+  limits: {
+    enabled: process.env.RATE_LIMITS ? process.env.RATE_LIMITS === 'true' : process.env.REQUIRE_USER_KEY === 'true',
+    questionsPerMinute: Number(process.env.LIMIT_QUESTIONS_PER_MINUTE) || 4, // a question is up to 2 Cohere calls
+    questionsPerDay: Number(process.env.LIMIT_QUESTIONS_PER_DAY) || 100,
+    uploadsPerDay: Number(process.env.LIMIT_UPLOADS_PER_DAY) || 15,
+    docsPerKey: Number(process.env.LIMIT_DOCS_PER_KEY) || 10,
+    cohereDaily: Number(process.env.COHERE_DAILY_CALLS) || 150,
+    // Cohere calls a minute for the whole server (trial key: 10). Always applied; 0 = off
+    cohereRpm: process.env.COHERE_RPM !== undefined && process.env.COHERE_RPM !== '' ? Number(process.env.COHERE_RPM) : 10,
+    maxQueryChars: 1000,
+    maxPages: Number(process.env.MAX_UPLOAD_PAGES) || 400,
+    maxChunks: Number(process.env.MAX_UPLOAD_CHUNKS) || 2000,
+  },
+  // Render sits behind a proxy: 1 = take the client IP from the last X-Forwarded-For hop
+  // (per-IP limits). Unset = use the socket address.
+  trustProxy: process.env.TRUST_PROXY ? Number(process.env.TRUST_PROXY) : false,
   cohere: {
     apiKey: process.env.COHERE_API_KEY,
     rerankModel: process.env.COHERE_RERANK_MODEL || 'rerank-v3.5',
