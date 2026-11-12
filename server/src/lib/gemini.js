@@ -53,6 +53,14 @@ export function geminiContext(headers, {
 const modelLists = new LruCache(200);
 // Models that list generateContent but aren't for document Q&A (seen in a real model list)
 const NON_TEXT = /embedding|tts|image|imagen|audio|live|veo|aqa|banana|robotics|computer-use|transcribe|customtools/i;
+// The picker shows only the flash / flash-lite models of these generations: they have a
+// free tier. Pro and older or experimental models are left out (paid, or no free quota).
+// A model can still be sent in X-Gemini-Model directly (e.g. by the eval runners).
+const PICKER_MODEL = /^gemini-(2\.5|3\.5|3\.6)-flash(-|$)/i;
+
+export function isPickerModel(id) {
+  return PICKER_MODEL.test(id ?? '') && !NON_TEXT.test(id);
+}
 
 export async function listTextModels(gemini) {
   const hit = modelLists.get(gemini.keyHash);
@@ -60,7 +68,7 @@ export async function listTextModels(gemini) {
   const models = [];
   for await (const m of await gemini.ai.models.list({ config: { pageSize: 100 } })) {
     const id = m.name?.replace(/^models\//, '');
-    if (!id?.startsWith('gemini') || NON_TEXT.test(id)) continue;
+    if (!isPickerModel(id)) continue;
     if (m.supportedActions && !m.supportedActions.includes('generateContent')) continue;
     models.push({ id, displayName: m.displayName ?? id, inputTokenLimit: m.inputTokenLimit ?? null });
   }

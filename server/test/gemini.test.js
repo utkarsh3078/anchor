@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ApiError } from '@google/genai';
-import { geminiContext, geminiHttpError } from '../src/lib/gemini.js';
+import { geminiContext, geminiHttpError, isPickerModel } from '../src/lib/gemini.js';
 import { LruCache, cached } from '../src/lib/cache.js';
 
 const opts = { serverKey: 'server-key', requireUserKey: false, defaultModel: 'gemini-default' };
@@ -66,4 +66,14 @@ test('cached() reuses values unless disabled', async () => {
   assert.deepEqual(await cached(c, 'k', true, fn), { value: 1, cached: false });
   assert.deepEqual(await cached(c, 'k', true, fn), { value: 1, cached: true });
   assert.deepEqual(await cached(c, 'k', false, fn), { value: 2, cached: false });
+});
+
+test('model picker keeps only free-tier flash models of 2.5, 3.5 and 3.6', () => {
+  const keep = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.6-flash',
+    'gemini-3.6-flash-lite', 'gemini-2.5-flash-preview-09-2025'];
+  const drop = ['gemini-2.5-pro', 'gemini-3.6-pro', 'gemini-2.0-flash', 'gemini-1.5-flash',
+    'gemini-2.5-flash-image', 'gemini-2.5-flash-preview-tts', 'gemini-2.5-flash-live', 'gemini-exp-1206',
+    'gemini-embedding-001', 'gemini-25-flash', 'gemma-3-27b-it', '', undefined];
+  for (const id of keep) assert.ok(isPickerModel(id), id);
+  for (const id of drop) assert.ok(!isPickerModel(id), String(id));
 });
