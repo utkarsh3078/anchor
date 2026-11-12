@@ -1,0 +1,48 @@
+# Render Blueprint for the Anchor API (server/).
+# This file lives in server/, so set the Blueprint path to `server/render.yaml`
+# when creating the Blueprint in the Render dashboard.
+# Values marked `sync: false` are secrets: Render asks for them on the first
+# deploy and they are never stored in this file.
+services:
+  - type: web
+    name: anchor-server
+    runtime: node
+    plan: free
+    rootDir: server            # relative to the repository root
+    buildCommand: npm ci
+    startCommand: npm start
+    # Returns 503 unless Typesense and MongoDB are reachable, so a wrong
+    # TYPESENSE_* or MONGODB_URI fails the deploy instead of going live.
+    healthCheckPath: /api/health
+    autoDeploy: true
+    # The BM25 index lives in memory per instance: keep exactly one.
+    numInstances: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: REQUIRE_USER_KEY
+        value: "true"
+      - key: MONGODB_DB
+        value: anchor_prod
+      - key: TYPESENSE_PORT
+        value: "443"
+      - key: TYPESENSE_PROTOCOL
+        value: https
+
+      # Secrets / per-deployment values (entered in the dashboard)
+      - key: COHERE_API_KEY
+        sync: false
+      - key: TYPESENSE_HOST          # e.g. xxx.a1.typesense.net
+        sync: false
+      - key: TYPESENSE_API_KEY       # admin key: the server creates the collection
+        sync: false
+      - key: MONGODB_URI             # mongodb+srv://...
+        sync: false
+      - key: CORS_ORIGIN             # https://<your-app>.vercel.app
+        sync: false
+
+    # Deliberately NOT set (see server/README.md "Deployment"):
+    #   PORT              Render provides it
+    #   GEMINI_API_KEY    visitors bring their own key
+    #   SHARED_DOCUMENTS  documents stay per key
+    #   EMBED_PACING / CONFIDENCE_SIGNALS  keep their defaults (on)

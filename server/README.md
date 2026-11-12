@@ -303,7 +303,9 @@ See [eval/README.md](eval/README.md): retrieval runs (`npm run eval`), answer ru
 ## Deployment
 
 - **Render** (web service): root `server`, build `npm install`, start `npm start`. Not
-  Vercel: uploads and embedding exceed serverless body and time limits.
+  Vercel: uploads and embedding exceed serverless body and time limits. `render.yaml`
+  in this folder is a Blueprint for it (New > Blueprint, Blueprint path
+  `server/render.yaml`); Render asks for the secret values on the first deploy.
 - **Typesense Cloud** or a Docker service with a persistent disk; set the `TYPESENSE_*` vars.
 - **MongoDB Atlas**: set `MONGODB_URI`.
 - Set `REQUIRE_USER_KEY=true` and leave `GEMINI_API_KEY` unset, so the server never
