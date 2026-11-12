@@ -6,6 +6,7 @@ import Logo from '@/components/ui/Logo';
 import Shell from '@/components/ui/Shell';
 import Spark from '@/components/ui/Spark';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import ServerStatus from '@/components/ui/ServerStatus';
 import Reveal from '@/components/ui/Reveal';
 import { IRIS, IrisIcon } from '@/components/ui/Iris';
 import AppPreview from '@/components/landing/AppPreview';
@@ -60,6 +61,7 @@ export default function Landing() {
             ))}
           </nav>
           <div className="flex items-center gap-1 sm:gap-2">
+            <ServerStatus className="mr-1" />
             <ThemeToggle />
             <Button href={START} size="sm">Get started</Button>
           </div>
