@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The header logo (components/ui/Logo.js): lucide's anchor in an ink circle. Always black, also in dark mode -->
+  <circle fill="#121316" cx="16" cy="16" r="16"/>
+  <g stroke="#ffffff" transform="translate(7 7) scale(0.75)" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22V8"/>
+    <path d="M5 12H2a10 10 0 0 0 20 0h-3"/>
+    <circle cx="12" cy="5" r="3"/>
+  </g>
+</svg>
