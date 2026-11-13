@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowUp, BookOpen, ChevronDown, ClipboardPaste, Cpu, FileUp, ListTree, Paperclip, Plus, ScrollText, Search,
-  SlidersHorizontal, Sparkles,
+  SlidersHorizontal, Sparkles, TriangleAlert, X,
 } from 'lucide-react';
 import Answer from './Answer';
 import Spark from './ui/Spark';
@@ -67,6 +67,25 @@ function ErrorMessage({ msg, models, currentModel, onRetry, onSwitchModel, onCha
           ? <button type="button" onClick={onChangeKey} className="font-medium underline underline-offset-4">Enter key again</button>
           : <button type="button" onClick={() => onRetry(msg)} className="font-medium underline underline-offset-4">Try again</button>}
       </div>
+    </div>
+  );
+}
+
+// Above the question box once the key has used 75% of a limit that the next question needs
+function UsageWarning({ alert, onOpen, onDismiss }) {
+  const tone = alert.level === 'danger'
+    ? 'border-danger/25 bg-danger-soft text-danger-fg'
+    : 'border-warn/30 bg-warn-soft text-warn-fg';
+  return (
+    <div className={`mx-auto mb-2 flex max-w-3xl items-start gap-2.5 rounded-card border px-3.5 py-2.5 text-sm ${tone}`} role="status" aria-live="polite">
+      <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+      <p className="min-w-0 flex-1">
+        {alert.text}{' '}
+        <button type="button" onClick={onOpen} className="font-medium underline underline-offset-4">See key usage</button>
+      </p>
+      <button type="button" onClick={onDismiss} aria-label="Hide this warning" title="Hide" className="-m-1 inline-flex size-7 shrink-0 items-center justify-center rounded-full hover:bg-fg/10">
+        <X className="size-4" aria-hidden />
+      </button>
     </div>
   );
 }
@@ -144,6 +163,7 @@ function Welcome({ docCount, searched, onAttach, onPaste, onStart }) {
 export default function Chat({
   className = '', messages, asking, docCount, searched, models, currentModel, showDetails,
   onAsk, onNewChat, onRetry, onSwitchModel, onModel, onChangeKey, onOpenSource, onAttach, onPaste, onOpenSettings,
+  usageAlert, onOpenUsage, onDismissUsageAlert,
 }) {
   const [query, setQuery] = useState('');
   const bottom = useRef(null);
@@ -231,6 +251,7 @@ export default function Chat({
       </div>
 
       <div className="px-3 pb-3 sm:px-8 sm:pb-6">
+        {usageAlert && <UsageWarning alert={usageAlert} onOpen={onOpenUsage} onDismiss={onDismissUsageAlert} />}
         <form
           onSubmit={submit}
           className="mx-auto max-w-3xl rounded-panel border border-border bg-surface/70 p-2.5 shadow-soft transition-shadow duration-200 has-[textarea:focus]:border-fg/45 has-[textarea:focus]:shadow-lift sm:p-3"

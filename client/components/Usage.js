@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
 import { duration, usageRows } from '@/lib/usage';
 
 function Meter({ label, m, unit = '' }) {
@@ -21,21 +19,9 @@ function Meter({ label, m, unit = '' }) {
 }
 
 // What this key has used through Anchor, next to its limits. An estimate: Google has no
-// way to ask for a key's real remaining quota. refreshKey changes after every question
-// and upload, so the numbers follow what the visitor does.
-export default function Usage({ gemini, refreshKey }) {
-  const [summary, setSummary] = useState(null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    api('/api/gemini/usage', { gemini })
-      .then((s) => { if (!cancelled) { setSummary(s); setFailed(false); } })
-      .catch(() => !cancelled && setFailed(true));
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshKey, gemini.key, gemini.model]);
-
+// way to ask for a key's real remaining quota. Workspace fetches the summary (after every
+// question and upload) and shares it with the warning above the question box.
+export default function Usage({ summary, failed }) {
   if (failed && !summary) return <p className="text-sm text-muted">Usage isn&apos;t available right now.</p>;
   if (!summary) return <p className="text-sm text-muted">Loading usage…</p>;
   if (!summary.enabled) return <p className="text-sm text-muted">Usage counting is turned off on this server.</p>;
@@ -44,7 +30,7 @@ export default function Usage({ gemini, refreshKey }) {
   const warn = rows.some((r) => r.today.warn || r.minute.warn || r.tokens?.warn);
   return (
     <div className="space-y-6">
-      {warn && <p className="text-sm font-semibold text-danger-fg">Close to a limit (80% or more used).</p>}
+      {warn && <p className="text-sm font-semibold text-danger-fg">Close to a limit (75% or more used).</p>}
       {rows.map((row) => (
         <div key={row.model} className="space-y-3">
           <p className="font-semibold">

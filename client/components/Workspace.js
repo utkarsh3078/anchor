@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import { pickDefaultModel } from '@/lib/models';
 import { askBody, loadPrefs, savePrefs } from '@/lib/settings';
+import { usageAlert } from '@/lib/usage';
 import Shell from './ui/Shell';
 import Sidebar from './Sidebar';
 import DocPanel from './DocPanel';
@@ -33,7 +34,29 @@ export default function Workspace({ session, onLogout }) {
   const [source, setSource] = useState(null); // passage open in the drawer
   const [usageKey, setUsageKey] = useState(0); // bumped after anything that uses the key, to refresh the usage screen
   const usageChanged = useCallback(() => setUsageKey((n) => n + 1), []);
+  const [usage, setUsage] = useState({ summary: null, failed: false }); // GET /api/gemini/usage
+  const [dismissedAlert, setDismissedAlert] = useState(null); // id of the warning the visitor closed
   const docPanel = useRef(null); // { pickFile, openPaste }
+
+  useEffect(() => {
+    let cancelled = false;
+    api('/api/gemini/usage', { gemini: { key: session.key, model: choice.model } })
+      .then((summary) => !cancelled && setUsage({ summary, failed: false }))
+      .catch(() => !cancelled && setUsage((u) => ({ ...u, failed: true })));
+    return () => { cancelled = true; };
+  }, [usageKey, session.key, choice.model]);
+
+  // Over 75% of a limit: a warning above the question box (lib/usage.js usageAlert)
+  const alert = usageAlert(usage.summary, choice.model);
+  // Once there is nothing to warn about, a later warning shows even if it says the same thing
+  const alertId = alert?.id ?? null;
+  useEffect(() => { if (!alertId) setDismissedAlert(null); }, [alertId]);
+  // A per-minute count drops on its own: look again in a minute so the warning clears
+  useEffect(() => {
+    if (alert?.scope !== 'minute') return;
+    const t = setTimeout(usageChanged, 60_000);
+    return () => clearTimeout(t);
+  }, [alert?.id, alert?.scope, usageChanged]);
 
   const closeSource = useCallback(() => setSource(null), []);
   const searched = docs.filter((d) => selectedIds.includes(d.docId)).map((d) => d.docName);
@@ -106,6 +129,9 @@ export default function Workspace({ session, onLogout }) {
         onAttach={toDocs('pickFile')}
         onPaste={toDocs('openPaste')}
         onOpenSettings={() => setView('settings')}
+        usageAlert={alert && alert.id !== dismissedAlert ? alert : null}
+        onOpenUsage={() => setView('usage')}
+        onDismissUsageAlert={() => setDismissedAlert(alert?.id ?? null)}
       />
 
       {view === 'settings' && (
@@ -123,7 +149,7 @@ export default function Workspace({ session, onLogout }) {
             <h1 className="text-3xl font-semibold tracking-tight">Key usage</h1>
             <p className="mt-1.5 text-muted">What your Gemini key has used through Anchor, next to its free limits.</p>
             <div className="mt-6 rounded-card border border-border bg-surface p-5 shadow-soft sm:p-6">
-              <Usage gemini={{ key: session.key, model: choice.model }} refreshKey={usageKey} />
+              <Usage summary={usage.summary} failed={usage.failed} />
             </div>
           </div>
         </main>
