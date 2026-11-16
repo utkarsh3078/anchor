@@ -115,3 +115,73 @@ export function aurc(rows) {
   }
   return previous ? area / previous : null;
 }
+
+// The answer check (src/lib/support.js) over a set of answered rows; rows: [{ support }]
+// with support.summary = { statements, supported, ... }. Rows without a check, or with
+// nothing to check, are left out.
+//   statementsMatched  statements backed by their cited passage / all statements
+//   answersAllMatched  answers whose every statement is backed / answers checked
+export const allMatched = (row) => row.support.summary.supported === row.support.summary.statements;
+
+export function supportStats(rows) {
+  const checked = rows.filter((r) => r.support?.summary?.statements > 0);
+  const statements = checked.reduce((n, r) => n + r.support.summary.statements, 0);
+  const matched = checked.reduce((n, r) => n + r.support.summary.supported, 0);
+  return {
+    answers: checked.length,
+    statements,
+    statementsMatched: statements ? matched / statements : null,
+    answersAllMatched: mean(checked.map((r) => (allMatched(r) ? 1 : 0))),
+  };
+}
+
+// Does the answer check agree with the judge? Judged rows are put in two groups by the
+// check's verdict (every statement matched, or not); each group gets the judge's
+// faithfulness counts and the share of its answers to answerable questions judged correct.
+export function checkVsJudge(rows) {
+  const usable = rows.filter((r) => r.support?.summary?.statements > 0 && r.faithfulness);
+  return [true, false].map((pass) => {
+    const group = usable.filter((r) => allMatched(r) === pass);
+    const graded = group.filter((r) => r.answerable && r.correctness && r.correctness !== 'no_reference');
+    return {
+      allMatched: pass,
+      answers: group.length,
+      supported: group.filter((r) => r.faithfulness === 'supported').length,
+      partial: group.filter((r) => r.faithfulness === 'partial').length,
+      unsupported: group.filter((r) => r.faithfulness === 'unsupported').length,
+      correct: mean(graded.map((r) => (r.correctness === 'correct' ? 1 : 0))),
+    };
+  });
+}
+
+// Hand-graded answers of any system (eval/external.js), one row per question:
+// { answerable, abstained, correctness: 'correct' | 'partial' | 'incorrect' | null,
+//   citation: 'correct' | 'wrong' | 'none' | null }. An answer to an unanswerable question
+// needs no grade: it is wrong. An answerable question that was not answered is wrong too.
+//   accuracy      correct / answerable questions (answered-but-ungraded rows left out)
+//   partial       partly correct / the same questions
+//   citedCorrect  answers to answerable questions that point at a gold page / those with a
+//                 citation verdict; noCitation: those that cite nothing
+// The four answer-or-abstain rates are the same as for Anchor's own modes (decisionMetrics).
+export function externalSummary(rows) {
+  const answerable = rows.filter((r) => r.answerable);
+  const settled = answerable.filter((r) => r.abstained || r.correctness);
+  const cited = answerable.filter((r) => !r.abstained && r.citation);
+  const d = decisionMetrics(rows.map((r) => {
+    let correct = null;
+    if (!r.abstained) correct = r.answerable ? (r.correctness ? r.correctness === 'correct' : null) : false;
+    return { answerable: r.answerable, answered: !r.abstained, correct };
+  }));
+  return {
+    ...d,
+    accuracy: mean(settled.map((r) => (!r.abstained && r.correctness === 'correct' ? 1 : 0))),
+    partial: mean(settled.map((r) => (!r.abstained && r.correctness === 'partial' ? 1 : 0))),
+    citedCorrect: mean(cited.map((r) => (r.citation === 'correct' ? 1 : 0))),
+    noCitation: mean(cited.map((r) => (r.citation === 'none' ? 1 : 0))),
+  };
+}
+
+// How often two graders give the same verdict. pairs: [{ a, b }]
+export function agreement(pairs) {
+  return { n: pairs.length, rate: mean(pairs.map((p) => (p.a === p.b ? 1 : 0))) };
+}

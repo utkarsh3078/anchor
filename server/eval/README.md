@@ -15,6 +15,10 @@ npm run eval:answers -- eval/datasets/smoke.json --modes dense,hybrid,anchor
 
 # Markdown tables for the paper from the latest runs
 npm run eval:report -- --dataset smoke --out ../report-smoke.md
+
+# Comparison with ChatGPT / NotebookLM, graded by hand (no API calls, see below)
+npm run eval:external -- sheet eval/datasets/smoke.json --system chatgpt
+npm run eval:external -- score eval/datasets/smoke.json
 ```
 
 ## Tuning and test halves
@@ -126,6 +130,57 @@ Also `hybrid-convex`, `anchor-soft` (the UI default: answers below the threshold
 `anchor-gate` and `anchor-gate+check` (strict, like `anchor`). The coverage-risk curve
 at answer level needs `anchor-soft`, because it answers whatever the gate would say.
 
+## Comparison with other systems (eval/external.js)
+
+The same questions are put to another tool with the same files uploaded, and a person
+grades every answer. Nothing here calls an API or needs the server.
+
+```bash
+# 1. One sheet per system: eval/external/<dataset>-<system>.csv
+npm run eval:external -- sheet eval/datasets/real.json --system chatgpt --split test
+npm run eval:external -- sheet eval/datasets/real.json --system notebooklm --split test
+# 2. Anchor's own answers in the same sheet format, from a finished answers run
+npm run eval:external -- sheet eval/datasets/real.json --from eval/results/real-answers-<ts>.json --mode anchor-soft
+# 3. Fill the sheets in a spreadsheet app (save as CSV), then
+npm run eval:external -- score eval/datasets/real.json
+npm run eval:report -- --dataset real --out ../report-real.md
+```
+
+A sheet has one row per question with the question, the reference answer and the gold
+pages. Columns to fill:
+
+| Column | Values | Meaning |
+| --- | --- | --- |
+| `answer` | text | the system's answer, pasted as given |
+| `abstained` | `yes` / `no` | `yes` = it said the documents don't contain the answer, or refused |
+| `correctness` | `correct` / `partial` / `incorrect` | against the reference: same meaning and complete / incomplete or partly wrong / wrong. Leave empty for abstentions and for unanswerable questions (answering one is wrong whatever it says) |
+| `citation` | `correct` / `wrong` / `none` | the answer points to a gold page / to another place / to nothing. Leave empty for abstentions |
+| `notes` | text | tool, model and date, anything odd |
+
+Keep the conditions equal and write them in the paper: the same files, the question text
+unchanged, a new conversation per question (or say that one conversation was used), the
+tool's model and the date. Grade all systems in one sitting with this rubric, ideally
+without looking at which system a row came from.
+
+A sheet made with `--from` holds Anchor's answers from that run with `abstained` and
+`citation` already filled from the run (`citation` = whether a gold page was cited);
+only `correctness` is left. Grading Anchor by hand as well puts every system in the table
+under the same grader, and because the run also has the LLM judge's verdicts, `score`
+and the report give the **hand/judge agreement rate** on those answers (the check on the
+judge asked for at the end of this file). The sheet's system name is the mode name, which
+is how the judge's rows are found; an answer edited in the sheet is left out of it.
+
+`score` refuses values outside the table above, leaves out rows that are still empty
+(and says how many), prints the comparison and saves it as a run of kind `external`. The
+report adds the table "Comparison with other systems, graded by hand" on its `--split`
+half, with a warning when the systems don't cover the same number of questions. A sheet
+is never overwritten without `--force`. `--dir` reads and writes sheets in another folder.
+
+Columns of the comparison: **Accuracy** (correct / answerable questions, a missing answer
+counts as wrong), **Partly correct**, the four answer-or-abstain rates defined under
+Metrics, and **Cited the right page** (answers to answerable questions with `citation` =
+`correct` / those with any citation verdict).
+
 ## Dataset format
 
 ```json
@@ -165,6 +220,19 @@ Answer runs:
   at least one citation on a gold page
 - **Faithfulness**: judge's verdict on whether the answer is supported by the passages it
   cites (`supported` / `partial` / `unsupported`)
+
+Answer check (the `support` block of `/api/ask`, shown under every answer in the app;
+definition in the server README). Each answered row of an answers run stores it, and the
+report measures it:
+
+- **Statements matched**: statements whose words and numbers are in the passage they
+  cite / all statements, per mode; **answers with every statement matched**
+- **Does the check agree with the judge?**: judged answers in two groups, "every
+  statement matched" and "at least one not matched", each with the judge's faithfulness
+  counts and the share judged correct. This is the evidence for (or against) showing the
+  check to readers: it is worth something only if the first group is mostly `supported`
+  and the judge's `partial` / `unsupported` answers land in the second. Rows keep
+  `coverage` per statement, so other cut-offs can be tried on a saved run without asking again
 
 Answer or abstain (report, per config or mode, on the chosen half):
 

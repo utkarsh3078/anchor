@@ -45,6 +45,7 @@ Later sessions: `docker start typesense anchor-mongo`.
 | `COHERE_API_KEY` | for rerank/anchor | trial keys: 10 calls/min |
 | `COHERE_RERANK_MODEL` | no | default `rerank-v3.5` |
 | `CONFIDENCE_SIGNALS` | no | default on; `false` = no per-attempt confidence signals computed, returned or logged (the behaviour before they existed) |
+| `ANSWER_CHECK` | no | default on: every answer's statements are compared with the passages they cite and returned as `support` (see Ask); `false` = nothing checked or returned |
 | `SHARED_DOCUMENTS` | no | default off: documents belong to the key that uploaded them (see Documents); `true` = one library shared by every visitor, as before owners existed |
 | `TYPESENSE_HOST/PORT/PROTOCOL/API_KEY` | yes | |
 | `TYPESENSE_COLLECTION` | no | default `chunks`; lets a second deployment or a test use its own collection on the same Typesense |
@@ -291,6 +292,47 @@ retrieved hits plus, for the top 4, the chunk before and after (`neighbours: fal
 that off). Answers are Markdown (bold headings, `- ` bullets) with `[n]` citations into
 `context`. The search `trace` includes `passages` (id → docName, page, text) for the top 10
 of each stage.
+
+#### Answer check (`support`)
+
+Every answer also carries `support` (src/lib/support.js): the answer cut into statements
+(the text in front of each `[n]` marker; headings and list lead-ins are skipped) and each
+statement compared with the passages it cites. No API call is made for it.
+
+```jsonc
+"support": {
+  "method": "lexical",
+  "statements": [
+    { "text": "The asset code of the backup chlorinator is CL-7Q", "cites": [1], "status": "supported",
+      "coverage": 1, "missingTerms": [], "missingNumbers": [], "elsewhere": null,
+      "evidence": { "n": 1, "quote": "The backup chlorinator (asset code CL-7Q) is tested on the first Monday of every month.",
+                    "marks": [[11, 22], [35, 37], [38, 40]], "clipped": false } }
+  ],
+  "summary": { "statements": 1, "supported": 1, "partial": 0, "unsupported": 0, "uncited": 0 }
+}
+```
+
+- `coverage`: share of the statement's content words (stopwords dropped, plural and
+  -ed / -ing endings folded) found in the cited passages, read together
+- `missingNumbers`: numbers in the statement that are not in those passages
+- `status`: `supported` (coverage at least 0.6 and no missing number), `partial`
+  (coverage at least 0.3, or a missing number), `unsupported` (below 0.3), `uncited`
+  (no citation, or only numbers that match no passage)
+- `evidence`: the lines of a cited passage the statement was taken from, which the app
+  shows under the answer as "From your document": the sentence that shares the most words
+  and numbers with the statement (plus a neighbouring sentence when it adds two more),
+  always an unbroken slice of passage `n`, so the page viewer can highlight it. `marks`
+  are the positions of the shared words inside `quote`; `clipped` = cut from a longer
+  sentence (at most 300 characters). `null` when fewer than two of the statement's words
+  are in any one sentence
+- `elsewhere`: for a statement that is not supported, the number of another passage in
+  `context` that does back it (a wrong or missing citation, not an invented statement)
+
+It compares wording, not meaning: a correct paraphrase can come out `partial`, and a
+statement that reuses the passage's words with a different meaning can come out
+`supported`. The cut-offs 0.6 / 0.3 are provisional; the evaluation report measures how
+the check's verdicts line up with the judge's (eval/README.md, "Answer check"). Chat
+history stores `support.summary` only. `ANSWER_CHECK=false` turns it off.
 
 When abstaining: `abstained: true`, `answer: null`, `citations: []`, and `abstainReason` is
 `low_retrieval_confidence` (anchor only; Gemini is not called), `not_in_passages`, or

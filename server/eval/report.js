@@ -17,8 +17,9 @@ import { gateProbability, loadGateModel } from '../src/lib/gate.js';
 import { DEFAULT_THRESHOLD } from '../src/routes/common.js';
 import { RESULTS_DIR } from './common.js';
 import { CONFIGS } from './configs.js';
+import { sameText } from './sheets.js';
 import {
-  aurc, decisionMetrics, gateCurve, mean, riskCoverage, riskCoverageAt,
+  agreement, aurc, checkVsJudge, decisionMetrics, externalSummary, gateCurve, mean, riskCoverage, riskCoverageAt, supportStats,
 } from './metrics.js';
 
 const { values: args } = parseArgs({
@@ -106,6 +107,32 @@ function answersSection(run) {
   out.push('', 'Accuracy counts abstentions on answerable questions as wrong. Judge: '
     + `${run.rows.find((r) => r.judgeModel)?.judgeModel ?? 'n/a'} (an LLM grading its own family; verify a sample by hand).`,
   `Answer models: ${models}.${unjudged ? ` ${unjudged} answered rows were not judged.` : ''}`);
+  return out.join('\n');
+}
+
+// The answer check shown under every answer in the app (src/lib/support.js), measured:
+// how many statements it matches per mode, and whether its verdict agrees with the judge.
+// Covers every answered row of the run: the check has no tuned part of its own yet.
+function answerCheckSection(run, data) {
+  const answered = run.rows.filter((r) => !r.error && !r.abstained);
+  if (!answered.some((r) => r.support)) return null;
+  const modes = [...new Set(answered.map((r) => r.mode))];
+  const perMode = modes.map((mode) => ({ mode, ...supportStats(answered.filter((r) => r.mode === mode)) }));
+  const agreement = checkVsJudge(answered);
+  data.push({ perMode, agreement });
+
+  const out = [`## Answer check: statements vs the passages they cite (${run.dataset}, all answered rows of the run)`, '',
+    table(['Mode', 'Answers checked', 'Statements', 'Statements matched', 'Answers with every statement matched'],
+      perMode.map((m) => [m.mode, m.answers, m.statements, pct(m.statementsMatched), pct(m.answersAllMatched)])), '',
+    'The check compares words and numbers, not meaning, and costs no API call. Matched = enough of the statement\'s words and all of its numbers are in the cited passage.'];
+  if (agreement.some((g) => g.answers)) {
+    out.push('', '### Does the check agree with the judge?', '',
+      table(['Answer check says', 'Answers', 'Judge: supported', 'Judge: partial', 'Judge: unsupported', 'Judged correct'],
+        agreement.map((g) => [g.allMatched ? 'every statement matched' : 'at least one not matched',
+          g.answers, g.supported, g.partial, g.unsupported, pct(g.correct)])), '',
+      'All modes together. "Judged correct" covers answers to answerable questions only. The check is useful to a reader '
+      + 'to the extent that the first row is mostly "supported" and the second row holds the answers the judge faults.');
+  }
   return out.join('\n');
 }
 
@@ -253,6 +280,39 @@ function coverageRisk(retrieval, answers, dataset, data) {
   return out.join('\n');
 }
 
+// Other systems on the same questions, graded by hand (eval/external.js score). Computed
+// here from the rows so the chosen half applies. A system exported from an Anchor answers
+// run (named after its mode) sits in the same table, graded the same way.
+function externalSection(run, answers, data) {
+  const { rows, note } = inSplit(run.rows, args.split);
+  const systems = [...new Set(rows.map((r) => r.system))];
+  if (!systems.length) return null;
+  const lines = systems.map((system) => {
+    const mine = rows.filter((r) => r.system === system);
+    const s = externalSummary(mine);
+    const pairs = mine.flatMap((r) => {
+      const j = answers?.rows.find((x) => x.mode === system && x.id === r.id && !x.abstained && x.correctness);
+      return r.correctness && j && sameText(j.answer, r.answer) ? [{ a: r.correctness, b: j.correctness }] : [];
+    });
+    const agree = pairs.length ? agreement(pairs) : null;
+    data.push({ system, ...s, judgeAgreement: agree });
+    return { system, s, agree };
+  });
+  const counts = new Set(lines.map((l) => l.s.n));
+  const out = [`## Comparison with other systems, graded by hand (${run.dataset}, ${note}, ${run.startedAt})`, '',
+    table(['System', 'Questions', 'Accuracy', 'Partly correct', 'Answer rate', 'Accuracy on answered', 'Unanswerable rejected', 'False abstention', 'Cited the right page', 'Ungraded answers'],
+      lines.map(({ system, s }) => [system, s.n, pct(s.accuracy), pct(s.partial), pct(s.answerRate), pct(s.accuracyOnAnswered),
+        pct(s.unanswerableRejection), pct(s.falseAbstention), pct(s.citedCorrect), s.ungraded])), '',
+    'Accuracy: answers to answerable questions graded correct, with a missing answer counted as wrong. An answer to an unanswerable question is wrong. '
+    + 'Every row was graded by a person against the reference answer with the rubric in eval/README.md.'];
+  if (counts.size > 1) out.push('WARNING: the systems do not cover the same number of questions, so their rows are not directly comparable.');
+  const agreed = lines.filter((l) => l.agree);
+  if (agreed.length) {
+    out.push('', `Hand grade vs LLM judge on the same answers: ${agreed.map((l) => `${l.system} ${pct(l.agree.rate)} agreement (n=${l.agree.n})`).join('; ')}.`);
+  }
+  return out.join('\n');
+}
+
 function alphaSection(run) {
   const k = run.settings.k;
   return [
@@ -275,11 +335,14 @@ async function main() {
   const retrieval = latest('retrieval');
   const answers = latest('answers');
   const alpha = latest('alpha');
-  if (!retrieval && !answers && !alpha) throw new Error(`No runs for dataset ${dataset}`);
-  const data = { dataset, split: args.split, decisions: { retrieval: [], answers: [] }, coverageRisk: [], alpha: alpha ?? null };
+  const external = latest('external');
+  if (!retrieval && !answers && !alpha && !external) throw new Error(`No runs for dataset ${dataset}`);
+  const data = { dataset, split: args.split, decisions: { retrieval: [], answers: [] }, answerCheck: [], external: [], coverageRisk: [], alpha: alpha ?? null };
 
   if (retrieval) sections.push(retrievalSection(retrieval));
   if (answers) sections.push(answersSection(answers));
+  if (answers) sections.push(answerCheckSection(answers, data.answerCheck));
+  if (external) sections.push(externalSection(external, answers, data.external));
   if (retrieval) sections.push(retrievalDecisions(retrieval, data.decisions.retrieval));
   if (answers) sections.push(answerDecisions(answers, data.decisions.answers));
   sections.push(coverageRisk(retrieval, answers, dataset, data.coverageRisk));

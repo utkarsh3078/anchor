@@ -6,6 +6,8 @@
 // Answerable questions: was it answered, is it correct, do citations point at gold pages.
 // Unanswerable questions: did it abstain. Answered rows are graded for faithfulness
 // (answer vs its cited passages) and correctness (vs the reference) by judge.js.
+// Each answered row also keeps the server's answer check (`support`), so the report can
+// say how often that check agrees with the judge.
 // Gemini requests per question: 1 answer (none if retrieval abstains) + up to 1 rewrite
 // per retry + 1 judge. Free tier: spread a run over days with --resume, and switch
 // --model / --judge-model when one model's quota runs out (each row records its model).
@@ -13,7 +15,7 @@ import { parseArgs } from 'util';
 import { makeJudge } from './judge.js';
 import { geminiHttpError } from '../src/lib/gemini.js';
 import { attemptLog } from '../src/lib/signals.js';
-import { citationPrecision, anyRelevant, mean, percentile, shares } from './metrics.js';
+import { citationPrecision, anyRelevant, mean, percentile, shares, supportStats } from './metrics.js';
 import {
   makeApi, geminiHeaders, loadDataset, resolveDocs, openCheckpoint, sleep, round, errorGuard,
 } from './common.js';
@@ -69,6 +71,8 @@ function scoreRow(mode, q, res, split) {
     // Passage text is kept so a failed judge call can be redone on --resume without re-asking
     citations: res.citations.map(({ n, docName, page, text }) => ({ n, docName, page, text })),
     invalidCitations: res.invalidCitations ?? 0,
+    // The server's answer check (statements vs cited passages); null on a server with ANSWER_CHECK=false
+    support: res.support ?? null,
   };
   if (q.answerable && !res.abstained) {
     row.citationPrecision = citationPrecision(row.citations, q.gold);
@@ -120,6 +124,9 @@ function summarise(mode, rows) {
     // Gate modes: share of questions the evidence gate really decided (0 = no coefficients file)
     gateUsed: MODES[mode].gate ? round(mean(ok.map((r) => (r.gate?.used ? 1 : 0)))) : null,
     unjudged: answered.filter((r) => !r.faithfulness).length,
+    // Answer check: statements whose words and numbers are in the passage they cite
+    statementsMatched: round(supportStats(answered).statementsMatched),
+    answersAllMatched: round(supportStats(answered).answersAllMatched),
   };
   if (judged.length) {
     // Accuracy counts abstentions on answerable questions as not correct

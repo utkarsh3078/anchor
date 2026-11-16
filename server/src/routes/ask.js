@@ -5,6 +5,8 @@ import { generateAnswer } from '../lib/generate.js';
 import { withNeighbours } from '../lib/context.js';
 import { isOverviewQuery, overviewPassages } from '../lib/overview.js';
 import { attemptLog } from '../lib/signals.js';
+import { checkSupport } from '../lib/support.js';
+import { config } from '../config.js';
 import { ms, timed } from '../lib/timing.js';
 import { safeWrite } from '../lib/db.js';
 import { limitQuestions } from '../lib/limits.js';
@@ -32,6 +34,8 @@ const router = Router();
 // Gemini calls use the caller's key and model (headers, see lib/gemini.js).
 // The answer sees the retrieved hits plus their neighbouring chunks (neighbours: false to
 // turn that off); `context` in the response lists exactly what Gemini was given.
+// `support` (lib/support.js) is the answer check: every statement of the answer compared
+// with the passages it cites, by words and numbers, without another API call.
 router.post('/', withGemini, limitQuestions, route(async ({ query, k, docIds, candidates }, body, req) => {
   const mode = body.mode ?? 'anchor';
   if (!MODES.includes(mode)) throw badRequest(`mode must be one of ${MODES.join(', ')}`);
@@ -75,6 +79,7 @@ router.post('/', withGemini, limitQuestions, route(async ({ query, k, docIds, ca
         answer: gen.result.answer,
         citations: gen.result.citations,
         invalidCitations: gen.result.invalidCitations,
+        ...(config.answerCheck ? { support: checkSupport(gen.result.answer, passages) } : {}),
         ...meta,
       }
       : abstention('not_in_passages', meta);
@@ -107,6 +112,7 @@ export function toMessage(query, r) {
     citations: r.citations.map(({ n, id, docName, page }) => ({ n, id, docName, page })),
     confidence: r.retrieval.confidence,
     lowConfidence: r.lowConfidence,
+    support: r.support?.summary ?? null,
     overview: r.overview,
     retries: r.retrieval.retries,
     bestAttempt: r.retrieval.bestAttempt ?? null,

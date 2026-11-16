@@ -41,9 +41,17 @@ Three parts inside the shell (`components/Workspace.js`):
    and Settings. Answers are rendered from the model's Markdown (`lib/markdown.js` parses,
    `components/Markdown.js` draws): sentence-case headings, bullets with one level of
    nesting, and citations as small raised marks placed after the sentence's punctuation
-   ("…14 May [1]." is shown as "…14 May.¹"), plus a line of page chips;
-   clicking either opens that page in a drawer with the passage highlighted (pdf.js). "Why
-   this answer?" under each answer is closed by default and lists the supporting passages.
+   ("…14 May [1]." is shown as "…14 May.¹"); clicking a mark opens that page in a drawer
+   with the passage highlighted (pdf.js). Under every answer, always open, is **From your
+   document** (`Evidence`, `lib/evidence.js`): one card per source the answer cites, with
+   its number, its page and the exact lines of the document the answer was taken from
+   (the words the answer shares with them are marked). A click on a line, or "Show on the
+   page", opens the page with that line highlighted; "Read the whole passage" shows the
+   rest. Three sources are shown, the others behind "Show all N sources". The lines come
+   from the server (`support.statements[].evidence`); a source with no located line, or a
+   server without the check, shows the start of its passage. With "Show retrieval
+   details" on, the statement-by-statement answer check (`AnswerCheck`: matches / partly
+   matches / number not in the passage / not matched / no source) is listed as well.
 3. **Documents** (`DocPanel`, right from 1280 px; a screen of its own below that): tick the
    documents a question should search, search them by name, upload a PDF/txt/md, paste
    text (the round button), remove. The library is per key: the server lists only the
@@ -83,7 +91,7 @@ fixed light colours whatever the theme (`data-theme="light"` on its wrapper).
 
 ```bash
 npm test    # node --test: plain-words errors, page grouping, default model, settings,
-            # usage rows, answer Markdown parsing
+            # usage rows, answer Markdown parsing, source cards, answer-check wording
 ```
 
 ## Files
@@ -95,11 +103,13 @@ npm test    # node --test: plain-words errors, page grouping, default model, set
   (`{ error, message }`) into `ApiError`
 - `lib/plain.js`: abstention sentence, error code -> plain sentence, citations -> pages
 - `lib/markdown.js`: answer text -> blocks and inline tokens (citations grouped, punctuation moved in front of them)
+- `lib/evidence.js`: the source cards under an answer (the quoted lines per cited passage, marked words)
+- `lib/support.js`: the answer check in plain words, shown only with retrieval details on
 - `lib/models.js`: default answer model
 - `lib/settings.js`: retrieval defaults, `/api/ask` body, remembered Advanced choices
 - `lib/highlight.js`: finds the pdf.js text items of a cited passage on its page
 - `components/`: `KeyGate`, `Workspace` (state and layout), `Sidebar`, `Chat`, `DocPanel`,
-  `SettingsView`, `Usage`, `Answer`, `AnswerDetails`, `Trace` (shared with classic),
+  `SettingsView`, `Usage`, `Answer`, `Evidence`, `AnswerCheck`, `AnswerDetails`, `Trace` (shared with classic),
   `SourceDrawer`, `SourceViewer`, `Markdown`
 - `components/ui/`: `Shell` (the translucent panel), `Spark`, `Iris` (gradient for icons),
   `Button`, `Logo`, `ThemeToggle`, `Reveal`, `Card`, `Stepper`

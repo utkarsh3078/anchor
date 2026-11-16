@@ -12,7 +12,8 @@
     "eval:report": "node eval/report.js",
     "eval:split": "node eval/split.js",
     "eval:fit-gate": "node eval/fit-gate.js",
-    "eval:alpha": "node eval/alpha-search.js"
+    "eval:alpha": "node eval/alpha-search.js",
+    "eval:external": "node eval/external.js"
   },
   "keywords": [],
   "type": "module",
