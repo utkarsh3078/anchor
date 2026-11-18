@@ -8,6 +8,8 @@ claude.md
 server/uploads/
 # Real evaluation documents (personal files) stay local
 server/eval/docs/real/
+# Draft test questions exported from visitor ratings (people's questions) stay local
+server/eval/datasets/drafts/
 
 term-report-results.txt
 report-real-core.md

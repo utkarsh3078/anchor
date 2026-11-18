@@ -34,7 +34,10 @@ theme variables; light and dark via `prefers-color-scheme` plus the toggle in
   MRR per version, with the points each step adds), Anchor vs plain hybrid answers, the
   cut-off chart (answerable still answered vs unanswerable stopped, crosshair on hover and
   arrow keys, Anchor's setting marked), per document, per kind of question, and "How this
-  was measured" (dates, question source, grader, answer model, sample-size caveat). Bars grow
+  was measured" (dates, question source, grader, answer model, sample-size caveat). Before
+  that, "What people say": the share of rated answers people found helpful, with a thin
+  helpful/not-helpful bar and counts, "too few ratings" under 20, refusal ratings apart, and
+  a plain statement that ratings are opinion and change no measured number. Bars grow
   and lines draw when scrolled into view; every chart has a legend for 2+ series, printed
   values, hover/focus details and a table view; reduced motion shows everything at once.
   Chart colours are the `viz-*` tokens in `globals.css` (validated for colour-blind readers in
@@ -119,6 +122,10 @@ npm test    # node --test: plain-words errors, page grouping, default model, set
 - `lib/plain.js`: abstention sentence, error code -> plain sentence, citations -> pages
 - `lib/markdown.js`: answer text -> blocks and inline tokens (citations grouped, punctuation moved in front of them)
 - `lib/evidence.js`: the source cards under an answer (the quoted lines per cited passage, marked words)
+- `components/Feedback.js` + `lib/feedback.js`: "Was this helpful?" thumbs under every answer
+  and "not in your document" reply (POST /api/feedback with the key; a second click takes the
+  rating back; after a thumbs-down an optional note; hidden when the answer has no
+  `messageId`), and the results page's "What people say" totals
 - `lib/support.js`: the answer check in plain words, shown only with retrieval details on
 - `lib/models.js`: default answer model
 - `lib/settings.js`: retrieval defaults, `/api/ask` body, remembered Advanced choices

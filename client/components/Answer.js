@@ -5,6 +5,7 @@ import Markdown from './Markdown';
 import AnswerCheck from './AnswerCheck';
 import AnswerDetails from './AnswerDetails';
 import Evidence from './Evidence';
+import Feedback from './Feedback';
 import { abstainText, citedPages } from '@/lib/plain';
 
 const box = 'rounded-card border border-border bg-surface p-4 shadow-soft sm:p-5';
@@ -14,8 +15,9 @@ const box = 'rounded-card border border-border bg-surface p-4 shadow-soft sm:p-5
 // and a way to see them highlighted on it. No scores, weights, thresholds or verdicts
 // unless "Show retrieval details" is on in Settings (then also the statement-by-statement
 // answer check and the retrieval trace).
+// Under both an answer and a "not in your document" reply: "Was this helpful?" (Feedback).
 // data: the /api/ask response. docCount: how many documents the question searched.
-export default function Answer({ data, query, docCount, showDetails, onOpenSource }) {
+export default function Answer({ data, query, docCount, showDetails, onOpenSource, onRate }) {
   const details = showDetails && <AnswerDetails data={data} query={query} onOpenSource={onOpenSource} />;
   if (data.abstained) {
     return (
@@ -24,6 +26,7 @@ export default function Answer({ data, query, docCount, showDetails, onOpenSourc
         <p className="mt-1 text-sm text-muted">
           Try asking in different words, or check that the right document is ticked.
         </p>
+        <Feedback messageId={data.messageId} onRate={onRate} refusal />
         {details}
       </div>
     );
@@ -61,6 +64,7 @@ export default function Answer({ data, query, docCount, showDetails, onOpenSourc
       </div>
 
       <Evidence data={data} multiDoc={multiDoc} onOpenSource={onOpenSource} />
+      <Feedback messageId={data.messageId} onRate={onRate} />
       {showDetails && <AnswerCheck support={data.support} context={data.context} showDetails onOpenSource={onOpenSource} />}
       {details}
     </div>

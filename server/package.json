@@ -14,7 +14,8 @@
     "eval:fit-gate": "node eval/fit-gate.js",
     "eval:alpha": "node eval/alpha-search.js",
     "eval:external": "node eval/external.js",
-    "eval:sync": "node eval/sync.js"
+    "eval:sync": "node eval/sync.js",
+    "eval:feedback": "node eval/feedback.js"
   },
   "keywords": [],
   "type": "module",

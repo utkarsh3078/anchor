@@ -278,7 +278,7 @@ tests with a fake client and clock only; no large upload has been run against Ge
 
 ```jsonc
 {
-  "chatId": "…", "mode": "anchor",
+  "chatId": "…", "messageId": "…", "mode": "anchor",
   "abstained": false,
   "answer": "The asset code of the backup chlorinator is CL-7Q [1].",
   "citations": [{ "n": 1, "id": "…", "docName": "plant-manual.pdf", "page": 2, "text": "…", "score": 0.92 }],
@@ -378,6 +378,18 @@ never stored) and survive a restart; the last minute and `limited` are in memory
 
 `GET /api/health` → `{ ok, typesense, mongo, requireUserKey }`, 503 if a configured service is down.
 
+### Feedback ("Was this helpful?")
+
+Every `/api/ask` response carries `messageId` (null when MongoDB couldn't store the
+exchange). `POST /api/feedback` with `X-Gemini-Key` and `{ messageId, rating: "up" | "down"
+| null, comment? }` rates that answer; only the key that asked can rate it (another key gets
+404 `not_found`), `null` takes the rating back, and `comment` (up to 500 characters) says
+what was wrong. Stored on the message as `feedback: { rating, comment, at }`. No Gemini
+call. 503 `feedback_unavailable` without MongoDB; rate-limited per key and IP (30 / 60 a
+minute) when rate limits are on. Ratings are opinions: `GET /api/results` reports them as a
+separate `feedback` part and never changes a measured number with them.
+`npm run eval:feedback` turns thumbs-down answers into draft test questions (eval/README.md).
+
 ### Results (the public results page)
 
 `GET /api/results[?dataset=real-core]` → totals of the latest saved evaluation runs of a
@@ -400,6 +412,10 @@ dataset file for question counts and document names (a dataset document may set 
       "accuracyOnAnswered": 0.98, "unanswerable": 10, "refused": 10, "citedRightPage": 1, "citationPrecision": 0.907, "latencyP50": 10084, "latencyP95": 25660 }] }
 }
 ```
+
+`feedback` (null without MongoDB): totals of every visitor rating,
+`{ rated, up, down, helpfulRate, answers: {…}, refusals: {…}, first, last }`, with answers and
+"not in your document" replies counted apart (lib/feedback.js).
 
 Questions, answers, passages and document text are never sent. `accuracy` and `correct`
 are `null` for an ungraded answer run. 404 `not_found` when the dataset has no runs. The

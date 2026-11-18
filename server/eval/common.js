@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir, rm } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { safeWrite, closeDb, mongoEnabled } from '../src/lib/db.js';
+import { datasetProblems } from './drafts.js';
 
 export const RESULTS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'results');
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -69,9 +70,16 @@ export function makeApi(base, extraHeaders = {}, { wait = sleep, log = console.e
   };
 }
 
+// Refuses a dataset that isn't finished (a draft from eval/feedback.js, or a question
+// without answerable / answer / gold), so unreviewed questions can't reach a result table
 export async function loadDataset(file) {
   const datasetPath = path.resolve(file);
   const dataset = JSON.parse(await readFile(datasetPath, 'utf8'));
+  const problems = datasetProblems(dataset);
+  if (problems.length) {
+    const more = problems.length > 8 ? `\n  ... and ${problems.length - 8} more` : '';
+    throw new Error(`${file} is not ready to run:\n  ${problems.slice(0, 8).join('\n  ')}${more}`);
+  }
   return { dataset, datasetDir: path.dirname(datasetPath) };
 }
 

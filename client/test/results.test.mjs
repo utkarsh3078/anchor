@@ -60,3 +60,21 @@ test('thresholdGeometry: paths run left to right, 100% at the top; nearest snaps
   assert.equal(nearest(g.positions, 20).threshold, 0.1);
   assert.equal(thresholdGeometry([], { width: 10, height: 10 }), null);
 });
+
+import { FEW_RATINGS, nextRating, ratingsSummary } from '../lib/feedback.js';
+
+test('nextRating: a second click on the same thumb takes the rating back', () => {
+  assert.equal(nextRating(null, 'up'), 'up');
+  assert.equal(nextRating('up', 'down'), 'down');
+  assert.equal(nextRating('down', 'down'), null);
+});
+
+test('ratingsSummary: answers only, refusals reported apart, too-few flagged', () => {
+  assert.equal(ratingsSummary(null), null);
+  const none = ratingsSummary({ answers: { rated: 0, up: 0, down: 0, helpfulRate: null }, refusals: { rated: 0, up: 0, down: 0 } });
+  assert.deepEqual([none.state, none.rate, none.refusals], ['none', null, null]);
+  const few = ratingsSummary({ answers: { rated: 3, up: 2, down: 1, helpfulRate: 2 / 3 }, refusals: { rated: 1, up: 0, down: 1 } });
+  assert.deepEqual([few.state, few.helpful, few.notHelpful], ['few', 2, 1]);
+  assert.equal(few.refusals, '“Not in your document” replies were rated 1 time: 0 helpful, 1 not.');
+  assert.equal(ratingsSummary({ answers: { rated: FEW_RATINGS, up: 15, down: 5, helpfulRate: 0.75 } }).state, 'enough');
+});

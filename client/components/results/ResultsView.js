@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FileSearch, Layers, ListChecks, MessageSquareQuote, RotateCw, Shapes } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { FileSearch, Layers, ListChecks, MessageSquareQuote, RotateCw, Shapes, ThumbsDown, ThumbsUp, Users } from 'lucide-react';
 import { api } from '@/lib/api';
 import { categoryName, duration, headline, pct, pipelineSteps } from '@/lib/results';
+import { ratingsSummary } from '@/lib/feedback';
 import Reveal from '@/components/ui/Reveal';
 import Spark from '@/components/ui/Spark';
 import Button from '@/components/ui/Button';
@@ -165,6 +167,56 @@ function ByType({ retrieval }) {
   );
 }
 
+// Visitor ratings ("Was this helpful?" in the chat). Opinion, not a measurement: shown as
+// its own section, never folded into the measured numbers above.
+function PeopleSay({ feedback }) {
+  const reduce = useReducedMotion();
+  const s = ratingsSummary(feedback);
+  if (!s) return null;
+  const share = s.rated ? s.helpful / s.rated : 0;
+  return (
+    <section aria-labelledby="people-title" className={`${section} py-12 md:py-16`}>
+      <Heading icon={Users} title={<span id="people-title">What people say</span>}>
+        People using Anchor can rate each answer with a thumbs up or down. This is their opinion, not a
+        measurement: they usually don’t know the correct answer, so it doesn’t change any number above. Answers
+        rated down are collected as new test questions instead.
+      </Heading>
+      <Reveal className={`${card} mt-6`}>
+        {s.state === 'none' ? (
+          <p className="text-muted">No answers have been rated yet. Rate answers in the chat with a thumbs up or down.</p>
+        ) : (
+          <>
+            <p className="text-sm font-medium text-muted">Rated helpful</p>
+            <p className="mt-1 flex flex-wrap items-baseline gap-x-3">
+              <CountUp value={s.rate} format={(v) => pct(v, 0)} className="text-5xl font-semibold tracking-[-0.03em]" />
+              <span className="text-muted">of {s.rated} rated answer{s.rated === 1 ? '' : 's'}</span>
+            </p>
+            <div
+              className="mt-5 flex h-2 w-full max-w-xl gap-0.5 overflow-hidden rounded-full"
+              role="img" aria-label={`${s.helpful} rated helpful, ${s.notHelpful} rated not helpful`}
+            >
+              {s.helpful > 0 && (
+                <motion.span
+                  className="h-full rounded-full bg-ok" style={{ width: `${share * 100}%`, transformOrigin: 'left' }}
+                  initial={reduce ? false : { scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                />
+              )}
+              {s.notHelpful > 0 && <span className="h-full flex-1 rounded-full bg-danger" />}
+            </div>
+            <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+              <span className="inline-flex items-center gap-1.5"><ThumbsUp className="size-4 text-ok" aria-hidden /> {s.helpful} helpful</span>
+              <span className="inline-flex items-center gap-1.5"><ThumbsDown className="size-4 text-danger" aria-hidden /> {s.notHelpful} not helpful</span>
+            </p>
+            {s.state === 'few' && <p className="mt-3 text-sm text-muted">Too few ratings to read much into yet.</p>}
+          </>
+        )}
+        {s.refusals && <p className="mt-4 border-t border-border pt-4 text-sm text-muted">{s.refusals}</p>}
+      </Reveal>
+    </section>
+  );
+}
+
 function Method({ results }) {
   const { dataset, retrieval, answers } = results;
   const dates = [...new Set([retrieval?.measuredAt, answers?.measuredAt].filter(Boolean).map(day))];
@@ -247,6 +299,7 @@ export default function ResultsView() {
       {results.retrieval && <Threshold retrieval={results.retrieval} />}
       {results.retrieval && <ByDocument retrieval={results.retrieval} />}
       {results.retrieval && <ByType retrieval={results.retrieval} />}
+      <PeopleSay feedback={results.feedback} />
       <Method results={results} />
     </>
   );

@@ -85,6 +85,14 @@ test('results: ungraded runs give null accuracy instead of 0', () => {
   assert.equal(a.modes[0].accuracy, null);
 });
 
+test('results: visitor ratings are passed through as their own part, apart from the measured numbers', () => {
+  const feedback = { rated: 3, up: 2, down: 1, helpfulRate: 2 / 3 };
+  const r = publicResults({ answers, dataset, feedback });
+  assert.deepEqual(r.feedback, feedback);
+  assert.equal(r.answers.modes[0].accuracy, 0.5); // unchanged by the ratings
+  assert.equal(publicResults({ answers, dataset }).feedback, null);
+});
+
 test('results: nothing from the questions, answers or passages is sent', () => {
   const text = JSON.stringify(publicResults({ retrieval, answers, dataset }));
   for (const secret of ['secret question text', 'secret answer', 'secret generated answer', 'secret passage']) assert.ok(!text.includes(secret), secret);

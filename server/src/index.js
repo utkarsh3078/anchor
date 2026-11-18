@@ -11,6 +11,7 @@ import ask from './routes/ask.js';
 import chats from './routes/chats.js';
 import gemini from './routes/gemini.js';
 import results from './routes/results.js';
+import feedback from './routes/feedback.js';
 
 const app = express();
 if (config.trustProxy !== false) app.set('trust proxy', config.trustProxy); // real client IP behind Render's proxy
@@ -29,6 +30,7 @@ app.use('/api/ask', ask);
 app.use('/api/chats', chats);
 app.use('/api/gemini', gemini);
 app.use('/api/results', results);
+app.use('/api/feedback', feedback);
 
 // Errors raised outside route handlers (bad JSON body, upload over 25 MB) as JSON too
 app.use((err, _req, res, _next) => {

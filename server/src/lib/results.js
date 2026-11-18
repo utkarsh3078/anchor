@@ -2,6 +2,7 @@ import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { collection, mongoEnabled } from './db.js';
+import { loadFeedbackTotals } from './feedback.js';
 import { config } from '../config.js';
 
 // The public results page (GET /api/results): the latest evaluation runs of one dataset,
@@ -132,8 +133,9 @@ function answersPart(run) {
   };
 }
 
-// runs: { retrieval, answers } (either may be missing); dataset: the dataset file, optional
-export function publicResults({ retrieval, answers, dataset }) {
+// runs: { retrieval, answers } (either may be missing); dataset: the dataset file, optional;
+// feedback: visitor rating totals (lib/feedback.js), shown apart from the measured numbers
+export function publicResults({ retrieval, answers, dataset, feedback = null }) {
   const docs = documentsOf(dataset);
   const qs = dataset?.questions ?? [];
   return {
@@ -146,6 +148,7 @@ export function publicResults({ retrieval, answers, dataset }) {
     },
     retrieval: retrieval ? retrievalPart(retrieval, docs) : null,
     answers: answers ? answersPart(answers) : null,
+    feedback,
   };
 }
 
@@ -179,7 +182,17 @@ export async function loadResults(dataset, { dir = path.join(EVAL_DIR, 'results'
   const [retrieval, answers] = await Promise.all([latest('retrieval'), latest('answers')]);
   if (!retrieval && !answers) return null;
   const datasetFile = await readFile(path.join(datasetsDir, `${dataset}.json`), 'utf8').then(JSON.parse, () => null);
-  return publicResults({ retrieval, answers, dataset: datasetFile });
+  // Ratings from every visitor of this server, whatever documents they asked about
+  let feedback = null;
+  if (mongoEnabled()) {
+    try {
+      const col = await collection('messages');
+      if (col) feedback = await loadFeedbackTotals(col);
+    } catch {
+      feedback = null; // MongoDB unreachable: the page shows the measured numbers without ratings
+    }
+  }
+  return publicResults({ retrieval, answers, dataset: datasetFile, feedback });
 }
 
 export const resultsDataset = () => config.results.dataset;

@@ -84,6 +84,11 @@ export default function Workspace({ session, onLogout }) {
     }
   }
 
+  // "Was this helpful?" under an answer; no Gemini call, the key says whose answer it is
+  const rate = (messageId, rating, comment) => api('/api/feedback', {
+    method: 'POST', json: { messageId, rating, comment }, gemini: { key: session.key },
+  });
+
   function switchModel(model, failed) {
     setChoice((c) => ({ ...c, model }));
     ask(failed.query, { failed, model });
@@ -126,6 +131,7 @@ export default function Workspace({ session, onLogout }) {
         onModel={(model) => setChoice((c) => ({ ...c, model }))}
         onChangeKey={onLogout}
         onOpenSource={setSource}
+        onRate={rate}
         onAttach={toDocs('pickFile')}
         onPaste={toDocs('openPaste')}
         onOpenSettings={() => setView('settings')}

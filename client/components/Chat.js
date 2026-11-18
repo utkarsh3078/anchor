@@ -162,7 +162,7 @@ function Welcome({ docCount, searched, onAttach, onPaste, onStart }) {
 // messages: { id, role: 'user' | 'assistant' | 'error', ... }; searched: names of the ticked documents
 export default function Chat({
   className = '', messages, asking, docCount, searched, models, currentModel, showDetails,
-  onAsk, onNewChat, onRetry, onSwitchModel, onModel, onChangeKey, onOpenSource, onAttach, onPaste, onOpenSettings,
+  onAsk, onNewChat, onRetry, onSwitchModel, onModel, onChangeKey, onOpenSource, onRate, onAttach, onPaste, onOpenSettings,
   usageAlert, onOpenUsage, onDismissUsageAlert,
 }) {
   const [query, setQuery] = useState('');
@@ -240,7 +240,7 @@ export default function Chat({
               return (
                 <Answer
                   key={msg.id} data={msg.data} query={msg.query} docCount={msg.docCount}
-                  showDetails={showDetails} onOpenSource={onOpenSource}
+                  showDetails={showDetails} onOpenSource={onOpenSource} onRate={onRate}
                 />
               );
             })}

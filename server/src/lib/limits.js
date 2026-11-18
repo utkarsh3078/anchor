@@ -50,6 +50,7 @@ const WHAT = {
   uploads: 'uploads',
   keys: 'key checks',
   reads: 'requests',
+  feedback: 'ratings',
 };
 
 // Express middleware. Run it after withGemini/withOwner so the key's hash is known.
@@ -156,3 +157,7 @@ export const limitUploads = rateLimit('uploads', {
 });
 export const limitKeyChecks = rateLimit('keys', { ip: { perMinute: 20, perDay: 500 } });
 export const limitReads = rateLimit('reads', { ip: { perMinute: 120, perDay: 5000 } });
+export const limitFeedback = rateLimit('feedback', {
+  key: { perMinute: 30, perDay: 300 },
+  ip: { perMinute: 60, perDay: 1000 },
+});

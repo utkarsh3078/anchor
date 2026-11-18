@@ -43,13 +43,15 @@ export async function collection(name) {
   return (await getDatabase())?.collection(name) ?? null;
 }
 
-// Logging must never fail the user's request, so errors are reported and swallowed
+// Logging must never fail the user's request, so errors are reported and swallowed.
+// Returns what fn returned, or null when nothing was written (no MongoDB, or an error).
 export async function safeWrite(name, fn) {
   try {
     const col = await collection(name);
-    if (col) await fn(col);
+    return col ? ((await fn(col)) ?? true) : null;
   } catch (e) {
     console.error(`MongoDB write to ${name} failed:`, e.message);
+    return null;
   }
 }
 

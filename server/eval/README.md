@@ -137,6 +137,26 @@ Also `hybrid-convex`, `anchor-soft` (the UI default: answers below the threshold
 `anchor-gate` and `anchor-gate+check` (strict, like `anchor`). The coverage-risk curve
 at answer level needs `anchor-soft`, because it answers whatever the gate would say.
 
+## New test questions from visitor ratings (eval/feedback.js)
+
+Answers people rate thumbs-down in the chat are the best source of new, realistic test
+questions. They are never counted as results; they become questions:
+
+```bash
+npm run eval:feedback                      # thumbs-down answers asked with your own key (.env)
+npm run eval:feedback -- --rating all      # thumbs up and down
+npm run eval:feedback -- --all-keys        # every visitor (their documents are not yours)
+```
+
+This writes `eval/datasets/drafts/feedback-<date>.json` (gitignored: it holds people's
+questions). Each question starts with `answerable: null`, an empty `answer` and no `gold`,
+plus a `review` block with what Anchor did (its answer or refusal, the pages it cited, the
+rating and the note). To use it: for each question you can check, set `answerable`,
+write the correct `answer` and list every `gold` page; delete the rest; fill in each
+document's `file`; remove `"draft": true`; move it to `eval/datasets/`. Every runner refuses
+a dataset that is still a draft or has a question without `answerable`, or an answerable one
+without an answer and gold pages (eval/drafts.js `datasetProblems`).
+
 ## Comparison with other systems (eval/external.js)
 
 The same questions are put to another tool with the same files uploaded, and a person

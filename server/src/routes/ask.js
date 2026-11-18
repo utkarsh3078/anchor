@@ -30,7 +30,8 @@ const router = Router();
 // doesn't accept abstains. strict: false keeps the soft behaviour with the gate too.
 // Whole-document questions ("what is inside the pdf?") in anchor mode skip retrieval and
 // use passages sampled across the selected documents (overview: false to turn off).
-// Each exchange is saved under chatId (generated if absent) when MongoDB is configured.
+// Each exchange is saved under chatId (generated if absent) when MongoDB is configured, with
+// a messageId the visitor can rate it by (POST /api/feedback).
 // Gemini calls use the caller's key and model (headers, see lib/gemini.js).
 // The answer sees the retrieved hits plus their neighbouring chunks (neighbours: false to
 // turn that off); `context` in the response lists exactly what Gemini was given.
@@ -85,11 +86,13 @@ router.post('/', withGemini, limitQuestions, route(async ({ query, k, docIds, ca
       : abstention('not_in_passages', meta);
   }
   const response = {
-    chatId, mode, model: gemini.model, strict, overview, lowConfidence: lowConfidence && !result.abstained,
+    chatId, messageId: randomUUID(), mode, model: gemini.model, strict, overview, lowConfidence: lowConfidence && !result.abstained,
     ...result, context, retrieval, latencyMs: ms(t0),
   };
 
-  await safeWrite('messages', (col) => col.insertOne({ owner: gemini.keyHash, ...toMessage(query, response) }));
+  // messageId lets the visitor rate this answer (POST /api/feedback); null when it wasn't stored
+  const stored = await safeWrite('messages', (col) => col.insertOne({ owner: gemini.keyHash, ...toMessage(query, response) }));
+  if (!stored) response.messageId = null;
   return response;
 }));
 
@@ -103,6 +106,7 @@ function abstention(reason, extra = {}) {
 export function toMessage(query, r) {
   return {
     chatId: r.chatId,
+    messageId: r.messageId,
     mode: r.mode,
     model: r.model,
     query,
