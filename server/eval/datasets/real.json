@@ -1,0 +1,6478 @@
+{
+  "name": "real",
+  "description": "Four documents indexed together (48-page lab file, 16-page term paper, 18-page revision notes, 113-page syllabus). Questions written from the page text, before running Anchor on them; gold pages checked by script against every page of the document. Draft: review before reporting results.",
+  "docs": [
+    {
+      "name": "UTK system design pdf.pdf",
+      "file": "../docs/real/UTK system design pdf.pdf"
+    },
+    {
+      "name": "FraudAlert_Term_Paper.pdf",
+      "file": "../docs/real/FraudAlert_Term_Paper.pdf"
+    },
+    {
+      "name": "Engineering Economics (Revision).pdf",
+      "file": "../docs/real/Engineering Economics (Revision).pdf"
+    },
+    {
+      "name": "Syllabus 2 nd year.pdf",
+      "file": "../docs/real/Syllabus 2 nd year.pdf"
+    }
+  ],
+  "questions": [
+    {
+      "id": "sd001",
+      "category": "exact",
+      "question": "Which university is the system design lab practical file submitted to?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Guru Gobind Singh Indraprastha University (University School of Information, Communication & Technology)"
+    },
+    {
+      "id": "sd002",
+      "category": "exact",
+      "question": "Who is the practical file submitted to?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Seema Dahiya, Asst. Professor (USICT, GGSIPU)"
+    },
+    {
+      "id": "sd003",
+      "category": "exact",
+      "question": "What is the course code of the Advanced Software Architecture and System Design lab?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "PCE 349P"
+    },
+    {
+      "id": "sd004",
+      "category": "exact",
+      "question": "For which academic session is the system design practical file?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "2026-27"
+    },
+    {
+      "id": "sd005",
+      "category": "numeric",
+      "question": "How many experiments are listed in the index of the system design practical file?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "15"
+    },
+    {
+      "id": "sd006",
+      "category": "list",
+      "question": "List the first five experiments in the system design practical file.",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Layered Architecture – Student Management System; Client–Server Application using sockets; MVC Architecture – Student Records; Observer Pattern – Event-Driven Notification System; Factory Design Pattern – Payment/Notification Objects"
+    },
+    {
+      "id": "sd007",
+      "category": "exact",
+      "question": "What is the last experiment listed in the index?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Performance Comparison with and without Caching"
+    },
+    {
+      "id": "sd008",
+      "category": "exact",
+      "question": "Which experiment number is the LRU Cache Implementation in the index?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Experiment 7"
+    },
+    {
+      "id": "sd009",
+      "category": "definition",
+      "question": "What is the aim of the Layered Architecture experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "To implement a Student Management System using the layered (N-tier) architecture, separating the presentation, business logic and data access layers"
+    },
+    {
+      "id": "sd010",
+      "category": "definition",
+      "question": "How does layered architecture organise an application?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "It divides the application into horizontal layers; each layer has one responsibility and may only talk to the layer directly below it"
+    },
+    {
+      "id": "sd011",
+      "category": "paraphrase",
+      "question": "Why doesn't a change in one layer affect the whole layered system?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Because every layer has one responsibility and only talks to the layer directly below it, so changes don't ripple through the system"
+    },
+    {
+      "id": "sd012",
+      "category": "exact",
+      "question": "Which class is the presentation layer in the Student Management System?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "StudentUI"
+    },
+    {
+      "id": "sd013",
+      "category": "exact",
+      "question": "Which class forms the business logic layer of the Student Management System?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "StudentService"
+    },
+    {
+      "id": "sd014",
+      "category": "exact",
+      "question": "Which class is the only one that runs SQL on the database in the layered experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "StudentRepository (the data access layer)"
+    },
+    {
+      "id": "sd015",
+      "category": "exact",
+      "question": "Which database does the layered Student Management System use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "SQLite"
+    },
+    {
+      "id": "sd016",
+      "category": "list",
+      "question": "What advantages of layered architecture are given in the practical file?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Separation of concerns, easy testing, and any layer can be replaced (e.g. SQLite by MySQL) without touching the others"
+    },
+    {
+      "id": "sd017",
+      "category": "paraphrase",
+      "question": "What does the business logic layer do in the student management experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "It validates marks and roll numbers and computes grades"
+    },
+    {
+      "id": "sd018",
+      "category": "exact",
+      "question": "Which npm package is installed for the layered Student Management System?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "better-sqlite3"
+    },
+    {
+      "id": "sd019",
+      "category": "exact",
+      "question": "What is the file name of the layered architecture program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "layeredStudent.js"
+    },
+    {
+      "id": "sd020",
+      "category": "list",
+      "question": "What columns does the students table have in the layered experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "roll (INTEGER PRIMARY KEY), name (TEXT NOT NULL), branch (TEXT) and marks (REAL)"
+    },
+    {
+      "id": "sd021",
+      "category": "numeric",
+      "question": "What minimum marks are needed for an A+ grade in StudentService.grade?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "90"
+    },
+    {
+      "id": "sd022",
+      "category": "list",
+      "question": "What are the grade boundaries used by StudentService?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "90 and above A+, 75 A, 60 B, 40 C, below 40 F"
+    },
+    {
+      "id": "sd023",
+      "category": "exact",
+      "question": "What error message is raised when a student's name is empty?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Name cannot be empty"
+    },
+    {
+      "id": "sd024",
+      "category": "numeric",
+      "question": "What range of marks does addStudent accept?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "0 to 100 (Marks must be between 0 and 100)"
+    },
+    {
+      "id": "sd025",
+      "category": "exact",
+      "question": "What happens if you add a student with a roll number that already exists in the layered system?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "A ValueError is raised: Roll number <roll> already exists"
+    },
+    {
+      "id": "sd026",
+      "category": "exact",
+      "question": "What custom error class does the layered Student Management System define?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "ValueError (extends Error)"
+    },
+    {
+      "id": "sd027",
+      "category": "paraphrase",
+      "question": "How does the StudentUI handle errors raised by the service?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Its attempt() method catches ValueError and prints [ERROR] with the message; other errors are re-thrown"
+    },
+    {
+      "id": "sd028",
+      "category": "exact",
+      "question": "What prefix does StudentUI print when an action succeeds?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "[OK]"
+    },
+    {
+      "id": "sd029",
+      "category": "exact",
+      "question": "Which student was added with invalid marks of 120 in the layered demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Dev (roll 4, ECE)"
+    },
+    {
+      "id": "sd030",
+      "category": "exact",
+      "question": "Which student's addition failed because of a duplicate roll number in the layered demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 5
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Neha (roll 2)"
+    },
+    {
+      "id": "sd031",
+      "category": "numeric",
+      "question": "What grade did Riya get in the layered experiment output?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "A+ (93 marks)"
+    },
+    {
+      "id": "sd032",
+      "category": "numeric",
+      "question": "What were Karan's marks after the update in the layered experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "78.0, grade A"
+    },
+    {
+      "id": "sd033",
+      "category": "exact",
+      "question": "Which roll number did removeStudent fail on because it does not exist?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 5
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Roll number 9"
+    },
+    {
+      "id": "sd034",
+      "category": "numeric",
+      "question": "How many students remain in the final report of the layered experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "2 (Riya and Karan)"
+    },
+    {
+      "id": "sd035",
+      "category": "paraphrase",
+      "question": "Where are validation errors such as duplicate roll numbers handled in the layered system?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "In the business layer (StudentService)"
+    },
+    {
+      "id": "sd036",
+      "category": "definition",
+      "question": "What is the aim of the client–server experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "To develop a client–server application in which a TCP server communicates with several clients at the same time using Node.js sockets (the net module)"
+    },
+    {
+      "id": "sd037",
+      "category": "definition",
+      "question": "What is a socket according to the practical file?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "An endpoint of a two-way communication link"
+    },
+    {
+      "id": "sd038",
+      "category": "paraphrase",
+      "question": "What kind of data stream do TCP sockets provide?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "A reliable, ordered byte stream"
+    },
+    {
+      "id": "sd039",
+      "category": "exact",
+      "question": "Which Node.js module is used for the TCP client–server experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "net"
+    },
+    {
+      "id": "sd040",
+      "category": "list",
+      "question": "What sequence of calls does the server make in the Node.js socket experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "net.createServer() → listen() → 'connection' event → on('data') / write() → end()"
+    },
+    {
+      "id": "sd041",
+      "category": "paraphrase",
+      "question": "How can the Node.js server serve several clients without a thread per client?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "Node.js handles every accepted connection through its event loop"
+    },
+    {
+      "id": "sd042",
+      "category": "numeric",
+      "question": "On which port does the TCP server listen in experiment 2?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "5050"
+    },
+    {
+      "id": "sd043",
+      "category": "exact",
+      "question": "What host address does the socket server use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 7
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "127.0.0.1"
+    },
+    {
+      "id": "sd044",
+      "category": "paraphrase",
+      "question": "How does the server respond to a normal message from a client?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 8
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "It replies with ECHO: followed by the message in upper case"
+    },
+    {
+      "id": "sd045",
+      "category": "exact",
+      "question": "What does the server send when a client says bye?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 8
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "Goodbye! Connection closed."
+    },
+    {
+      "id": "sd046",
+      "category": "list",
+      "question": "What messages does each client send to the server?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "hello from <name>, what is client-server?, bye"
+    },
+    {
+      "id": "sd047",
+      "category": "exact",
+      "question": "Which two clients connected to the server in the output of experiment 2?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 8
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "Alice and Bob"
+    },
+    {
+      "id": "sd048",
+      "category": "paraphrase",
+      "question": "What was demonstrated by the client–server experiment's conclusion?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "The server accepted two clients one after the other, echoed their messages in upper case and closed each connection on bye"
+    },
+    {
+      "id": "sd049",
+      "category": "definition",
+      "question": "What are the three parts of MVC?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Model, View and Controller"
+    },
+    {
+      "id": "sd050",
+      "category": "paraphrase",
+      "question": "What is the role of the View in MVC?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "It decides how data is shown to the user and never changes the data"
+    },
+    {
+      "id": "sd051",
+      "category": "paraphrase",
+      "question": "What does the Controller do in the MVC architecture?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "It receives the user's action, asks the model to update, and selects what the view must show"
+    },
+    {
+      "id": "sd052",
+      "category": "paraphrase",
+      "question": "What does the Model store in the MVC student records experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "The student data and the rules for changing it (add, get, delete)"
+    },
+    {
+      "id": "sd053",
+      "category": "exact",
+      "question": "What is the file name of the MVC program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "mvcStudent.js"
+    },
+    {
+      "id": "sd054",
+      "category": "list",
+      "question": "Which fields does the Student class have in the MVC experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "roll, name, branch and cgpa"
+    },
+    {
+      "id": "sd055",
+      "category": "exact",
+      "question": "Which data structure does StudentModel use to store students?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "A Map"
+    },
+    {
+      "id": "sd056",
+      "category": "numeric",
+      "question": "What range of CGPA values does the MVC controller accept?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "0 to 10"
+    },
+    {
+      "id": "sd057",
+      "category": "exact",
+      "question": "What does StudentView print after listing all students?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "Total records: <count>"
+    },
+    {
+      "id": "sd058",
+      "category": "exact",
+      "question": "Which student was rejected for an invalid CGPA of 11.0?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Pooja (roll 104)"
+    },
+    {
+      "id": "sd059",
+      "category": "numeric",
+      "question": "What was Rohit's CGPA updated to in the MVC demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "7.85"
+    },
+    {
+      "id": "sd060",
+      "category": "numeric",
+      "question": "What CGPA does Utkarsh have in the MVC student records?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "7.77"
+    },
+    {
+      "id": "sd061",
+      "category": "numeric",
+      "question": "How many records remain at the end of the MVC demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "2"
+    },
+    {
+      "id": "sd062",
+      "category": "paraphrase",
+      "question": "Why could the MVC console view be replaced by a GUI without changing the model?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Because the view only prints and the model only stores data"
+    },
+    {
+      "id": "sd063",
+      "category": "definition",
+      "question": "What dependency does the Observer pattern define?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "A one-to-many dependency: when the subject changes state or raises an event, all registered observers are notified automatically"
+    },
+    {
+      "id": "sd064",
+      "category": "paraphrase",
+      "question": "Why does the observer pattern give loose coupling?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "The subject does not need to know what the observers do"
+    },
+    {
+      "id": "sd065",
+      "category": "exact",
+      "question": "Which class acts as the subject in the observer experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "EventManager"
+    },
+    {
+      "id": "sd066",
+      "category": "list",
+      "question": "Which observers are implemented in the event notification system?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "EmailNotifier, SMSNotifier, PushNotifier and AuditLogger"
+    },
+    {
+      "id": "sd067",
+      "category": "list",
+      "question": "What methods does the EventManager provide?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "subscribe(), unsubscribe() and publish()"
+    },
+    {
+      "id": "sd068",
+      "category": "exact",
+      "question": "Which method must every observer implement?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "update(event, data)"
+    },
+    {
+      "id": "sd069",
+      "category": "list",
+      "question": "Which observers are subscribed to ORDER_PLACED at the start of the demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 14
+        }
+      ],
+      "answer": "Email, SMS and Audit"
+    },
+    {
+      "id": "sd070",
+      "category": "list",
+      "question": "Which observers react to PAYMENT_FAILED?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 14
+        }
+      ],
+      "answer": "PushNotifier and EmailNotifier"
+    },
+    {
+      "id": "sd071",
+      "category": "exact",
+      "question": "Which notifier unsubscribes from ORDER_PLACED in the observer demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 14
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "The SMS notifier"
+    },
+    {
+      "id": "sd072",
+      "category": "numeric",
+      "question": "How many subscribers did USER_LOGIN have when it was published?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "0"
+    },
+    {
+      "id": "sd073",
+      "category": "numeric",
+      "question": "How many subscribers did ORDER_PLACED have after the SMS notifier unsubscribed?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "2"
+    },
+    {
+      "id": "sd074",
+      "category": "exact",
+      "question": "What does the AuditLogger print when an event happens?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 14
+        }
+      ],
+      "answer": "[Audit] <event> recorded in log file"
+    },
+    {
+      "id": "sd075",
+      "category": "definition",
+      "question": "What kind of pattern is the Factory pattern?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 16
+        }
+      ],
+      "answer": "A creational pattern that moves object creation into a separate class"
+    },
+    {
+      "id": "sd076",
+      "category": "paraphrase",
+      "question": "Why does adding a new type need a change only in the factory?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 16
+        }
+      ],
+      "answer": "The client asks the factory for an object by name and works with it through a common interface"
+    },
+    {
+      "id": "sd077",
+      "category": "list",
+      "question": "Which concrete payment classes are created by the PaymentFactory?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 16
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 17
+        }
+      ],
+      "answer": "CreditCardPayment, UPIPayment and NetBankingPayment"
+    },
+    {
+      "id": "sd078",
+      "category": "list",
+      "question": "Which notification classes can NotificationFactory create?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 16
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 17
+        }
+      ],
+      "answer": "EmailNotification, SMSNotification and PushNotification"
+    },
+    {
+      "id": "sd079",
+      "category": "exact",
+      "question": "What are the two product interfaces in the Factory experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 16
+        }
+      ],
+      "answer": "Payment and Notification (abstract classes)"
+    },
+    {
+      "id": "sd080",
+      "category": "numeric",
+      "question": "What gateway fee is applied to credit card payments in the factory program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 17
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 18
+        }
+      ],
+      "answer": "2%"
+    },
+    {
+      "id": "sd081",
+      "category": "paraphrase",
+      "question": "What does a UPI payment cost in the factory example?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 17
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 18
+        }
+      ],
+      "answer": "It is instant with no fee"
+    },
+    {
+      "id": "sd082",
+      "category": "list",
+      "question": "What keys does PaymentFactory accept?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 17
+        }
+      ],
+      "answer": "card, upi and netbanking"
+    },
+    {
+      "id": "sd083",
+      "category": "exact",
+      "question": "What error does PaymentFactory raise for an unknown payment kind?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 17
+        }
+      ],
+      "answer": "Unsupported payment method: <kind>"
+    },
+    {
+      "id": "sd084",
+      "category": "exact",
+      "question": "Which payment method was rejected in the factory demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 18
+        }
+      ],
+      "answer": "bitcoin"
+    },
+    {
+      "id": "sd085",
+      "category": "numeric",
+      "question": "How much was paid via Net Banking in the factory demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 18
+        }
+      ],
+      "answer": "Rs.25000"
+    },
+    {
+      "id": "sd086",
+      "category": "numeric",
+      "question": "How much was paid by UPI in the factory output?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 18
+        }
+      ],
+      "answer": "Rs.799"
+    },
+    {
+      "id": "sd087",
+      "category": "definition",
+      "question": "What does a load balancer do?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 19
+        }
+      ],
+      "answer": "It sits in front of several servers and spreads client requests among them to improve throughput and availability"
+    },
+    {
+      "id": "sd088",
+      "category": "definition",
+      "question": "How does the Round-Robin algorithm assign requests?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 19
+        }
+      ],
+      "answer": "In a fixed circular order (S1, S2, S3, S1, ...)"
+    },
+    {
+      "id": "sd089",
+      "category": "paraphrase",
+      "question": "What is the limitation of plain Round-Robin load balancing?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 19
+        }
+      ],
+      "answer": "It ignores the current load and capacity of a server (weighted variants fix this)"
+    },
+    {
+      "id": "sd090",
+      "category": "paraphrase",
+      "question": "How does the load balancer avoid sending requests to a failed server?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 19
+        }
+      ],
+      "answer": "It checks a health flag and skips unhealthy servers, using the next healthy one"
+    },
+    {
+      "id": "sd091",
+      "category": "exact",
+      "question": "What is the file name of the load balancer program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 19
+        }
+      ],
+      "answer": "loadBalancer.js"
+    },
+    {
+      "id": "sd092",
+      "category": "exact",
+      "question": "What error is raised when no server is healthy?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 20
+        }
+      ],
+      "answer": "No healthy servers available"
+    },
+    {
+      "id": "sd093",
+      "category": "exact",
+      "question": "Which server goes down in phase 2 of the load balancer demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 20
+        }
+      ],
+      "answer": "Server-2"
+    },
+    {
+      "id": "sd094",
+      "category": "numeric",
+      "question": "How many requests did Server-2 handle in total in the load balancer demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 20
+        }
+      ],
+      "answer": "4"
+    },
+    {
+      "id": "sd095",
+      "category": "numeric",
+      "question": "How many requests did Server-1 handle in the Round-Robin demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 20
+        }
+      ],
+      "answer": "7"
+    },
+    {
+      "id": "sd096",
+      "category": "exact",
+      "question": "Which server handled request 17 after Server-2 recovered?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 20
+        }
+      ],
+      "answer": "Server-2"
+    },
+    {
+      "id": "sd097",
+      "category": "definition",
+      "question": "What does LRU stand for and which entry does it evict?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "Least Recently Used; it removes the entry that has not been used for the longest time"
+    },
+    {
+      "id": "sd098",
+      "category": "numeric",
+      "question": "What time complexity do the LRU cache's get and put operations have?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "O(1)"
+    },
+    {
+      "id": "sd099",
+      "category": "list",
+      "question": "Which two data structures make up the LRU cache?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "A HashMap (Map) for key lookup and a doubly linked list ordered from most to least recently used"
+    },
+    {
+      "id": "sd100",
+      "category": "paraphrase",
+      "question": "What happens to a node when get() is called on the LRU cache?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "It is moved to the front (most recently used)"
+    },
+    {
+      "id": "sd101",
+      "category": "paraphrase",
+      "question": "Why does the LRU cache use dummy head and tail nodes?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "They are sentinels at both ends of the doubly linked list"
+    },
+    {
+      "id": "sd102",
+      "category": "numeric",
+      "question": "What is the capacity of the LRU cache in the demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 22
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 23
+        }
+      ],
+      "answer": "3"
+    },
+    {
+      "id": "sd103",
+      "category": "exact",
+      "question": "What value does LRUCache.get return on a miss?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 22
+        }
+      ],
+      "answer": "-1"
+    },
+    {
+      "id": "sd104",
+      "category": "list",
+      "question": "Which keys were evicted from the LRU cache in the demo, in order?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 23
+        }
+      ],
+      "answer": "B, then A"
+    },
+    {
+      "id": "sd105",
+      "category": "numeric",
+      "question": "How many hits and misses did the LRU cache demo record?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 23
+        }
+      ],
+      "answer": "Hits = 1, Misses = 2"
+    },
+    {
+      "id": "sd106",
+      "category": "exact",
+      "question": "What was the final state of the LRU cache in the demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 23
+        }
+      ],
+      "answer": "[E=5, C=30, D=4]"
+    },
+    {
+      "id": "sd107",
+      "category": "definition",
+      "question": "What is REST according to the practical file?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 24
+        }
+      ],
+      "answer": "Representational State Transfer, an architectural style where resources are identified by URLs and manipulated with standard HTTP methods; the server is stateless and exchanges JSON"
+    },
+    {
+      "id": "sd108",
+      "category": "exact",
+      "question": "Which framework is used for the RESTful API experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 24
+        }
+      ],
+      "answer": "Express (Node.js)"
+    },
+    {
+      "id": "sd109",
+      "category": "list",
+      "question": "Which HTTP status codes does the REST API return?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 24
+        }
+      ],
+      "answer": "200, 201, 400 and 404"
+    },
+    {
+      "id": "sd110",
+      "category": "exact",
+      "question": "Which status code is returned when a student is created through the REST API?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 24
+        }
+      ],
+      "answer": "201 Created"
+    },
+    {
+      "id": "sd111",
+      "category": "exact",
+      "question": "Which endpoint lists all students in the REST API?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 24
+        }
+      ],
+      "answer": "GET /api/students"
+    },
+    {
+      "id": "sd112",
+      "category": "numeric",
+      "question": "On which port does the Express REST API from experiment 8 run?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        }
+      ],
+      "answer": "5000"
+    },
+    {
+      "id": "sd113",
+      "category": "list",
+      "question": "Which students are in the REST API's initial data?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        }
+      ],
+      "answer": "Utkarsh (id 1, IT) and Ananya (id 2, CSE)"
+    },
+    {
+      "id": "sd114",
+      "category": "exact",
+      "question": "What error does the REST API return when a student is not found?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 26
+        }
+      ],
+      "answer": "Student not found (HTTP 404)"
+    },
+    {
+      "id": "sd115",
+      "category": "exact",
+      "question": "What error does the REST API return when name or branch is missing in a POST?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        }
+      ],
+      "answer": "'name' and 'branch' are required (HTTP 400)"
+    },
+    {
+      "id": "sd116",
+      "category": "paraphrase",
+      "question": "How does the REST API handle a malformed JSON body?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        }
+      ],
+      "answer": "An error handler returns 400 with {\"error\": \"Invalid JSON\"} instead of Express's default HTML error page"
+    },
+    {
+      "id": "sd117",
+      "category": "exact",
+      "question": "Which tool was used to test the REST API?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 26
+        }
+      ],
+      "answer": "curl"
+    },
+    {
+      "id": "sd118",
+      "category": "exact",
+      "question": "Which student was created through POST in the REST API output?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        }
+      ],
+      "answer": "Rohit (id 3, branch ECE)"
+    },
+    {
+      "id": "sd119",
+      "category": "paraphrase",
+      "question": "What was Rohit's branch changed to by the PUT request?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        }
+      ],
+      "answer": "IT"
+    },
+    {
+      "id": "sd120",
+      "category": "exact",
+      "question": "Which student was deleted in the REST API demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 26
+        }
+      ],
+      "answer": "Student 2 (Ananya)"
+    },
+    {
+      "id": "sd121",
+      "category": "numeric",
+      "question": "What status code does GET /api/students/99 return?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 26
+        }
+      ],
+      "answer": "404"
+    },
+    {
+      "id": "sd122",
+      "category": "definition",
+      "question": "What is the aim of the API rate limiter experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 27
+        }
+      ],
+      "answer": "To implement an API rate limiter using the Token Bucket algorithm that limits the number of requests per client"
+    },
+    {
+      "id": "sd123",
+      "category": "paraphrase",
+      "question": "Why is rate limiting used?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 27
+        }
+      ],
+      "answer": "It protects a service from overload and abuse by restricting how many requests a client may send in a period"
+    },
+    {
+      "id": "sd124",
+      "category": "numeric",
+      "question": "What HTTP status code rejects requests above the rate limit?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 27
+        }
+      ],
+      "answer": "429 (Too Many Requests)"
+    },
+    {
+      "id": "sd125",
+      "category": "definition",
+      "question": "How does the Token Bucket algorithm work?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 27
+        }
+      ],
+      "answer": "A bucket holds up to 'capacity' tokens and is refilled at a fixed rate; each request consumes one token"
+    },
+    {
+      "id": "sd126",
+      "category": "paraphrase",
+      "question": "How large a burst of requests does the token bucket allow?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 27
+        }
+      ],
+      "answer": "Up to 'capacity' requests; after that requests are accepted only as fast as tokens are refilled"
+    },
+    {
+      "id": "sd127",
+      "category": "paraphrase",
+      "question": "Why does the rate limiter keep one bucket per client?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 27
+        }
+      ],
+      "answer": "So a heavy client does not affect the others"
+    },
+    {
+      "id": "sd128",
+      "category": "exact",
+      "question": "What is the file name of the rate limiter program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 27
+        }
+      ],
+      "answer": "rateLimiter.js"
+    },
+    {
+      "id": "sd129",
+      "category": "numeric",
+      "question": "What capacity and refill rate does the RateLimiter demo use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "Burst of 5 requests and refill of 1 token per second"
+    },
+    {
+      "id": "sd130",
+      "category": "numeric",
+      "question": "How many of client A's 7 requests at t = 0 were rejected?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "2 (requests 6 and 7)"
+    },
+    {
+      "id": "sd131",
+      "category": "paraphrase",
+      "question": "How is the retry-after time calculated by the rate limiter?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "(1 - tokens) / refillRate seconds"
+    },
+    {
+      "id": "sd132",
+      "category": "numeric",
+      "question": "How many tokens were left after client B's first request?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "4.0"
+    },
+    {
+      "id": "sd133",
+      "category": "numeric",
+      "question": "How many of client A's requests were accepted after waiting 3 seconds?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 29
+        }
+      ],
+      "answer": "3 (the 4th got 429)"
+    },
+    {
+      "id": "sd134",
+      "category": "paraphrase",
+      "question": "What does the conclusion of the rate limiter experiment say?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 29
+        }
+      ],
+      "answer": "It accepted a burst of five requests, rejected extra ones with 429, tracked clients separately and allowed requests again once tokens refilled"
+    },
+    {
+      "id": "sd135",
+      "category": "definition",
+      "question": "What is the aim of the producer–consumer experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "To implement the Producer–Consumer problem using a bounded message queue with asynchronous tasks"
+    },
+    {
+      "id": "sd136",
+      "category": "paraphrase",
+      "question": "Why does the queue let producers and consumers work at different speeds?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "The queue decouples both sides"
+    },
+    {
+      "id": "sd137",
+      "category": "numeric",
+      "question": "What is the maximum size of the bounded queue in experiment 10?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 31
+        }
+      ],
+      "answer": "3"
+    },
+    {
+      "id": "sd138",
+      "category": "paraphrase",
+      "question": "What happens when a producer tries to put a message in a full bounded queue?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "put() waits until there is room"
+    },
+    {
+      "id": "sd139",
+      "category": "numeric",
+      "question": "How many producer and consumer tasks run in the message queue experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "Two producers and two consumers"
+    },
+    {
+      "id": "sd140",
+      "category": "paraphrase",
+      "question": "Why are no locks needed in the Node.js producer–consumer program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "Node.js is single-threaded, so async tasks take the place of threads"
+    },
+    {
+      "id": "sd141",
+      "category": "exact",
+      "question": "How are consumers told to shut down in the producer–consumer program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 31
+        }
+      ],
+      "answer": "A STOP sentinel (null) is put in the queue, one per consumer"
+    },
+    {
+      "id": "sd142",
+      "category": "exact",
+      "question": "Which seeded random generator is used in the producer–consumer program?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "mulberry32"
+    },
+    {
+      "id": "sd143",
+      "category": "numeric",
+      "question": "How many messages does each producer create?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 31
+        }
+      ],
+      "answer": "4"
+    },
+    {
+      "id": "sd144",
+      "category": "numeric",
+      "question": "How many messages in total were produced and consumed?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 31
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 32
+        }
+      ],
+      "answer": "8"
+    },
+    {
+      "id": "sd145",
+      "category": "exact",
+      "question": "What naming format do the produced messages use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 31
+        }
+      ],
+      "answer": "P<pid>-msg<i>, e.g. P1-msg1"
+    },
+    {
+      "id": "sd146",
+      "category": "paraphrase",
+      "question": "What does the producer–consumer conclusion say about the queue size?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 32
+        }
+      ],
+      "answer": "It never grew beyond 3 items, so fast producers could not overwhelm slow consumers"
+    },
+    {
+      "id": "sd147",
+      "category": "definition",
+      "question": "What is a microservices architecture?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        }
+      ],
+      "answer": "An application built as a set of small, independently deployable services, each owning its data and communicating over HTTP/REST"
+    },
+    {
+      "id": "sd148",
+      "category": "numeric",
+      "question": "On which port does the User Service run?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        }
+      ],
+      "answer": "5001"
+    },
+    {
+      "id": "sd149",
+      "category": "numeric",
+      "question": "On which port does the Order Service run?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        }
+      ],
+      "answer": "5002"
+    },
+    {
+      "id": "sd150",
+      "category": "numeric",
+      "question": "On which port does the API Gateway run in the microservices experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "5000"
+    },
+    {
+      "id": "sd151",
+      "category": "paraphrase",
+      "question": "What does the API Gateway do in the microservices experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        }
+      ],
+      "answer": "It is the single entry point; it forwards /api/users to the User service and /api/orders to the Order service"
+    },
+    {
+      "id": "sd152",
+      "category": "paraphrase",
+      "question": "How does the microservices application show fault isolation?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "If one service fails the others keep working and the gateway returns a clear 503 error"
+    },
+    {
+      "id": "sd153",
+      "category": "exact",
+      "question": "Which Node.js version is needed for the microservices experiment and why?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        }
+      ],
+      "answer": "Node.js 18 or newer, because the built-in fetch() is used"
+    },
+    {
+      "id": "sd154",
+      "category": "exact",
+      "question": "Which email does user 1 have in the User Service?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 33
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "utkarsh@example.com"
+    },
+    {
+      "id": "sd155",
+      "category": "paraphrase",
+      "question": "How does the Order Service check that a user exists?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        }
+      ],
+      "answer": "It calls the User Service over HTTP (/users/<id>) with a 2-second timeout"
+    },
+    {
+      "id": "sd156",
+      "category": "exact",
+      "question": "What error does the Order Service return when the User Service is unreachable?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "User service unavailable (HTTP 503)"
+    },
+    {
+      "id": "sd157",
+      "category": "numeric",
+      "question": "What timeout does the API Gateway use for forwarded requests?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        }
+      ],
+      "answer": "3000 ms (3 seconds)"
+    },
+    {
+      "id": "sd158",
+      "category": "list",
+      "question": "Which HTTP methods does the API Gateway allow?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        }
+      ],
+      "answer": "GET and POST (others get 405 Method not allowed)"
+    },
+    {
+      "id": "sd159",
+      "category": "exact",
+      "question": "What does the gateway return for an unknown service name?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        }
+      ],
+      "answer": "404 Unknown service '<name>'"
+    },
+    {
+      "id": "sd160",
+      "category": "exact",
+      "question": "Which item was ordered successfully in the microservices demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "A Laptop (qty 1) for Utkarsh"
+    },
+    {
+      "id": "sd161",
+      "category": "exact",
+      "question": "Why did the order for user_id 9 fail?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "Cannot place order: user not found (HTTP 404)"
+    },
+    {
+      "id": "sd162",
+      "category": "paraphrase",
+      "question": "What happened to GET /api/orders when the User service was stopped?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "It still worked and returned the existing order (HTTP 200)"
+    },
+    {
+      "id": "sd163",
+      "category": "definition",
+      "question": "What is the difference between a Docker image and a container?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 36
+        }
+      ],
+      "answer": "An image packages an application with its libraries and runtime; a container is a running instance of an image, isolated from the host"
+    },
+    {
+      "id": "sd164",
+      "category": "list",
+      "question": "Which Dockerfile instructions are listed in the theory of experiment 12?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 36
+        }
+      ],
+      "answer": "FROM, WORKDIR, COPY, RUN, EXPOSE, CMD"
+    },
+    {
+      "id": "sd165",
+      "category": "paraphrase",
+      "question": "Why is package.json copied first in the Dockerfile?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 36
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "So Docker caches the dependency layer, which speeds up later builds"
+    },
+    {
+      "id": "sd166",
+      "category": "exact",
+      "question": "Why does the Docker app listen on 0.0.0.0?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 36
+        }
+      ],
+      "answer": "So the app is reachable from outside the container"
+    },
+    {
+      "id": "sd167",
+      "category": "exact",
+      "question": "What message does the Dockerized app return at its root route?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 36
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "Hello from a Dockerized Express app!"
+    },
+    {
+      "id": "sd168",
+      "category": "exact",
+      "question": "What does the /health route of the Dockerized app return?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 36
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "{\"status\": \"healthy\"}"
+    },
+    {
+      "id": "sd169",
+      "category": "exact",
+      "question": "Which base image does the Dockerfile use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "node:20-alpine"
+    },
+    {
+      "id": "sd170",
+      "category": "exact",
+      "question": "What is the working directory inside the container?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "/app"
+    },
+    {
+      "id": "sd171",
+      "category": "exact",
+      "question": "Which command builds the Docker image?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "docker build -t node-app:1.0 ."
+    },
+    {
+      "id": "sd172",
+      "category": "exact",
+      "question": "Which command runs the container in the background with port mapping?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "docker run -d -p 5000:5000 --name node-container node-app:1.0"
+    },
+    {
+      "id": "sd173",
+      "category": "exact",
+      "question": "What value is APP_VERSION set to in the Dockerfile?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "1.0"
+    },
+    {
+      "id": "sd174",
+      "category": "exact",
+      "question": "What is the name of the Docker container in experiment 12?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "node-container"
+    },
+    {
+      "id": "sd175",
+      "category": "definition",
+      "question": "What is the aim of the circuit breaker experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "To implement the Circuit Breaker pattern with a retry mechanism using exponential back-off so calls to an unreliable service are fault tolerant"
+    },
+    {
+      "id": "sd176",
+      "category": "paraphrase",
+      "question": "Why does a circuit breaker stop calls to a failing service?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "So the system fails fast and the service gets time to recover"
+    },
+    {
+      "id": "sd177",
+      "category": "list",
+      "question": "What are the three states of a circuit breaker?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "CLOSED, OPEN and HALF-OPEN"
+    },
+    {
+      "id": "sd178",
+      "category": "paraphrase",
+      "question": "What happens in the HALF-OPEN state?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "One trial call is allowed; if it succeeds the circuit closes, otherwise it opens again"
+    },
+    {
+      "id": "sd179",
+      "category": "paraphrase",
+      "question": "When does a closed circuit become open?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "When the counted failures reach the threshold"
+    },
+    {
+      "id": "sd180",
+      "category": "list",
+      "question": "What retry delays does the exponential back-off produce?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "0.1 s, 0.2 s, 0.4 s ... (base delay × 2^attempt)"
+    },
+    {
+      "id": "sd181",
+      "category": "numeric",
+      "question": "What are the default failure threshold and recovery timeout of the CircuitBreaker class?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "Failure threshold 3 and recovery timeout 2.0 seconds"
+    },
+    {
+      "id": "sd182",
+      "category": "exact",
+      "question": "What error is thrown when the circuit is open?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 39
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 40
+        }
+      ],
+      "answer": "CircuitOpenError: circuit OPEN - call blocked"
+    },
+    {
+      "id": "sd183",
+      "category": "paraphrase",
+      "question": "Why doesn't the retry wrapper retry a CircuitOpenError?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 39
+        }
+      ],
+      "answer": "There is no point retrying while the circuit is open, so it is re-thrown at once"
+    },
+    {
+      "id": "sd184",
+      "category": "exact",
+      "question": "What does FlakyService do?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 39
+        }
+      ],
+      "answer": "It fails for the first failFirst calls (service unavailable) and then returns 200 OK"
+    },
+    {
+      "id": "sd185",
+      "category": "numeric",
+      "question": "How many attempts did demo 1 need before the flaky service returned 200 OK?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 40
+        }
+      ],
+      "answer": "3 (two failures, then success)"
+    },
+    {
+      "id": "sd186",
+      "category": "numeric",
+      "question": "What recovery timeout is used for the breaker in demo 2?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 40
+        }
+      ],
+      "answer": "1.5 seconds"
+    },
+    {
+      "id": "sd187",
+      "category": "list",
+      "question": "What state transitions happened at call 4 in the circuit breaker demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 40
+        }
+      ],
+      "answer": "OPEN -> HALF_OPEN, then HALF_OPEN -> CLOSED"
+    },
+    {
+      "id": "sd188",
+      "category": "paraphrase",
+      "question": "What happened to calls 2 and 3 in the circuit breaker demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 40
+        }
+      ],
+      "answer": "They failed immediately with circuit OPEN - call blocked"
+    },
+    {
+      "id": "sd189",
+      "category": "definition",
+      "question": "What are the three parts of a JWT?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 41
+        }
+      ],
+      "answer": "Header, payload (claims such as user, role and expiry) and signature"
+    },
+    {
+      "id": "sd190",
+      "category": "paraphrase",
+      "question": "How does JWT keep the server stateless?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 41
+        }
+      ],
+      "answer": "The client sends the token in the Authorization header with every request after login"
+    },
+    {
+      "id": "sd191",
+      "category": "numeric",
+      "question": "What status code is returned when token authentication fails?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 41
+        }
+      ],
+      "answer": "401 Unauthorized"
+    },
+    {
+      "id": "sd192",
+      "category": "numeric",
+      "question": "What status code is returned when the role is not allowed for a route?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 41
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        }
+      ],
+      "answer": "403 Forbidden"
+    },
+    {
+      "id": "sd193",
+      "category": "list",
+      "question": "Which roles are used in the JWT experiment and what can they open?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 41
+        }
+      ],
+      "answer": "'user' can open /profile; 'admin' can also open /admin/dashboard"
+    },
+    {
+      "id": "sd194",
+      "category": "paraphrase",
+      "question": "How are passwords stored in the JWT experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 41
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        }
+      ],
+      "answer": "As hashes, never in plain text (bcrypt)"
+    },
+    {
+      "id": "sd195",
+      "category": "list",
+      "question": "Which npm packages are installed for the JWT experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        }
+      ],
+      "answer": "express, jsonwebtoken and bcryptjs"
+    },
+    {
+      "id": "sd196",
+      "category": "exact",
+      "question": "Which signing algorithm is used for the JWT?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        }
+      ],
+      "answer": "HS256"
+    },
+    {
+      "id": "sd197",
+      "category": "numeric",
+      "question": "What is the default token lifetime in the JWT experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 43
+        }
+      ],
+      "answer": "900 seconds (15 minutes)"
+    },
+    {
+      "id": "sd198",
+      "category": "list",
+      "question": "Which users exist in the JWT experiment and with what roles?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        }
+      ],
+      "answer": "alice (role user) and admin (role admin)"
+    },
+    {
+      "id": "sd199",
+      "category": "exact",
+      "question": "What error is returned when the Authorization header is missing?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 43
+        }
+      ],
+      "answer": "Missing or malformed token (HTTP 401)"
+    },
+    {
+      "id": "sd200",
+      "category": "exact",
+      "question": "What does the /public route return?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 42
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 43
+        }
+      ],
+      "answer": "Anyone can see this"
+    },
+    {
+      "id": "sd201",
+      "category": "exact",
+      "question": "What does alice get when she opens /admin/dashboard?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 43
+        }
+      ],
+      "answer": "HTTP 403: Forbidden: role 'user' not allowed"
+    },
+    {
+      "id": "sd202",
+      "category": "exact",
+      "question": "What response does a tampered token get?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 44
+        }
+      ],
+      "answer": "HTTP 401 Invalid token"
+    },
+    {
+      "id": "sd203",
+      "category": "paraphrase",
+      "question": "How was token expiry tested in the JWT experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 43
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 44
+        }
+      ],
+      "answer": "The server was started with JWT_TTL=2 (2-second tokens) and the test client, run with 'expiry', waited 3000 ms; /profile then returned 401 Token expired"
+    },
+    {
+      "id": "sd204",
+      "category": "definition",
+      "question": "What is the aim of experiment 15?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 45
+        }
+      ],
+      "answer": "To compare the response time of an application with and without caching and measure the improvement"
+    },
+    {
+      "id": "sd205",
+      "category": "definition",
+      "question": "What is the cache hit ratio?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 45
+        }
+      ],
+      "answer": "The fraction of requests served from the cache"
+    },
+    {
+      "id": "sd206",
+      "category": "numeric",
+      "question": "What workload is used in the caching performance experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 45
+        }
+      ],
+      "answer": "200 requests for 20 products, with popular products requested more often"
+    },
+    {
+      "id": "sd207",
+      "category": "numeric",
+      "question": "What simulated database latency is used in the caching experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 45
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 46
+        }
+      ],
+      "answer": "30 ms per query"
+    },
+    {
+      "id": "sd208",
+      "category": "list",
+      "question": "Which npm packages does the caching experiment install?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 46
+        }
+      ],
+      "answer": "chart.js and chartjs-node-canvas"
+    },
+    {
+      "id": "sd209",
+      "category": "exact",
+      "question": "What seed does the caching experiment's random generator use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 46
+        }
+      ],
+      "answer": "42"
+    },
+    {
+      "id": "sd210",
+      "category": "numeric",
+      "question": "What was the total time without cache for 200 requests?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "6.07 s"
+    },
+    {
+      "id": "sd211",
+      "category": "numeric",
+      "question": "What was the total time with cache?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "0.58 s"
+    },
+    {
+      "id": "sd212",
+      "category": "numeric",
+      "question": "What was the average time per request with caching?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "2.88 ms (vs 30.37 ms without)"
+    },
+    {
+      "id": "sd213",
+      "category": "numeric",
+      "question": "How many database queries were made with the cache?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "19 (vs 200 without)"
+    },
+    {
+      "id": "sd214",
+      "category": "numeric",
+      "question": "What cache hit ratio was achieved in experiment 15?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "90.5%"
+    },
+    {
+      "id": "sd215",
+      "category": "numeric",
+      "question": "How much faster was the workload with caching?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "10.5x faster"
+    },
+    {
+      "id": "sd216",
+      "category": "exact",
+      "question": "What is the name of the chart file saved by the caching experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "caching_chart.png"
+    },
+    {
+      "id": "sd217",
+      "category": "numeric",
+      "question": "How many distinct products did the caching workload actually request?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "19"
+    },
+    {
+      "id": "ee001",
+      "category": "definition",
+      "question": "What does Engineering Economics deal with?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "The application of economic principles and techniques to engineering decision-making"
+    },
+    {
+      "id": "ee002",
+      "category": "list",
+      "question": "What are the objectives of Engineering Economics?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Minimize cost, maximize profit, efficient utilization of resources, economic evaluation of alternatives, support managerial decisions"
+    },
+    {
+      "id": "ee003",
+      "category": "list",
+      "question": "What is the scope of Engineering Economics?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Production planning, project evaluation, inventory control, replacement decisions, make-or-buy decisions, value engineering and cost analysis"
+    },
+    {
+      "id": "ee004",
+      "category": "definition",
+      "question": "What is a fixed cost?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "A cost that does not change with the level of production"
+    },
+    {
+      "id": "ee005",
+      "category": "list",
+      "question": "Give examples of fixed costs from the revision notes.",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Rent, salary, insurance"
+    },
+    {
+      "id": "ee006",
+      "category": "definition",
+      "question": "What is a variable cost?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "A cost that changes with production volume (e.g. raw material, power)"
+    },
+    {
+      "id": "ee007",
+      "category": "definition",
+      "question": "What is a semi-variable cost?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "A cost that contains both fixed and variable components"
+    },
+    {
+      "id": "ee008",
+      "category": "definition",
+      "question": "What is a sunk cost?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "A past cost that cannot be recovered"
+    },
+    {
+      "id": "ee009",
+      "category": "definition",
+      "question": "What is opportunity cost?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "The benefit sacrificed by selecting one alternative over another"
+    },
+    {
+      "id": "ee010",
+      "category": "definition",
+      "question": "What is the break-even point?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "The point where Total Revenue = Total Cost"
+    },
+    {
+      "id": "ee011",
+      "category": "exact",
+      "question": "What is the formula for contribution per unit?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Contribution = Selling Price – Variable Cost"
+    },
+    {
+      "id": "ee012",
+      "category": "exact",
+      "question": "How is the break-even quantity calculated?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "BEP = Fixed Cost / Contribution per unit"
+    },
+    {
+      "id": "ee013",
+      "category": "exact",
+      "question": "What is the formula for break-even sales value?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "BEP Sales = Fixed Cost / P/V Ratio"
+    },
+    {
+      "id": "ee014",
+      "category": "exact",
+      "question": "How is the P/V ratio calculated?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "P/V Ratio = Contribution / Sales × 100"
+    },
+    {
+      "id": "ee015",
+      "category": "exact",
+      "question": "What is the margin of safety formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "MOS = Actual Sales – Break-even Sales"
+    },
+    {
+      "id": "ee016",
+      "category": "exact",
+      "question": "How is profit computed from contribution?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Profit = Contribution – Fixed Cost"
+    },
+    {
+      "id": "ee017",
+      "category": "definition",
+      "question": "How is demand defined in the notes?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "The quantity of a commodity consumers are willing to buy at a given price"
+    },
+    {
+      "id": "ee018",
+      "category": "paraphrase",
+      "question": "What does the law of demand say about price and quantity?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "When price increases demand decreases and vice versa: a negative relationship between price and quantity demanded"
+    },
+    {
+      "id": "ee019",
+      "category": "list",
+      "question": "What factors affect demand?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Price, income, population, taste and preference, availability of substitutes"
+    },
+    {
+      "id": "ee020",
+      "category": "paraphrase",
+      "question": "What does the law of supply state?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "When price increases, supply increases"
+    },
+    {
+      "id": "ee021",
+      "category": "list",
+      "question": "What factors affect supply?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Production cost, technology, taxation, government policy"
+    },
+    {
+      "id": "ee022",
+      "category": "paraphrase",
+      "question": "What is the difference between technical and economic efficiency?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Technical efficiency is producing maximum output from given resources; economic efficiency is producing the desired output at minimum possible cost"
+    },
+    {
+      "id": "ee023",
+      "category": "paraphrase",
+      "question": "What is the decision criterion for technical versus economic efficiency?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Higher productivity for technical efficiency; lower total cost for economic efficiency"
+    },
+    {
+      "id": "ee024",
+      "category": "paraphrase",
+      "question": "In the machine example, why may the 800-unit machine be economically more efficient?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Because it may produce its 800 units at significantly lower cost, even though the 1,000-unit machine is technically more efficient"
+    },
+    {
+      "id": "ee025",
+      "category": "paraphrase",
+      "question": "Why is elementary economic analysis needed?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "For comparing alternatives before selecting the best engineering decision"
+    },
+    {
+      "id": "ee026",
+      "category": "list",
+      "question": "What are the applications of elementary economic analysis?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Material selection, design selection, process planning, equipment selection, transportation decisions"
+    },
+    {
+      "id": "ee027",
+      "category": "list",
+      "question": "On what basis are alternative materials compared?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Material cost, processing cost, transportation cost, weight and operating cost"
+    },
+    {
+      "id": "ee028",
+      "category": "definition",
+      "question": "What is economic advantage in material selection?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "The difference in total cost between alternatives"
+    },
+    {
+      "id": "ee029",
+      "category": "list",
+      "question": "What are the steps in process planning?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Analyze drawing, identify operations, select machines, determine process sequence, estimate cost"
+    },
+    {
+      "id": "ee030",
+      "category": "definition",
+      "question": "What is process modification?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Modifying an existing process to reduce production cost"
+    },
+    {
+      "id": "ee031",
+      "category": "exact",
+      "question": "How is total processing cost calculated?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Cost = Machine Hour Rate × Processing Time"
+    },
+    {
+      "id": "ee032",
+      "category": "definition",
+      "question": "What is the time value of money?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "The principle that money available today is worth more than the same amount received in the future"
+    },
+    {
+      "id": "ee033",
+      "category": "list",
+      "question": "Why does money have time value?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Earning capacity, inflation, risk and uncertainty, and preference for present consumption"
+    },
+    {
+      "id": "ee034",
+      "category": "exact",
+      "question": "What is the simple interest formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "I = P × n × i, and F = P(1 + ni)"
+    },
+    {
+      "id": "ee035",
+      "category": "exact",
+      "question": "What is the compound interest formula for future amount?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "F = P(1 + i)^n"
+    },
+    {
+      "id": "ee036",
+      "category": "exact",
+      "question": "How is present worth computed from a future amount?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "P = F / (1 + i)^n"
+    },
+    {
+      "id": "ee037",
+      "category": "exact",
+      "question": "What is the sinking fund formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "A = F[i / ((1+i)^n – 1)]"
+    },
+    {
+      "id": "ee038",
+      "category": "exact",
+      "question": "What is the equal payment series compound amount formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "F = A[(1+i)^n – 1] / i"
+    },
+    {
+      "id": "ee039",
+      "category": "exact",
+      "question": "What is the equal payment present worth formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 4
+        }
+      ],
+      "answer": "P = A[((1+i)^n – 1) / i(1+i)^n]"
+    },
+    {
+      "id": "ee040",
+      "category": "exact",
+      "question": "What is the capital recovery formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        },
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "A = P[i(1+i)^n / ((1+i)^n – 1)]"
+    },
+    {
+      "id": "ee041",
+      "category": "paraphrase",
+      "question": "What happens to cash flows in the present worth method?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "All future cash flows are converted to present value"
+    },
+    {
+      "id": "ee042",
+      "category": "paraphrase",
+      "question": "What is the decision rule of the present worth method?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Accept if PW > 0, reject if PW < 0"
+    },
+    {
+      "id": "ee043",
+      "category": "list",
+      "question": "What are the steps of the present worth procedure?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Identify cash flows, convert to present worth, compare alternatives, select highest PW"
+    },
+    {
+      "id": "ee044",
+      "category": "list",
+      "question": "What advantages of the present worth method are listed?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Considers time value of money, easy comparison of projects, widely used"
+    },
+    {
+      "id": "ee045",
+      "category": "paraphrase",
+      "question": "How does the future worth method treat cash flows?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "All cash flows are converted to future value at the end of project life"
+    },
+    {
+      "id": "ee046",
+      "category": "exact",
+      "question": "What is the future worth formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "FW = Future worth of benefits – Future worth of costs"
+    },
+    {
+      "id": "ee047",
+      "category": "list",
+      "question": "What advantages does the future worth method have?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Useful for long-term planning and easy understanding of the accumulated amount"
+    },
+    {
+      "id": "ee048",
+      "category": "definition",
+      "question": "What does the annual equivalent method do?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Converts all cash flows into an equivalent annual amount"
+    },
+    {
+      "id": "ee049",
+      "category": "exact",
+      "question": "How is annual equivalent cost calculated?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "AEC = Capital Recovery + Annual Operating Cost"
+    },
+    {
+      "id": "ee050",
+      "category": "paraphrase",
+      "question": "Which alternative is preferred under the annual equivalent method for cost alternatives?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "The one with minimum AEC (maximum annual equivalent for revenue alternatives)"
+    },
+    {
+      "id": "ee051",
+      "category": "paraphrase",
+      "question": "Why is the annual equivalent method suitable for alternatives with different lives?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "It reduces each alternative to an equivalent annual amount, which allows easy annual comparison"
+    },
+    {
+      "id": "ee052",
+      "category": "definition",
+      "question": "What is the internal rate of return?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "The interest rate at which the present worth of benefits equals the present worth of costs, i.e. NPW = 0"
+    },
+    {
+      "id": "ee053",
+      "category": "paraphrase",
+      "question": "When should a project be accepted under the rate of return method?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "When IRR > MARR; reject when IRR < MARR"
+    },
+    {
+      "id": "ee054",
+      "category": "exact",
+      "question": "What does MARR stand for?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Minimum Attractive Rate of Return"
+    },
+    {
+      "id": "ee055",
+      "category": "list",
+      "question": "What are the limitations of the rate of return method?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 7
+        }
+      ],
+      "answer": "Complex calculations, multiple IRRs possible, assumes reinvestment at the IRR itself"
+    },
+    {
+      "id": "ee056",
+      "category": "definition",
+      "question": "What is replacement analysis?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 7
+        }
+      ],
+      "answer": "The economic evaluation of whether an existing asset should be retained or replaced with a new one"
+    },
+    {
+      "id": "ee057",
+      "category": "list",
+      "question": "What are the reasons for replacement?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 7
+        }
+      ],
+      "answer": "High maintenance cost, obsolescence, low efficiency, technological advancement"
+    },
+    {
+      "id": "ee058",
+      "category": "list",
+      "question": "What are the types of deterioration?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 7
+        }
+      ],
+      "answer": "Physical deterioration (wear and tear) and functional/technological obsolescence"
+    },
+    {
+      "id": "ee059",
+      "category": "exact",
+      "question": "What are the defender and the challenger in replacement analysis?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 7
+        },
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 8
+        }
+      ],
+      "answer": "The defender is the existing asset; the challenger is the proposed replacement"
+    },
+    {
+      "id": "ee060",
+      "category": "paraphrase",
+      "question": "When should a machine be replaced according to the replacement procedure?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 8
+        }
+      ],
+      "answer": "When the annual equivalent cost of the new machine is lower than that of the old one"
+    },
+    {
+      "id": "ee061",
+      "category": "definition",
+      "question": "What is depreciation?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 8
+        }
+      ],
+      "answer": "The gradual decrease in the value of an asset over time due to wear and tear, age, usage, obsolescence or other factors"
+    },
+    {
+      "id": "ee062",
+      "category": "exact",
+      "question": "What is the straight line depreciation formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 8
+        }
+      ],
+      "answer": "Depreciation = (First Cost – Salvage Value) / Life"
+    },
+    {
+      "id": "ee063",
+      "category": "exact",
+      "question": "How is book value calculated?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 8
+        }
+      ],
+      "answer": "BV = First Cost – Accumulated Depreciation"
+    },
+    {
+      "id": "ee064",
+      "category": "exact",
+      "question": "How is depreciation calculated under the declining balance method?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 8
+        }
+      ],
+      "answer": "Depreciation = Book Value × Depreciation Rate"
+    },
+    {
+      "id": "ee065",
+      "category": "exact",
+      "question": "What is the sum of years digits depreciation formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 8
+        }
+      ],
+      "answer": "Depreciation = Remaining Life / Sum of Digits × (Cost – Salvage)"
+    },
+    {
+      "id": "ee066",
+      "category": "list",
+      "question": "Why is depreciation important?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 9
+        }
+      ],
+      "answer": "Tax calculation, profit estimation, replacement planning"
+    },
+    {
+      "id": "ee067",
+      "category": "list",
+      "question": "Give examples of public alternatives.",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 9
+        }
+      ],
+      "answer": "Metro rail, highways, dams, hospitals"
+    },
+    {
+      "id": "ee068",
+      "category": "exact",
+      "question": "How is the benefit-cost ratio calculated?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "B/C Ratio = Equivalent Benefits / Equivalent Costs"
+    },
+    {
+      "id": "ee069",
+      "category": "paraphrase",
+      "question": "When is a public project accepted under the B/C ratio?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "When B/C > 1; a higher B/C is preferred"
+    },
+    {
+      "id": "ee070",
+      "category": "list",
+      "question": "What makes evaluating public alternatives difficult?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Social benefits are difficult to measure, long project life, non-monetary factors"
+    },
+    {
+      "id": "ee071",
+      "category": "paraphrase",
+      "question": "What is the difference between tangible and intangible benefits?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Tangible benefits are direct monetary benefits; intangible benefits are social or environmental"
+    },
+    {
+      "id": "ee072",
+      "category": "definition",
+      "question": "How is inflation defined in the notes?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "A continuous increase in the general price level"
+    },
+    {
+      "id": "ee073",
+      "category": "list",
+      "question": "What are the effects of inflation?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Increase in material cost, increase in labour cost, reduced purchasing power"
+    },
+    {
+      "id": "ee074",
+      "category": "exact",
+      "question": "What is the relationship between market, real and inflation rates?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "(1 + Market Rate) = (1 + Real Rate)(1 + Inflation Rate)"
+    },
+    {
+      "id": "ee075",
+      "category": "paraphrase",
+      "question": "What is the real interest rate?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "The interest rate excluding inflation (the market rate includes it)"
+    },
+    {
+      "id": "ee076",
+      "category": "definition",
+      "question": "What is inventory?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 11
+        }
+      ],
+      "answer": "Stock of materials kept for future use"
+    },
+    {
+      "id": "ee077",
+      "category": "list",
+      "question": "What are the objectives of inventory control?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 11
+        }
+      ],
+      "answer": "Avoid shortage, reduce inventory cost, smooth production"
+    },
+    {
+      "id": "ee078",
+      "category": "list",
+      "question": "What are the types of inventory costs?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 11
+        }
+      ],
+      "answer": "Ordering cost, carrying cost and shortage cost"
+    },
+    {
+      "id": "ee079",
+      "category": "definition",
+      "question": "What is carrying cost?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 11
+        }
+      ],
+      "answer": "The cost of storing inventory"
+    },
+    {
+      "id": "ee080",
+      "category": "definition",
+      "question": "What is a make-or-buy decision?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 14
+        }
+      ],
+      "answer": "Deciding whether a component should be manufactured internally or purchased externally"
+    },
+    {
+      "id": "ee081",
+      "category": "list",
+      "question": "What factors affect the make-or-buy decision?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 15
+        }
+      ],
+      "answer": "Production cost, capacity availability, supplier reliability, quality, confidentiality"
+    },
+    {
+      "id": "ee082",
+      "category": "exact",
+      "question": "What is the break-even quantity formula for make or buy?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 15
+        }
+      ],
+      "answer": "Break-even Quantity = Fixed Cost / (Buy Cost per unit – Variable Cost per unit)"
+    },
+    {
+      "id": "ee083",
+      "category": "list",
+      "question": "What are the phases of project management?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 15
+        }
+      ],
+      "answer": "Planning, scheduling, monitoring and controlling"
+    },
+    {
+      "id": "ee084",
+      "category": "paraphrase",
+      "question": "What does the scheduling phase of a project determine?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 15
+        }
+      ],
+      "answer": "The start and end times of each activity, summarized in a time chart/Gantt chart"
+    },
+    {
+      "id": "ee085",
+      "category": "paraphrase",
+      "question": "When is CPM used instead of PERT?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 15
+        },
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "CPM is used when activity times are certain; PERT when they are uncertain"
+    },
+    {
+      "id": "ee086",
+      "category": "exact",
+      "question": "What does PERT stand for?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "Program Evaluation Review Technique"
+    },
+    {
+      "id": "ee087",
+      "category": "definition",
+      "question": "What is the critical path?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "The longest path in the project network; its activities have zero slack"
+    },
+    {
+      "id": "ee088",
+      "category": "exact",
+      "question": "How is slack time calculated?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "Slack = LFT – EFT (difference between latest and earliest event time)"
+    },
+    {
+      "id": "ee089",
+      "category": "list",
+      "question": "What are the rules for network construction?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "Network flows left to right, no loops, use arrows for directions"
+    },
+    {
+      "id": "ee090",
+      "category": "definition",
+      "question": "What is value analysis?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "A systematic approach to improve the value of a product by eliminating unnecessary costs without reducing quality, performance, reliability or functionality"
+    },
+    {
+      "id": "ee091",
+      "category": "exact",
+      "question": "How is value defined in value engineering?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "Value = Function / Cost"
+    },
+    {
+      "id": "ee092",
+      "category": "paraphrase",
+      "question": "How is value engineering different from value analysis?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 16
+        }
+      ],
+      "answer": "VE is applied during the design stage (preventive); VA is applied to existing products (corrective)"
+    },
+    {
+      "id": "ee093",
+      "category": "list",
+      "question": "What are the phases of value analysis?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 17
+        }
+      ],
+      "answer": "Information, function analysis, creative, evaluation, development, presentation/implementation"
+    },
+    {
+      "id": "ee094",
+      "category": "exact",
+      "question": "What is the basic function of a fan according to the notes?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 17
+        }
+      ],
+      "answer": "To move air"
+    },
+    {
+      "id": "ee095",
+      "category": "list",
+      "question": "Give examples of secondary functions from the notes.",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 17
+        }
+      ],
+      "answer": "Attractive design, color, remote control"
+    },
+    {
+      "id": "ee096",
+      "category": "list",
+      "question": "Where is value analysis applied?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 18
+        }
+      ],
+      "answer": "Product design, manufacturing processes, material selection, component design, service industries, construction projects"
+    },
+    {
+      "id": "fa001",
+      "category": "exact",
+      "question": "Who is the mentor of the FraudAlert term paper?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Dr. Shubhra Goyal"
+    },
+    {
+      "id": "fa002",
+      "category": "exact",
+      "question": "In which semester was the FraudAlert term paper submitted?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "B.Tech (IT) 4th Semester"
+    },
+    {
+      "id": "fa003",
+      "category": "exact",
+      "question": "What academic year is the FraudAlert term paper from?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "2024–25"
+    },
+    {
+      "id": "fa004",
+      "category": "definition",
+      "question": "What is FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "A web-based scam and fraud detection platform that helps everyday internet users identify suspicious messages, phishing URLs and fraudulent digital activities in real time"
+    },
+    {
+      "id": "fa005",
+      "category": "list",
+      "question": "Which techniques does FraudAlert use to generate fraud risk scores?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Rule-based keyword analysis, URL structure evaluation and VirusTotal API integration"
+    },
+    {
+      "id": "fa006",
+      "category": "list",
+      "question": "Which technologies is FraudAlert built with?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 2
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 3
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "React.js, Node.js, Express.js and MongoDB Atlas"
+    },
+    {
+      "id": "fa007",
+      "category": "list",
+      "question": "Which extra features does the FraudAlert abstract mention besides detection?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "JWT-based user authentication, a community scam reporting mechanism and an analytics dashboard"
+    },
+    {
+      "id": "fa008",
+      "category": "list",
+      "question": "What fraud threats does the FraudAlert abstract say have become common?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Phishing attacks, fake job offers and malicious payment requests"
+    },
+    {
+      "id": "fa009",
+      "category": "paraphrase",
+      "question": "What harm results when users cannot tell safe content from harmful content?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Severe financial losses, privacy breaches and identity theft"
+    },
+    {
+      "id": "fa010",
+      "category": "paraphrase",
+      "question": "Why are traditional cybersecurity tools hard for ordinary users, according to the FraudAlert introduction?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "They are designed for technically proficient users and demand an advanced understanding of security concepts"
+    },
+    {
+      "id": "fa011",
+      "category": "paraphrase",
+      "question": "What gap in existing solutions does FraudAlert address?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Existing tools focus only on URL detection or only on spam filtering, without a unified, accessible platform for fraud analysis"
+    },
+    {
+      "id": "fa012",
+      "category": "list",
+      "question": "What academic skills does the FraudAlert project demonstrate?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Full-stack web development, cybersecurity concepts, RESTful API integration, JWT authentication and fraud detection techniques"
+    },
+    {
+      "id": "fa013",
+      "category": "list",
+      "question": "What are the key challenges in the FraudAlert problem statement?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 3
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Detecting phishing links in real time, misleading scam messages using urgency/reward/impersonation, no centralized reporting platform, no real-time risk scoring and alerts"
+    },
+    {
+      "id": "fa014",
+      "category": "list",
+      "question": "Which tactics do misleading scam messages use according to the problem statement?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Urgency, reward and impersonation"
+    },
+    {
+      "id": "fa015",
+      "category": "numeric",
+      "question": "How many objectives does the FraudAlert project list?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "7"
+    },
+    {
+      "id": "fa016",
+      "category": "list",
+      "question": "What are the objectives of the FraudAlert project?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Detect suspicious messages by keyword analysis; analyse URLs with VirusTotal; generate a fraud risk score with alerts; JWT authentication; let users report scams; analytics dashboard; demonstrate VirusTotal integration"
+    },
+    {
+      "id": "fa017",
+      "category": "paraphrase",
+      "question": "What can users report on FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Scam numbers, malicious links and fraudulent messages"
+    },
+    {
+      "id": "fa018",
+      "category": "paraphrase",
+      "question": "Is FraudAlert a financial transaction processing system?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "No, it is scoped as a scam detection and awareness platform, not a transaction processing system"
+    },
+    {
+      "id": "fa019",
+      "category": "list",
+      "question": "What four layers does FraudAlert's scope of work span?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Frontend, backend, database and external APIs"
+    },
+    {
+      "id": "fa020",
+      "category": "exact",
+      "question": "Which CSS framework does the FraudAlert frontend use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Tailwind CSS"
+    },
+    {
+      "id": "fa021",
+      "category": "paraphrase",
+      "question": "What does MongoDB Atlas store in FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "User reports, detection histories and analytics data"
+    },
+    {
+      "id": "fa022",
+      "category": "list",
+      "question": "What future enhancements are planned for FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "Google Safe Browsing API, browser extension, mobile app, machine-learning fraud prediction, AI-generated fraud explanations and real-time push notifications"
+    },
+    {
+      "id": "fa023",
+      "category": "list",
+      "question": "Which services offer URL reputation checking according to the related work?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Google Safe Browsing and VirusTotal"
+    },
+    {
+      "id": "fa024",
+      "category": "paraphrase",
+      "question": "Why are browser extensions and antivirus software a problem for non-technical users?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Installing them adds friction and may not cover all channels of digital communication"
+    },
+    {
+      "id": "fa025",
+      "category": "paraphrase",
+      "question": "Why are machine-learning fraud detectors impractical for small projects?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "They need substantial computing resources, large labelled datasets and domain expertise"
+    },
+    {
+      "id": "fa026",
+      "category": "paraphrase",
+      "question": "Why are rule-based detection systems used in FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "They are a computationally lightweight alternative that can flag fraudulent content without machine-learning pipelines"
+    },
+    {
+      "id": "fa027",
+      "category": "paraphrase",
+      "question": "What does prior research say about combining rule-based heuristics with reputation APIs?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 5
+        }
+      ],
+      "answer": "It significantly improves detection accuracy while keeping things simple"
+    },
+    {
+      "id": "fa028",
+      "category": "paraphrase",
+      "question": "How is FraudAlert different from existing tools?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 5
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "It combines message analysis, URL verification, fraud scoring, JWT accounts, community reporting and scam analytics in one platform, instead of addressing one dimension"
+    },
+    {
+      "id": "fa029",
+      "category": "list",
+      "question": "What are the four tiers of the FraudAlert architecture?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Client Layer, Application Layer, Reputation Layer and Database Layer"
+    },
+    {
+      "id": "fa030",
+      "category": "paraphrase",
+      "question": "How do FraudAlert's tiers communicate?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Through well-defined RESTful API contracts secured with JWT tokens"
+    },
+    {
+      "id": "fa031",
+      "category": "list",
+      "question": "Which pages do users interact with in the FraudAlert frontend?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "URL analysis, message scanning, scam reporting and analytics visualization"
+    },
+    {
+      "id": "fa032",
+      "category": "paraphrase",
+      "question": "Where is authentication state managed in FraudAlert's frontend?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Client-side, using JWT tokens stored in the browser"
+    },
+    {
+      "id": "fa033",
+      "category": "paraphrase",
+      "question": "What must users do to obtain a JWT in FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Register and log in; the token is then validated on every subsequent request"
+    },
+    {
+      "id": "fa034",
+      "category": "numeric",
+      "question": "How many stages does FraudAlert's fraud detection pipeline have?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "8"
+    },
+    {
+      "id": "fa035",
+      "category": "list",
+      "question": "What are the stages of FraudAlert's fraud detection pipeline?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "Input reception, keyword analysis, URL structure analysis, external API verification, fraud score calculation, risk categorisation, result storage, alert display"
+    },
+    {
+      "id": "fa036",
+      "category": "list",
+      "question": "Which suspicious phrases does the keyword analysis look for?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "urgent payment, claim your reward, verify your account, limited time offer"
+    },
+    {
+      "id": "fa037",
+      "category": "list",
+      "question": "Which URL anomalies does FraudAlert check for?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "Excessive subdomains, IP-based addresses, suspicious TLDs and URL shorteners"
+    },
+    {
+      "id": "fa038",
+      "category": "paraphrase",
+      "question": "How is FraudAlert's composite fraud score computed?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        }
+      ],
+      "answer": "From a weighted combination of keyword hits, URL anomalies and API reputation data"
+    },
+    {
+      "id": "fa039",
+      "category": "list",
+      "question": "What risk levels can a FraudAlert result have?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 9
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Safe, Medium Risk or High Risk"
+    },
+    {
+      "id": "fa040",
+      "category": "exact",
+      "question": "Which API does FraudAlert use for URL reputation checking?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 7
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "VirusTotal API"
+    },
+    {
+      "id": "fa041",
+      "category": "exact",
+      "question": "Where is FraudAlert hosted?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "Vercel"
+    },
+    {
+      "id": "fa042",
+      "category": "list",
+      "question": "Which development tools are used for FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "GitHub and VS Code"
+    },
+    {
+      "id": "fa043",
+      "category": "numeric",
+      "question": "How many steps are in FraudAlert's data flow diagram?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "9"
+    },
+    {
+      "id": "fa044",
+      "category": "exact",
+      "question": "What type of HTTP request does the frontend send to the backend in the data flow diagram?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "An HTTP POST request"
+    },
+    {
+      "id": "fa045",
+      "category": "paraphrase",
+      "question": "What happens in step 5 of the FraudAlert data flow?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "The backend queries the VirusTotal API for domain reputation and threat intelligence"
+    },
+    {
+      "id": "fa046",
+      "category": "paraphrase",
+      "question": "What happens after the risk level is classified in the data flow?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 9
+        }
+      ],
+      "answer": "The result is stored in MongoDB Atlas, then the verdict and alert are returned to the frontend"
+    },
+    {
+      "id": "fa047",
+      "category": "list",
+      "question": "What components are in Tier 1 of the FraudAlert architecture?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "React.js frontend, Tailwind CSS interface, login/register page (JWT), URL submission form, message scanner, analytics dashboard, report scam page"
+    },
+    {
+      "id": "fa048",
+      "category": "list",
+      "question": "What components are in the FraudAlert application layer?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Node.js + Express.js backend, REST API endpoints, JWT authentication middleware, keyword analysis engine, URL structure parser, rule-based fraud scorer, risk level classifier"
+    },
+    {
+      "id": "fa049",
+      "category": "list",
+      "question": "What does the FraudAlert reputation layer contain?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "External API gateway, VirusTotal API, domain reputation checker, malicious URL database lookup"
+    },
+    {
+      "id": "fa050",
+      "category": "list",
+      "question": "Which collections are in FraudAlert's database layer?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Scam reports, detection history, analytics data and user activity logs"
+    },
+    {
+      "id": "fa051",
+      "category": "paraphrase",
+      "question": "Why is React's component-based architecture useful for FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "It enables modular, reusable UI elements such as the URL form, message scanner, report page and dashboard"
+    },
+    {
+      "id": "fa052",
+      "category": "paraphrase",
+      "question": "Why is Node.js suited to FraudAlert's backend?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "It provides an event-driven, non-blocking I/O environment for handling concurrent API requests"
+    },
+    {
+      "id": "fa053",
+      "category": "list",
+      "question": "Which endpoints does the FraudAlert backend expose?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "URL analysis, message scanning, scam reporting and analytics retrieval"
+    },
+    {
+      "id": "fa054",
+      "category": "paraphrase",
+      "question": "Where does the FraudAlert client put the JWT on later requests?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "In the Authorization header"
+    },
+    {
+      "id": "fa055",
+      "category": "list",
+      "question": "What are the two phases of FraudAlert's fraud detection engine?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "Keyword analysis and URL structure analysis"
+    },
+    {
+      "id": "fa056",
+      "category": "list",
+      "question": "Which high-risk phrases raise the fraud score in the detection engine section?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "urgent payment required, claim your prize, verify your account immediately, click here to avoid suspension"
+    },
+    {
+      "id": "fa057",
+      "category": "paraphrase",
+      "question": "What does VirusTotal check a submitted URL against?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "A continuously updated database of malicious domains, phishing sites and threat reports from dozens of antivirus engines and security vendors"
+    },
+    {
+      "id": "fa058",
+      "category": "paraphrase",
+      "question": "What does the JWT generated by FraudAlert contain?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "The user's identity and role"
+    },
+    {
+      "id": "fa059",
+      "category": "paraphrase",
+      "question": "What does FraudAlert's JWT middleware check before allowing access?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "The token signature and expiry"
+    },
+    {
+      "id": "fa060",
+      "category": "paraphrase",
+      "question": "Why was MongoDB Atlas chosen for FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Its schema-less document model suits heterogeneous detection records, scam reports and analytics data"
+    },
+    {
+      "id": "fa061",
+      "category": "list",
+      "question": "What does FraudAlert store for each detection result?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "The original input, computed fraud score, risk category, timestamps and VirusTotal response summaries"
+    },
+    {
+      "id": "fa062",
+      "category": "list",
+      "question": "What visual alerts does FraudAlert show for each risk level?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "A green safe badge, an amber caution alert or a red high-risk warning"
+    },
+    {
+      "id": "fa063",
+      "category": "list",
+      "question": "What does FraudAlert's analytics dashboard show?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Scam trends, most frequently detected keywords and risk category distributions over time"
+    },
+    {
+      "id": "fa064",
+      "category": "paraphrase",
+      "question": "Which URLs are flagged as High Risk by FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "Phishing URLs with IP-based addresses, deceptive subdomains and known malicious domains"
+    },
+    {
+      "id": "fa065",
+      "category": "paraphrase",
+      "question": "How is the latency of VirusTotal API calls handled?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "Through asynchronous processing on the backend so the UI remains non-blocking"
+    },
+    {
+      "id": "fa066",
+      "category": "paraphrase",
+      "question": "How are MongoDB queries optimised in FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "By indexing detection records by user ID and timestamp"
+    },
+    {
+      "id": "fa067",
+      "category": "paraphrase",
+      "question": "How much overhead does JWT validation add in FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "Negligible overhead per request"
+    },
+    {
+      "id": "fa068",
+      "category": "paraphrase",
+      "question": "What did the FraudAlert reporting system achieve in testing?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "Users could submit scam reports and all reports were persisted to MongoDB Atlas"
+    },
+    {
+      "id": "fa069",
+      "category": "paraphrase",
+      "question": "What does the FraudAlert conclusion say about accuracy compared with rules alone?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "VirusTotal integration improves accuracy and reliability beyond what rule-based approaches alone can achieve"
+    },
+    {
+      "id": "fa070",
+      "category": "paraphrase",
+      "question": "Why would a browser extension help FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "It would enable inline phishing detection without users visiting the platform"
+    },
+    {
+      "id": "fa071",
+      "category": "paraphrase",
+      "question": "What would machine-learning models add to FraudAlert in the future?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "Probabilistic fraud prediction with higher accuracy than static rule sets, trained on labelled scam datasets"
+    },
+    {
+      "id": "fa072",
+      "category": "numeric",
+      "question": "How many references does the FraudAlert term paper list?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 16
+        }
+      ],
+      "answer": "7"
+    },
+    {
+      "id": "fa073",
+      "category": "exact",
+      "question": "What is reference 5 of the FraudAlert paper?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 16
+        }
+      ],
+      "answer": "VirusTotal API Documentation, Google LLC (developers.virustotal.com)"
+    },
+    {
+      "id": "fa074",
+      "category": "exact",
+      "question": "Which organisation publishes the JWT introduction cited in the FraudAlert paper?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 16
+        }
+      ],
+      "answer": "Auth0 (jwt.io/introduction)"
+    },
+    {
+      "id": "sy001",
+      "category": "list",
+      "question": "Which major disciplines does the USICT dual degree syllabus cover?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 1
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "CSE, IT and ECE as major disciplines, plus CSE - Artificial Intelligence and CSE - Data Science"
+    },
+    {
+      "id": "sy002",
+      "category": "exact",
+      "question": "From which academic session is the dual degree scheme effective?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "AS 2024-25"
+    },
+    {
+      "id": "sy003",
+      "category": "exact",
+      "question": "What is the vision of the University School of Information, Communication & Technology?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Create high-quality engineering and computer application professionals"
+    },
+    {
+      "id": "sy004",
+      "category": "paraphrase",
+      "question": "What is the mission of USICT according to the syllabus?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "To serve humanity by creating professionally competent, socially sensitive engineers with high ethical values who can work individually or in groups in multicultural global environments"
+    },
+    {
+      "id": "sy005",
+      "category": "paraphrase",
+      "question": "Who resolves difficulties in interpreting the dual degree curriculum document?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "The Dean of USICT; the decision is later put before the Board of Studies for approval"
+    },
+    {
+      "id": "sy006",
+      "category": "paraphrase",
+      "question": "Whose decision wins if the Board of Studies disagrees with the Dean on a curriculum issue?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "The Board's decision, effective from the date of its approval (the Dean's decision stands in the interim)"
+    },
+    {
+      "id": "sy007",
+      "category": "numeric",
+      "question": "What is the marking scheme for non-NUES papers in the dual degree programme?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 4
+        }
+      ],
+      "answer": "Teachers Continuous Evaluation 40 marks and term end theory examination 60 marks"
+    },
+    {
+      "id": "sy008",
+      "category": "numeric",
+      "question": "How many credits does the first semester of the dual degree carry in total?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "24"
+    },
+    {
+      "id": "sy009",
+      "category": "exact",
+      "question": "Which paper is offered as ES-101 in the first semester?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Programming for Problem Solving"
+    },
+    {
+      "id": "sy010",
+      "category": "exact",
+      "question": "What is VAC-117?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 26
+        }
+      ],
+      "answer": "Indian Constitution (an NUES paper)"
+    },
+    {
+      "id": "sy011",
+      "category": "exact",
+      "question": "What is VAC-119?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "Human Values & Ethics"
+    },
+    {
+      "id": "sy012",
+      "category": "paraphrase",
+      "question": "How must students complete the Human Values & Ethics paper?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "Through the SWAYAM / NPTEL MOOCs platform, at least 2 credits, with the approval of the Dean, USIC&T"
+    },
+    {
+      "id": "sy013",
+      "category": "numeric",
+      "question": "What minimum marks must the MOOC course for VAC-119 be passed with?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "At least 40%"
+    },
+    {
+      "id": "sy014",
+      "category": "paraphrase",
+      "question": "By when must the MOOC marksheet for VAC-119 be submitted to the school?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "By the end of the 6th semester (3rd year)"
+    },
+    {
+      "id": "sy015",
+      "category": "paraphrase",
+      "question": "Who pays for the SWAYAM/NPTEL course taken for VAC-119?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "The student (including the examination fee)"
+    },
+    {
+      "id": "sy016",
+      "category": "exact",
+      "question": "What is offered to students right at the start of the first semester?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "An orientation / student induction program"
+    },
+    {
+      "id": "sy017",
+      "category": "numeric",
+      "question": "How many credits does the second semester carry?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "25"
+    },
+    {
+      "id": "sy018",
+      "category": "exact",
+      "question": "Which paper code is Python Programming?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 10
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "SEC-104"
+    },
+    {
+      "id": "sy019",
+      "category": "exact",
+      "question": "What is the paper code of Engineering Mathematics – II?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 10
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "BS-110"
+    },
+    {
+      "id": "sy020",
+      "category": "exact",
+      "question": "What is the prerequisite paper for Data Structures (ES-102)?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "ES-101 (Programming for Problem Solving)"
+    },
+    {
+      "id": "sy021",
+      "category": "numeric",
+      "question": "How many questions are in the term end paper of Programming for Problem Solving?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "9"
+    },
+    {
+      "id": "sy022",
+      "category": "numeric",
+      "question": "How many marks is the compulsory first question of ES-101 worth?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "15"
+    },
+    {
+      "id": "sy023",
+      "category": "exact",
+      "question": "In which language does Programming for Problem Solving teach programming?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "sy024",
+      "category": "list",
+      "question": "What are the course outcomes of Programming for Problem Solving?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Simple algorithms in C; conditional branching, iteration, recursion and functions; arrays, pointers, union and structures; decomposing a problem into functions using divide and conquer"
+    },
+    {
+      "id": "sy025",
+      "category": "list",
+      "question": "What are the course objectives of the Data Structures paper?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "Basics of data structures (arrays, strings, linked lists); stacks, queues and trees; sets, heaps and graphs; sorting and searching algorithms"
+    },
+    {
+      "id": "sy026",
+      "category": "list",
+      "question": "What topics are in Unit I of Data Structures?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "Algorithm analysis, ADTs, arrays and pointers, strings, lists (single, double, circular), stacks, prefix/infix/postfix expressions, recursion, queues"
+    },
+    {
+      "id": "sy027",
+      "category": "exact",
+      "question": "Which unit of Data Structures covers sparse matrix representation?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 28
+        }
+      ],
+      "answer": "Unit II"
+    },
+    {
+      "id": "sy028",
+      "category": "list",
+      "question": "What are the course objectives of Python Programming (SEC-104)?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "Programming in Python, language-implemented data structures, simple graphics and image processing with object-oriented features, and graphical user interfaces"
+    },
+    {
+      "id": "sy029",
+      "category": "list",
+      "question": "Which modules for files and directories are covered in Unit I of Python Programming?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "The os and sys modules"
+    },
+    {
+      "id": "sy030",
+      "category": "paraphrase",
+      "question": "What file formats does Python Programming Unit I cover for formatted files?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "CSV or tab-separated files"
+    },
+    {
+      "id": "sy031",
+      "category": "list",
+      "question": "Which theory papers are in the third semester of the 2nd year scheme?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "Computer Organization and Architecture, Database Management Systems, Object Oriented Programming using Java, Design and Analysis of Algorithms, Operating Systems, and Principles of Management or Engineering Economics"
+    },
+    {
+      "id": "sy032",
+      "category": "numeric",
+      "question": "How many credits does the third semester carry?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "26"
+    },
+    {
+      "id": "sy033",
+      "category": "exact",
+      "question": "What is PC-259 in the third semester?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 68
+        }
+      ],
+      "answer": "Term Paper – I (an NUES paper, 2 credits)"
+    },
+    {
+      "id": "sy034",
+      "category": "list",
+      "question": "Which theory papers are taught in the fourth semester?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "Theory of Computation, Software Engineering, Computer Networks, Artificial Intelligence & Machine Learning, Web Technologies, and Engineering Economics or Principles of Management"
+    },
+    {
+      "id": "sy035",
+      "category": "exact",
+      "question": "What is the paper code of Web Technologies?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 57
+        }
+      ],
+      "answer": "PC-210"
+    },
+    {
+      "id": "sy036",
+      "category": "exact",
+      "question": "What is the paper code of Term Paper – II?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 68
+        }
+      ],
+      "answer": "PC-260"
+    },
+    {
+      "id": "sy037",
+      "category": "exact",
+      "question": "What is the paper code of Database Management Systems in the third semester?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "PC-203"
+    },
+    {
+      "id": "sy038",
+      "category": "list",
+      "question": "Which normal forms are covered in the DBMS syllabus?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "1NF, 2NF, 3NF, BCNF, 4NF, 5NF and domain key normal form"
+    },
+    {
+      "id": "sy039",
+      "category": "exact",
+      "question": "Which databases are emphasised for stored procedures and triggers in DBMS?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "MySQL and PostgreSQL"
+    },
+    {
+      "id": "sy040",
+      "category": "list",
+      "question": "Which concurrency control techniques are in DBMS Unit III?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "Locking techniques and time stamp ordering"
+    },
+    {
+      "id": "sy041",
+      "category": "list",
+      "question": "Which indexes are covered in DBMS Unit IV?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "Single level, multi-level, B and B+ tree indexes"
+    },
+    {
+      "id": "sy042",
+      "category": "numeric",
+      "question": "How many marks is the compulsory question in the Java (PC-205) paper?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 39
+        }
+      ],
+      "answer": "20"
+    },
+    {
+      "id": "sy043",
+      "category": "numeric",
+      "question": "What is the marks weightage of each unit in Object Oriented Programming using Java?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 39
+        }
+      ],
+      "answer": "10"
+    },
+    {
+      "id": "sy044",
+      "category": "list",
+      "question": "Which Java topics are in the course outcomes of PC-205?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 39
+        }
+      ],
+      "answer": "Java characteristics, compilation, JVM, sandbox model; wrapper classes, inheritance, exception handling; multithreading and swing; I/O, file handling and JDBC"
+    },
+    {
+      "id": "sy045",
+      "category": "list",
+      "question": "Which object oriented concepts are introduced in Unit I of the Java paper?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 39
+        }
+      ],
+      "answer": "Classes, objects, encapsulation, inheritance, data hiding, abstraction, polymorphism"
+    },
+    {
+      "id": "sy046",
+      "category": "list",
+      "question": "Which linear-time sorting algorithms are in Design and Analysis of Algorithms?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 41
+        }
+      ],
+      "answer": "Counting sort, radix sort and bucket sort"
+    },
+    {
+      "id": "sy047",
+      "category": "exact",
+      "question": "Which matrix multiplication algorithm is in Unit I of Design and Analysis of Algorithms?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 41
+        }
+      ],
+      "answer": "Strassen's algorithm"
+    },
+    {
+      "id": "sy048",
+      "category": "list",
+      "question": "What are the course objectives of Design and Analysis of Algorithms?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 41
+        }
+      ],
+      "answer": "Algorithm analysis, growth of functions and disjoint sets; dynamic and greedy programming; graphs and their applications; string matching and NP-complete problems"
+    },
+    {
+      "id": "sy049",
+      "category": "list",
+      "question": "What are the course objectives of Theory of Computation?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 49
+        }
+      ],
+      "answer": "Automata and language theory; CFGs, parse trees and pushdown automata; Turing machines and computability; complexity theory and space complexity"
+    },
+    {
+      "id": "sy050",
+      "category": "list",
+      "question": "Which topics are in Unit I of Theory of Computation?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 49
+        }
+      ],
+      "answer": "Chomsky classification, finite automata, DFA, NFA, regular expressions and their equivalence, algebraic laws for regular expressions"
+    },
+    {
+      "id": "sy051",
+      "category": "list",
+      "question": "Which software process models are in Unit I of Software Engineering?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 51
+        }
+      ],
+      "answer": "Waterfall, incremental development, spiral, reuse-oriented and prototype models"
+    },
+    {
+      "id": "sy052",
+      "category": "list",
+      "question": "Which non-traditional software development processes are introduced in Software Engineering?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 51
+        }
+      ],
+      "answer": "Rational Unified Process and Rapid Application Development"
+    },
+    {
+      "id": "sy053",
+      "category": "list",
+      "question": "What are the course objectives of Software Engineering (PC-204)?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 51
+        }
+      ],
+      "answer": "Software processes and models; requirements analysis, SRS, metrics and system modelling; design, quality and maintenance; testing and system security"
+    },
+    {
+      "id": "sy054",
+      "category": "list",
+      "question": "Which uninformed search algorithms are in the AI & ML syllabus?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 55
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 59
+        }
+      ],
+      "answer": "Breadth-First Search, Depth-First Search and Uniform-Cost Search"
+    },
+    {
+      "id": "sy055",
+      "category": "exact",
+      "question": "What is the paper code of Artificial Intelligence & Machine Learning?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 55
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 59
+        }
+      ],
+      "answer": "PC 208"
+    },
+    {
+      "id": "sy056",
+      "category": "paraphrase",
+      "question": "What does the first course outcome of AI & ML focus on?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 55
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 59
+        }
+      ],
+      "answer": "Fundamentals of AI: intelligent agents, problem-solving techniques and search algorithms"
+    },
+    {
+      "id": "sy057",
+      "category": "list",
+      "question": "What does Unit 1 of Web Technologies cover?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 57
+        }
+      ],
+      "answer": "HTML and CSS: HTML vs HTML5, document structure, headings, lists, tables, images, hyperlinks and forms"
+    },
+    {
+      "id": "sy058",
+      "category": "paraphrase",
+      "question": "Which front-end and back-end technologies does Web Technologies use for full-stack apps?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 57
+        }
+      ],
+      "answer": "React.js for the front end and Node.js with its core modules for the back end"
+    },
+    {
+      "id": "sy059",
+      "category": "paraphrase",
+      "question": "In which year are lateral entry students admitted?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 63
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 102
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 104
+        }
+      ],
+      "answer": "The second year of the degree programme"
+    },
+    {
+      "id": "sy060",
+      "category": "list",
+      "question": "Which bridge courses must lateral entry students study?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 63
+        }
+      ],
+      "answer": "BC-001 Bridge Course in Mathematics and BC-002 Bridge Course in Programming in C"
+    },
+    {
+      "id": "sy061",
+      "category": "numeric",
+      "question": "What are the qualifying marks in each bridge course?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 63
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 102
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 104
+        }
+      ],
+      "answer": "40 marks"
+    },
+    {
+      "id": "sy062",
+      "category": "paraphrase",
+      "question": "Are bridge course marks included in the CGPA?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 63
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 102
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 104
+        }
+      ],
+      "answer": "No, they are qualifying only and not included in CGPA"
+    },
+    {
+      "id": "sy063",
+      "category": "paraphrase",
+      "question": "How do lateral entry students study the bridge courses?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 63
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 102
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 104
+        }
+      ],
+      "answer": "In self-study mode under the mentorship of mentors (the 3rd semester class in-charges)"
+    },
+    {
+      "id": "un001",
+      "category": "unanswerable",
+      "question": "What port does the Redis cache use in the LRU cache experiment?",
+      "answerable": false
+    },
+    {
+      "id": "un002",
+      "category": "unanswerable",
+      "question": "What is the aim of experiment 16 in the system design practical file?",
+      "answerable": false
+    },
+    {
+      "id": "un003",
+      "category": "unanswerable",
+      "question": "What marks did the teacher award for the system design practical file?",
+      "answerable": false
+    },
+    {
+      "id": "un004",
+      "category": "unanswerable",
+      "question": "Which Kubernetes command deploys the Docker container from experiment 12?",
+      "answerable": false
+    },
+    {
+      "id": "un005",
+      "category": "unanswerable",
+      "question": "What load balancing algorithm does Nginx use in the round-robin experiment?",
+      "answerable": false
+    },
+    {
+      "id": "un006",
+      "category": "unanswerable",
+      "question": "How does the GraphQL version of the student API work?",
+      "answerable": false
+    },
+    {
+      "id": "un007",
+      "category": "unanswerable",
+      "question": "What database does the microservices Order Service use to store orders permanently?",
+      "answerable": false
+    },
+    {
+      "id": "un008",
+      "category": "unanswerable",
+      "question": "What refresh token lifetime is used in the JWT experiment?",
+      "answerable": false
+    },
+    {
+      "id": "un009",
+      "category": "unanswerable",
+      "question": "Which message broker, Kafka or RabbitMQ, is used in the producer–consumer experiment?",
+      "answerable": false
+    },
+    {
+      "id": "un010",
+      "category": "unanswerable",
+      "question": "What is the throughput in requests per second of the round-robin load balancer?",
+      "answerable": false
+    },
+    {
+      "id": "un011",
+      "category": "unanswerable",
+      "question": "What CPU and memory limits are set for the Docker container?",
+      "answerable": false
+    },
+    {
+      "id": "un012",
+      "category": "unanswerable",
+      "question": "Which Python version is used to run the experiments in the system design file?",
+      "answerable": false
+    },
+    {
+      "id": "un013",
+      "category": "unanswerable",
+      "question": "What is the weighted round-robin weight given to Server-3?",
+      "answerable": false
+    },
+    {
+      "id": "un014",
+      "category": "unanswerable",
+      "question": "How many users signed up for FraudAlert during testing?",
+      "answerable": false
+    },
+    {
+      "id": "un015",
+      "category": "unanswerable",
+      "question": "What precision and recall did FraudAlert achieve on its test set?",
+      "answerable": false
+    },
+    {
+      "id": "un016",
+      "category": "unanswerable",
+      "question": "What is the exact numeric threshold for High Risk in FraudAlert's fraud score?",
+      "answerable": false
+    },
+    {
+      "id": "un017",
+      "category": "unanswerable",
+      "question": "How much does a VirusTotal premium API subscription cost per month?",
+      "answerable": false
+    },
+    {
+      "id": "un018",
+      "category": "unanswerable",
+      "question": "Which machine learning model does FraudAlert currently use for prediction?",
+      "answerable": false
+    },
+    {
+      "id": "un019",
+      "category": "unanswerable",
+      "question": "What is the URL of the deployed FraudAlert website?",
+      "answerable": false
+    },
+    {
+      "id": "un020",
+      "category": "unanswerable",
+      "question": "Who were the other team members of the FraudAlert project?",
+      "answerable": false
+    },
+    {
+      "id": "un021",
+      "category": "unanswerable",
+      "question": "How many scam reports are stored in FraudAlert's database?",
+      "answerable": false
+    },
+    {
+      "id": "un022",
+      "category": "unanswerable",
+      "question": "Does FraudAlert support Hindi language messages?",
+      "answerable": false
+    },
+    {
+      "id": "un023",
+      "category": "unanswerable",
+      "question": "What is the Android version of FraudAlert called on the Play Store?",
+      "answerable": false
+    },
+    {
+      "id": "un024",
+      "category": "unanswerable",
+      "question": "What is the weight given to keyword hits in FraudAlert's score formula?",
+      "answerable": false
+    },
+    {
+      "id": "un025",
+      "category": "unanswerable",
+      "question": "What is the formula for the economic order quantity (EOQ)?",
+      "answerable": false
+    },
+    {
+      "id": "un026",
+      "category": "unanswerable",
+      "question": "What is the solution to example 13.2 on make or buy?",
+      "answerable": false
+    },
+    {
+      "id": "un027",
+      "category": "unanswerable",
+      "question": "What interest rate is used in example 11.1 of inflation-adjusted decisions?",
+      "answerable": false
+    },
+    {
+      "id": "un028",
+      "category": "unanswerable",
+      "question": "How is depreciation calculated under the sinking fund method?",
+      "answerable": false
+    },
+    {
+      "id": "un029",
+      "category": "unanswerable",
+      "question": "What is the formula for the service output method of depreciation?",
+      "answerable": false
+    },
+    {
+      "id": "un030",
+      "category": "unanswerable",
+      "question": "What is the critical path of the network in example 14.3?",
+      "answerable": false
+    },
+    {
+      "id": "un031",
+      "category": "unanswerable",
+      "question": "What is the expected time formula used in PERT?",
+      "answerable": false
+    },
+    {
+      "id": "un032",
+      "category": "unanswerable",
+      "question": "What is the elasticity of demand formula?",
+      "answerable": false
+    },
+    {
+      "id": "un033",
+      "category": "unanswerable",
+      "question": "What are the GDP and national income definitions in the economics notes?",
+      "answerable": false
+    },
+    {
+      "id": "un034",
+      "category": "unanswerable",
+      "question": "What is the formula for the IRR interpolation step?",
+      "answerable": false
+    },
+    {
+      "id": "un035",
+      "category": "unanswerable",
+      "question": "What is the payback period method and its formula?",
+      "answerable": false
+    },
+    {
+      "id": "un036",
+      "category": "unanswerable",
+      "question": "What is the tuition fee for the B.Tech dual degree programme?",
+      "answerable": false
+    },
+    {
+      "id": "un037",
+      "category": "unanswerable",
+      "question": "Who is the Dean of USICT?",
+      "answerable": false
+    },
+    {
+      "id": "un038",
+      "category": "unanswerable",
+      "question": "What is the syllabus of the 7th semester Machine Learning elective?",
+      "answerable": false
+    },
+    {
+      "id": "un039",
+      "category": "unanswerable",
+      "question": "How many seats are there in the CSE - Data Science programme?",
+      "answerable": false
+    },
+    {
+      "id": "un040",
+      "category": "unanswerable",
+      "question": "What is the late fee for end term exam registration?",
+      "answerable": false
+    },
+    {
+      "id": "un041",
+      "category": "unanswerable",
+      "question": "What is the syllabus of Compiler Design?",
+      "answerable": false
+    },
+    {
+      "id": "un042",
+      "category": "unanswerable",
+      "question": "Which textbook is prescribed for Cloud Computing?",
+      "answerable": false
+    },
+    {
+      "id": "un043",
+      "category": "unanswerable",
+      "question": "What is the minimum CGPA required for placement eligibility?",
+      "answerable": false
+    },
+    {
+      "id": "un044",
+      "category": "unanswerable",
+      "question": "When are the mid-semester exams of the third semester held?",
+      "answerable": false
+    },
+    {
+      "id": "un045",
+      "category": "unanswerable",
+      "question": "What is the hostel fee at the Dwarka campus?",
+      "answerable": false
+    },
+    {
+      "id": "un046",
+      "category": "unanswerable",
+      "question": "What is the capital of Australia?",
+      "answerable": false
+    },
+    {
+      "id": "un047",
+      "category": "unanswerable",
+      "question": "Who won the 2023 Cricket World Cup?",
+      "answerable": false
+    },
+    {
+      "id": "un048",
+      "category": "unanswerable",
+      "question": "What is the boiling point of ethanol?",
+      "answerable": false
+    },
+    {
+      "id": "un049",
+      "category": "unanswerable",
+      "question": "How do I reset my Gmail password?",
+      "answerable": false
+    },
+    {
+      "id": "un050",
+      "category": "unanswerable",
+      "question": "What is the current repo rate set by the RBI?",
+      "answerable": false
+    }
+  ]
+}

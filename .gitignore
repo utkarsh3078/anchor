@@ -6,3 +6,5 @@ dist/
 .DS_Store
 claude.md
 server/uploads/
+# Real evaluation documents (personal files) stay local
+server/eval/docs/real/

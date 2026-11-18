@@ -1,0 +1,796 @@
+{
+  "name": "real-core",
+  "description": "Sample of real.json (same ids). Four documents indexed together (48-page lab file, 16-page term paper, 18-page revision notes, 113-page syllabus). Questions written from the page text, before running Anchor on them; gold pages checked by script against every page of the document. Draft: review before reporting results.",
+  "docs": [
+    {
+      "name": "UTK system design pdf.pdf",
+      "file": "../docs/real/UTK system design pdf.pdf"
+    },
+    {
+      "name": "FraudAlert_Term_Paper.pdf",
+      "file": "../docs/real/FraudAlert_Term_Paper.pdf"
+    },
+    {
+      "name": "Engineering Economics (Revision).pdf",
+      "file": "../docs/real/Engineering Economics (Revision).pdf"
+    },
+    {
+      "name": "Syllabus 2 nd year.pdf",
+      "file": "../docs/real/Syllabus 2 nd year.pdf"
+    }
+  ],
+  "questions": [
+    {
+      "id": "sd001",
+      "category": "exact",
+      "question": "Which university is the system design lab practical file submitted to?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Guru Gobind Singh Indraprastha University (University School of Information, Communication & Technology)"
+    },
+    {
+      "id": "sd015",
+      "category": "exact",
+      "question": "Which database does the layered Student Management System use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "SQLite"
+    },
+    {
+      "id": "sd033",
+      "category": "exact",
+      "question": "Which roll number did removeStudent fail on because it does not exist?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 5
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "Roll number 9"
+    },
+    {
+      "id": "sd065",
+      "category": "exact",
+      "question": "Which class acts as the subject in the observer experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "EventManager"
+    },
+    {
+      "id": "sd093",
+      "category": "exact",
+      "question": "Which server goes down in phase 2 of the load balancer demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 20
+        }
+      ],
+      "answer": "Server-2"
+    },
+    {
+      "id": "sd117",
+      "category": "exact",
+      "question": "Which tool was used to test the REST API?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 25
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 26
+        }
+      ],
+      "answer": "curl"
+    },
+    {
+      "id": "sd156",
+      "category": "exact",
+      "question": "What error does the Order Service return when the User Service is unreachable?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        },
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 35
+        }
+      ],
+      "answer": "User service unavailable (HTTP 503)"
+    },
+    {
+      "id": "sd171",
+      "category": "exact",
+      "question": "Which command builds the Docker image?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "docker build -t node-app:1.0 ."
+    },
+    {
+      "id": "sd201",
+      "category": "exact",
+      "question": "What does alice get when she opens /admin/dashboard?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 43
+        }
+      ],
+      "answer": "HTTP 403: Forbidden: role 'user' not allowed"
+    },
+    {
+      "id": "ee016",
+      "category": "exact",
+      "question": "How is profit computed from contribution?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Profit = Contribution – Fixed Cost"
+    },
+    {
+      "id": "ee046",
+      "category": "exact",
+      "question": "What is the future worth formula?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "FW = Future worth of benefits – Future worth of costs"
+    },
+    {
+      "id": "ee074",
+      "category": "exact",
+      "question": "What is the relationship between market, real and inflation rates?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "(1 + Market Rate) = (1 + Real Rate)(1 + Inflation Rate)"
+    },
+    {
+      "id": "fa020",
+      "category": "exact",
+      "question": "Which CSS framework does the FraudAlert frontend use?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Tailwind CSS"
+    },
+    {
+      "id": "sy010",
+      "category": "exact",
+      "question": "What is VAC-117?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 26
+        }
+      ],
+      "answer": "Indian Constitution (an NUES paper)"
+    },
+    {
+      "id": "sy035",
+      "category": "exact",
+      "question": "What is the paper code of Web Technologies?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 35
+        },
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 57
+        }
+      ],
+      "answer": "PC-210"
+    },
+    {
+      "id": "sd005",
+      "category": "numeric",
+      "question": "How many experiments are listed in the index of the system design practical file?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "15"
+    },
+    {
+      "id": "sd060",
+      "category": "numeric",
+      "question": "What CGPA does Utkarsh have in the MVC student records?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "7.77"
+    },
+    {
+      "id": "sd098",
+      "category": "numeric",
+      "question": "What time complexity do the LRU cache's get and put operations have?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "O(1)"
+    },
+    {
+      "id": "sd133",
+      "category": "numeric",
+      "question": "How many of client A's requests were accepted after waiting 3 seconds?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 29
+        }
+      ],
+      "answer": "3 (the 4th got 429)"
+    },
+    {
+      "id": "sd181",
+      "category": "numeric",
+      "question": "What are the default failure threshold and recovery timeout of the CircuitBreaker class?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "Failure threshold 3 and recovery timeout 2.0 seconds"
+    },
+    {
+      "id": "sd211",
+      "category": "numeric",
+      "question": "What was the total time with cache?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 48
+        }
+      ],
+      "answer": "0.58 s"
+    },
+    {
+      "id": "fa072",
+      "category": "numeric",
+      "question": "How many references does the FraudAlert term paper list?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 16
+        }
+      ],
+      "answer": "7"
+    },
+    {
+      "id": "sy043",
+      "category": "numeric",
+      "question": "What is the marks weightage of each unit in Object Oriented Programming using Java?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 39
+        }
+      ],
+      "answer": "10"
+    },
+    {
+      "id": "sd006",
+      "category": "list",
+      "question": "List the first five experiments in the system design practical file.",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Layered Architecture – Student Management System; Client–Server Application using sockets; MVC Architecture – Student Records; Observer Pattern – Event-Driven Notification System; Factory Design Pattern – Payment/Notification Objects"
+    },
+    {
+      "id": "sd069",
+      "category": "list",
+      "question": "Which observers are subscribed to ORDER_PLACED at the start of the demo?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 14
+        }
+      ],
+      "answer": "Email, SMS and Audit"
+    },
+    {
+      "id": "sd158",
+      "category": "list",
+      "question": "Which HTTP methods does the API Gateway allow?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 34
+        }
+      ],
+      "answer": "GET and POST (others get 405 Method not allowed)"
+    },
+    {
+      "id": "ee002",
+      "category": "list",
+      "question": "What are the objectives of Engineering Economics?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 1
+        }
+      ],
+      "answer": "Minimize cost, maximize profit, efficient utilization of resources, economic evaluation of alternatives, support managerial decisions"
+    },
+    {
+      "id": "ee043",
+      "category": "list",
+      "question": "What are the steps of the present worth procedure?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 5
+        }
+      ],
+      "answer": "Identify cash flows, convert to present worth, compare alternatives, select highest PW"
+    },
+    {
+      "id": "ee073",
+      "category": "list",
+      "question": "What are the effects of inflation?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 10
+        }
+      ],
+      "answer": "Increase in material cost, increase in labour cost, reduced purchasing power"
+    },
+    {
+      "id": "fa005",
+      "category": "list",
+      "question": "Which techniques does FraudAlert use to generate fraud risk scores?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Rule-based keyword analysis, URL structure evaluation and VirusTotal API integration"
+    },
+    {
+      "id": "fa022",
+      "category": "list",
+      "question": "What future enhancements are planned for FraudAlert?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 4
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 15
+        }
+      ],
+      "answer": "Google Safe Browsing API, browser extension, mobile app, machine-learning fraud prediction, AI-generated fraud explanations and real-time push notifications"
+    },
+    {
+      "id": "fa047",
+      "category": "list",
+      "question": "What components are in Tier 1 of the FraudAlert architecture?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "React.js frontend, Tailwind CSS interface, login/register page (JWT), URL submission form, message scanner, analytics dashboard, report scam page"
+    },
+    {
+      "id": "fa063",
+      "category": "list",
+      "question": "What does FraudAlert's analytics dashboard show?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 12
+        }
+      ],
+      "answer": "Scam trends, most frequently detected keywords and risk category distributions over time"
+    },
+    {
+      "id": "sy038",
+      "category": "list",
+      "question": "Which normal forms are covered in the DBMS syllabus?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 37
+        }
+      ],
+      "answer": "1NF, 2NF, 3NF, BCNF, 4NF, 5NF and domain key normal form"
+    },
+    {
+      "id": "sy051",
+      "category": "list",
+      "question": "Which software process models are in Unit I of Software Engineering?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 51
+        }
+      ],
+      "answer": "Waterfall, incremental development, spiral, reuse-oriented and prototype models"
+    },
+    {
+      "id": "sd009",
+      "category": "definition",
+      "question": "What is the aim of the Layered Architecture experiment?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "To implement a Student Management System using the layered (N-tier) architecture, separating the presentation, business logic and data access layers"
+    },
+    {
+      "id": "sd097",
+      "category": "definition",
+      "question": "What does LRU stand for and which entry does it evict?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "Least Recently Used; it removes the entry that has not been used for the longest time"
+    },
+    {
+      "id": "sd204",
+      "category": "definition",
+      "question": "What is the aim of experiment 15?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 45
+        }
+      ],
+      "answer": "To compare the response time of an application with and without caching and measure the improvement"
+    },
+    {
+      "id": "ee017",
+      "category": "definition",
+      "question": "How is demand defined in the notes?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "The quantity of a commodity consumers are willing to buy at a given price"
+    },
+    {
+      "id": "ee076",
+      "category": "definition",
+      "question": "What is inventory?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 11
+        }
+      ],
+      "answer": "Stock of materials kept for future use"
+    },
+    {
+      "id": "sd011",
+      "category": "paraphrase",
+      "question": "Why doesn't a change in one layer affect the whole layered system?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "Because every layer has one responsibility and only talks to the layer directly below it, so changes don't ripple through the system"
+    },
+    {
+      "id": "sd051",
+      "category": "paraphrase",
+      "question": "What does the Controller do in the MVC architecture?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 10
+        }
+      ],
+      "answer": "It receives the user's action, asks the model to update, and selects what the view must show"
+    },
+    {
+      "id": "sd101",
+      "category": "paraphrase",
+      "question": "Why does the LRU cache use dummy head and tail nodes?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 21
+        }
+      ],
+      "answer": "They are sentinels at both ends of the doubly linked list"
+    },
+    {
+      "id": "sd138",
+      "category": "paraphrase",
+      "question": "What happens when a producer tries to put a message in a full bounded queue?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 30
+        }
+      ],
+      "answer": "put() waits until there is room"
+    },
+    {
+      "id": "sd178",
+      "category": "paraphrase",
+      "question": "What happens in the HALF-OPEN state?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "UTK system design pdf.pdf",
+          "page": 38
+        }
+      ],
+      "answer": "One trial call is allowed; if it succeeds the circuit closes, otherwise it opens again"
+    },
+    {
+      "id": "ee022",
+      "category": "paraphrase",
+      "question": "What is the difference between technical and economic efficiency?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 2
+        }
+      ],
+      "answer": "Technical efficiency is producing maximum output from given resources; economic efficiency is producing the desired output at minimum possible cost"
+    },
+    {
+      "id": "ee053",
+      "category": "paraphrase",
+      "question": "When should a project be accepted under the rate of return method?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Engineering Economics (Revision).pdf",
+          "page": 6
+        }
+      ],
+      "answer": "When IRR > MARR; reject when IRR < MARR"
+    },
+    {
+      "id": "fa010",
+      "category": "paraphrase",
+      "question": "Why are traditional cybersecurity tools hard for ordinary users, according to the FraudAlert introduction?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 3
+        }
+      ],
+      "answer": "They are designed for technically proficient users and demand an advanced understanding of security concepts"
+    },
+    {
+      "id": "fa028",
+      "category": "paraphrase",
+      "question": "How is FraudAlert different from existing tools?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 5
+        },
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 6
+        }
+      ],
+      "answer": "It combines message analysis, URL verification, fraud scoring, JWT accounts, community reporting and scam analytics in one platform, instead of addressing one dimension"
+    },
+    {
+      "id": "fa054",
+      "category": "paraphrase",
+      "question": "Where does the FraudAlert client put the JWT on later requests?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 11
+        }
+      ],
+      "answer": "In the Authorization header"
+    },
+    {
+      "id": "fa068",
+      "category": "paraphrase",
+      "question": "What did the FraudAlert reporting system achieve in testing?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "FraudAlert_Term_Paper.pdf",
+          "page": 13
+        }
+      ],
+      "answer": "Users could submit scam reports and all reports were persisted to MongoDB Atlas"
+    },
+    {
+      "id": "sy015",
+      "category": "paraphrase",
+      "question": "Who pays for the SWAYAM/NPTEL course taken for VAC-119?",
+      "answerable": true,
+      "gold": [
+        {
+          "doc": "Syllabus 2 nd year.pdf",
+          "page": 8
+        }
+      ],
+      "answer": "The student (including the examination fee)"
+    },
+    {
+      "id": "un001",
+      "category": "unanswerable",
+      "question": "What port does the Redis cache use in the LRU cache experiment?",
+      "answerable": false
+    },
+    {
+      "id": "un006",
+      "category": "unanswerable",
+      "question": "How does the GraphQL version of the student API work?",
+      "answerable": false
+    },
+    {
+      "id": "un011",
+      "category": "unanswerable",
+      "question": "What CPU and memory limits are set for the Docker container?",
+      "answerable": false
+    },
+    {
+      "id": "un016",
+      "category": "unanswerable",
+      "question": "What is the exact numeric threshold for High Risk in FraudAlert's fraud score?",
+      "answerable": false
+    },
+    {
+      "id": "un021",
+      "category": "unanswerable",
+      "question": "How many scam reports are stored in FraudAlert's database?",
+      "answerable": false
+    },
+    {
+      "id": "un026",
+      "category": "unanswerable",
+      "question": "What is the solution to example 13.2 on make or buy?",
+      "answerable": false
+    },
+    {
+      "id": "un031",
+      "category": "unanswerable",
+      "question": "What is the expected time formula used in PERT?",
+      "answerable": false
+    },
+    {
+      "id": "un036",
+      "category": "unanswerable",
+      "question": "What is the tuition fee for the B.Tech dual degree programme?",
+      "answerable": false
+    },
+    {
+      "id": "un041",
+      "category": "unanswerable",
+      "question": "What is the syllabus of Compiler Design?",
+      "answerable": false
+    },
+    {
+      "id": "un046",
+      "category": "unanswerable",
+      "question": "What is the capital of Australia?",
+      "answerable": false
+    }
+  ]
+}
