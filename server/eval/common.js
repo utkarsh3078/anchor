@@ -17,8 +17,27 @@ export function geminiHeaders({ model, rewriteModel } = {}) {
   return h;
 }
 
-export function makeApi(base, extraHeaders = {}) {
-  return async function api(method, route, body) {
+// Errors that only mean "not right now" are retried; everything else is thrown at once.
+//   gemini_quota (per minute)  Gemini's retry delay (else a minute) + 2 s, up to 3 times
+//   gemini_unavailable         Google overloaded (503): 15 s, up to 2 times
+//   fetch failed               the connection to the Anchor server dropped, typically a
+//                              kept-alive socket the server closed during a long wait: 1 s, once
+// A daily limit is never retried. Waits are logged; the latency a row records is the
+// server's, so it doesn't include them.
+const RETRY = {
+  minute: { times: 3, wait: (e) => ((e.retryAfterSec || 60) + 2) * 1000 },
+  busy: { times: 2, wait: () => 15000 },
+  dropped: { times: 1, wait: () => 1000 },
+};
+function retryKind(e) {
+  if (e.code === 'gemini_quota') return e.scope === 'day' ? null : 'minute';
+  if (e.code === 'gemini_unavailable') return 'busy';
+  if (e.name === 'TypeError' && /fetch failed/i.test(e.message)) return 'dropped';
+  return null;
+}
+
+export function makeApi(base, extraHeaders = {}, { wait = sleep, log = console.error } = {}) {
+  async function once(method, route, body) {
     const isForm = body instanceof FormData;
     const res = await fetch(base + route, {
       method,
@@ -28,9 +47,25 @@ export function makeApi(base, extraHeaders = {}) {
     const json = await res.json();
     if (!res.ok) {
       const err = new Error(`${method} ${route} -> ${res.status} ${json.error}: ${json.message ?? ''}`);
-      throw Object.assign(err, { status: res.status, code: json.error, scope: json.scope });
+      throw Object.assign(err, { status: res.status, code: json.error, scope: json.scope, retryAfterSec: json.retryAfterSec });
     }
     return json;
+  }
+  const WHY = { minute: 'Gemini per-minute limit', busy: 'Gemini busy', dropped: 'connection dropped' };
+  return async function api(method, route, body) {
+    const used = { minute: 0, busy: 0, dropped: 0 };
+    for (;;) {
+      try {
+        return await once(method, route, body);
+      } catch (e) {
+        const kind = retryKind(e);
+        if (!kind || used[kind] >= RETRY[kind].times) throw e;
+        used[kind] += 1;
+        const ms = RETRY[kind].wait(e);
+        log(`\n  ${WHY[kind]}: waiting ${Math.round(ms / 1000)} s, then sending ${route} again`);
+        await wait(ms);
+      }
+    }
   };
 }
 

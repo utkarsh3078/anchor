@@ -53,6 +53,15 @@
   --iris-3: #8d7be0;
   --iris-4: #5c9fe6;
   --ring: #ad4526;
+  /* Chart series (results page). Validated as a set for colour-blind readers, light and
+     dark (dataviz validate_palette, all pairs). viz-3 is under 3:1 on white, so every
+     chart also prints its values and has a table view. viz-base: the de-emphasised
+     comparison series. viz-grid: hairline axes. */
+  --viz-1: #2a78d6;
+  --viz-2: #eb6834;
+  --viz-3: #1baf7a;
+  --viz-base: #a3a4ab;
+  --viz-grid: rgb(18 19 22 / 0.1);
   --shadow-color: 60 40 30;
   color-scheme: light;
 }
@@ -104,6 +113,11 @@
     --iris-3: #ab9cf0;
     --iris-4: #84b8f2;
     --ring: #f2a584;
+    --viz-1: #3987e5;
+    --viz-2: #d95926;
+    --viz-3: #199e70;
+    --viz-base: #6b6d75;
+    --viz-grid: rgb(255 255 255 / 0.1);
     --shadow-color: 0 0 0;
     color-scheme: dark;
   }
@@ -155,6 +169,11 @@
   --iris-3: #ab9cf0;
   --iris-4: #84b8f2;
   --ring: #f2a584;
+  --viz-1: #3987e5;
+  --viz-2: #d95926;
+  --viz-3: #199e70;
+  --viz-base: #6b6d75;
+  --viz-grid: rgb(255 255 255 / 0.1);
   --shadow-color: 0 0 0;
   color-scheme: dark;
 }
@@ -197,6 +216,11 @@
   --color-sem-soft: var(--sem-soft);
   --color-sem-fg: var(--sem-fg);
   --color-ring: var(--ring);
+  --color-viz-1: var(--viz-1);
+  --color-viz-2: var(--viz-2);
+  --color-viz-3: var(--viz-3);
+  --color-viz-base: var(--viz-base);
+  --color-viz-grid: var(--viz-grid);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;

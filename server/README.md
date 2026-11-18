@@ -46,6 +46,7 @@ Later sessions: `docker start typesense anchor-mongo`.
 | `COHERE_RERANK_MODEL` | no | default `rerank-v3.5` |
 | `CONFIDENCE_SIGNALS` | no | default on; `false` = no per-attempt confidence signals computed, returned or logged (the behaviour before they existed) |
 | `ANSWER_CHECK` | no | default on: every answer's statements are compared with the passages they cite and returned as `support` (see Ask); `false` = nothing checked or returned |
+| `RESULTS_DATASET` | no | default `real-core`: the dataset `GET /api/results` (the client's results page) shows |
 | `SHARED_DOCUMENTS` | no | default off: documents belong to the key that uploaded them (see Documents); `true` = one library shared by every visitor, as before owners existed |
 | `TYPESENSE_HOST/PORT/PROTOCOL/API_KEY` | yes | |
 | `TYPESENSE_COLLECTION` | no | default `chunks`; lets a second deployment or a test use its own collection on the same Typesense |
@@ -376,6 +377,34 @@ never stored) and survive a restart; the last minute and `limited` are in memory
 ### Health
 
 `GET /api/health` → `{ ok, typesense, mongo, requireUserKey }`, 503 if a configured service is down.
+
+### Results (the public results page)
+
+`GET /api/results[?dataset=real-core]` → totals of the latest saved evaluation runs of a
+dataset (src/lib/results.js), for the client's `/results` page. No key, no API call, cached
+for a minute, rate-limited like other reads. Reads MongoDB `evalRuns` (newest run of each
+kind; ties go to the most recently stored record), else `eval/results/*.json`, plus the
+dataset file for question counts and document names (a dataset document may set `label`).
+
+```jsonc
+{
+  "dataset": { "name": "real-core", "questions": 62, "answerable": 52, "unanswerable": 10, "documents": ["System design lab file", "…"] },
+  "retrieval": { "measuredAt": "…", "k": 5, "questions": 62,
+    "configs": [{ "config": "dense", "label": "Meaning search", "recall": 0.897, "mrr": 0.867, "found": 49, "answerable": 52, "latencyP50": 432, "latencyP95": 467 }],
+    "byCategory": [{ "category": "exact", "questions": 15, "recall": { "dense": 0.878, "…": 0 } }],
+    "byDocument": [{ "document": "FraudAlert term paper", "questions": 10, "recall": { "dense": 0.72, "…": 0 } }],
+    "threshold": [{ "threshold": 0.15, "answerableKept": 0.981, "unanswerableCaught": 0.2 }], "defaultThreshold": 0.15,
+    "retries": { "questions": 3, "helped": 0 } },
+  "answers": { "measuredAt": "…", "k": 10, "questions": 62, "models": ["gemini-3.5-flash-lite"], "gradedBy": "…",
+    "modes": [{ "mode": "anchor-soft", "label": "Anchor", "answerable": 52, "answered": 50, "correct": 49, "accuracy": 0.942,
+      "accuracyOnAnswered": 0.98, "unanswerable": 10, "refused": 10, "citedRightPage": 1, "citationPrecision": 0.907, "latencyP50": 10084, "latencyP95": 25660 }] }
+}
+```
+
+Questions, answers, passages and document text are never sent. `accuracy` and `correct`
+are `null` for an ungraded answer run. 404 `not_found` when the dataset has no runs. The
+default dataset is `RESULTS_DATASET` (else `real-core`). After grading or editing a run file,
+`npm run eval:sync -- <run.json>` puts it into MongoDB so this route shows it.
 
 ## Evaluation
 

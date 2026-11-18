@@ -4,18 +4,22 @@
   "docs": [
     {
       "name": "UTK system design pdf.pdf",
+      "label": "System design lab file",
       "file": "../docs/real/UTK system design pdf.pdf"
     },
     {
       "name": "FraudAlert_Term_Paper.pdf",
+      "label": "FraudAlert term paper",
       "file": "../docs/real/FraudAlert_Term_Paper.pdf"
     },
     {
       "name": "Engineering Economics (Revision).pdf",
+      "label": "Engineering Economics notes",
       "file": "../docs/real/Engineering Economics (Revision).pdf"
     },
     {
       "name": "Syllabus 2 nd year.pdf",
+      "label": "2nd-year syllabus",
       "file": "../docs/real/Syllabus 2 nd year.pdf"
     }
   ],

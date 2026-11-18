@@ -19,6 +19,7 @@ const NAV = [
   { href: '#how', label: 'How it works' },
   { href: '#why', label: 'Why Anchor' },
   { href: '#inside', label: 'Under the hood' },
+  { href: '/results', label: 'Test results' },
 ];
 
 const STEPS = [

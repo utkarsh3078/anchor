@@ -16,6 +16,10 @@ npm run eval:answers -- eval/datasets/smoke.json --modes dense,hybrid,anchor
 # Markdown tables for the paper from the latest runs
 npm run eval:report -- --dataset smoke --out ../report-smoke.md
 
+# After editing a run file (e.g. grading answers), put it into MongoDB so the report and
+# the results page (GET /api/results, client /results) read the edited rows
+npm run eval:sync -- eval/results/<run>.json
+
 # Comparison with ChatGPT / NotebookLM, graded by hand (no API calls, see below)
 npm run eval:external -- sheet eval/datasets/smoke.json --system chatgpt
 npm run eval:external -- score eval/datasets/smoke.json
@@ -67,7 +71,10 @@ the best alpha (recall, then MRR, then nearest 0.5). It does not change any sett
 ### Free tiers
 
 The runners send `GEMINI_API_KEY` from `.env` as `X-Gemini-Key` and bypass the server
-caches, so latencies are real calls. Progress is saved after every question; when a quota
+caches, so latencies are real calls. Errors that only mean "not right now" are retried: Gemini's per-minute limit (its retry
+delay, else a minute, up to 3 times), Gemini overloaded (`gemini_unavailable`, 15 s, twice)
+and a dropped connection to the server (1 s, once). A row's latency is the server's and
+doesn't include those waits. Progress is saved after every question; when a quota
 runs out the run stops (at once for a daily quota) and prints a `--resume` command:
 
 ```bash

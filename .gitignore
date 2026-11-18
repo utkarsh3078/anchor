@@ -8,3 +8,6 @@ claude.md
 server/uploads/
 # Real evaluation documents (personal files) stay local
 server/eval/docs/real/
+
+term-report-results.txt
+report-real-core.md

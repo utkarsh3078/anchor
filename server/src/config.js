@@ -22,6 +22,9 @@ export const config = {
   // Check every answer's statements against the passages they cite (lib/support.js) and
   // return the result as `support`. No API call. false = nothing checked or returned.
   answerCheck: process.env.ANSWER_CHECK !== 'false',
+  // The public results page (GET /api/results) shows the latest evaluation runs of this
+  // dataset (MongoDB evalRuns, else server/eval/results).
+  results: { dataset: process.env.RESULTS_DATASET || 'real-core' },
   // Count what each key uses through this server and serve it at GET /api/gemini/usage.
   // false = nothing counted or stored.
   usageTracking: process.env.USAGE_TRACKING !== 'false',

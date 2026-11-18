@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookOpen, Files, Gauge, House, KeyRound, MessagesSquare, Settings } from 'lucide-react';
+import { BarChart3, BookOpen, Files, Gauge, House, KeyRound, MessagesSquare, Settings } from 'lucide-react';
 import Logo from './ui/Logo';
 import ThemeToggle from './ui/ThemeToggle';
 
@@ -57,6 +57,9 @@ export default function Sidebar({ view, setView, tickedCount, keyTail, onChangeK
         <div className="mt-2 flex flex-col gap-1.5">
           <Link href="/#how" className={`${item} ${idle}`}>
             <BookOpen className="size-[18px] shrink-0" aria-hidden /> How it works
+          </Link>
+          <Link href="/results" className={`${item} ${idle}`}>
+            <BarChart3 className="size-[18px] shrink-0" aria-hidden /> Test results
           </Link>
           <Link href="/" className={`${item} ${idle}`}>
             <House className="size-[18px] shrink-0" aria-hidden /> Home page

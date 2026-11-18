@@ -26,6 +26,19 @@ theme variables; light and dark via `prefers-color-scheme` plus the toggle in
   animated `HeroIllustration`, "Why Anchor", "Under the hood" (the pipeline in plain words),
   closing call. "Get started" leads to `/chat`.
 - `/chat` (`app/chat/page.js`): the key screen (`KeyGate`), then the workspace.
+- `/results` (`app/results/page.js`, `components/results/`): the measured test results for
+  visitors and examiners, loaded in the browser from `GET /api/results` (the latest saved
+  test run, so a new run shows without a rebuild). Four opening figures that count up
+  (answers correct, right page found, "not in your document" when it wasn't there, answers
+  citing a right page), then: the search built up step by step (right page in the top k and
+  MRR per version, with the points each step adds), Anchor vs plain hybrid answers, the
+  cut-off chart (answerable still answered vs unanswerable stopped, crosshair on hover and
+  arrow keys, Anchor's setting marked), per document, per kind of question, and "How this
+  was measured" (dates, question source, grader, answer model, sample-size caveat). Bars grow
+  and lines draw when scrolled into view; every chart has a legend for 2+ series, printed
+  values, hover/focus details and a table view; reduced motion shows everything at once.
+  Chart colours are the `viz-*` tokens in `globals.css` (validated for colour-blind readers in
+  light and dark). Linked from the landing nav ("Test results") and the chat rail.
 
 ## Flow (at /chat)
 
@@ -98,6 +111,8 @@ npm test    # node --test: plain-words errors, page grouping, default model, set
 
 - `app/page.js`: landing page
 - `app/chat/page.js`: key screen, then the workspace (or the classic one)
+- `app/results/page.js` + `components/results/` (`ResultsView`, `Bars`, `ThresholdChart`,
+  `CountUp`): the results page; `lib/results.js`: its formatting and chart geometry (tested)
 - `app/globals.css`: design tokens, page gradient, spark animation
 - `lib/api.js`: fetch wrapper that adds the `X-Gemini-*` headers and turns server errors
   (`{ error, message }`) into `ApiError`
